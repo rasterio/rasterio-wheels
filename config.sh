@@ -30,7 +30,7 @@ function build_geos {
 
 function build_jsonc {
     local old_cflags=$CFLAGS
-    export CFLAGS = "${old_cflags} -Wno-error=unused-command-line-argument"
+    export CFLAGS="${old_cflags} -Wno-error=unused-command-line-argument"
     build_simple json-c $JSONC_VERSION https://s3.amazonaws.com/json-c_releases/releases tar.gz
     export CFLAGS=$old_cflags
 }
