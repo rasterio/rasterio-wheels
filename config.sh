@@ -24,12 +24,12 @@ GDAL_VERSION=2.2.4
 
 
 function build_geos {
-    build_simple geos $GEOS_VERSION https://download.osgeo.org/geos
+    build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
 }
 
 
 function build_jsonc {
-    build_simple json-c $JSONC_VERSION https://s3.amazonaws.com/json-c_releases/releases
+    build_simple json-c $JSONC_VERSION https://s3.amazonaws.com/json-c_releases/releases tar.gz
 }
 
 
@@ -46,7 +46,7 @@ function build_proj {
 
 
 function build_sqlite {
-    build_simple sqlite $SQLITE_VERSION https://www.sqlite.org/2018
+    build_simple sqlite $SQLITE_VERSION https://www.sqlite.org/2018 tar.gz
 }
 
 
