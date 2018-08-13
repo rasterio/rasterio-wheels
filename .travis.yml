@@ -1,3 +1,9 @@
+language: python
+python: 3.5
+sudo: required
+dist: trusty
+services: docker
+
 env:
     global:
         - REPO_DIR=rasterio
@@ -16,15 +22,9 @@ env:
         - ARTIFACTS_BUCKET="rasterio-wheels"
 
 addons:
-    artifacts: true
+    artifacts:
         paths:
             - $(ls wheels/*.whl)
-
-language: python
-python: 3.5
-sudo: required
-dist: trusty
-services: docker
 
 matrix:
   exclude:
