@@ -40,7 +40,7 @@ function build_proj {
     if [ -e proj-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
-        && patch -u -p1 < patches/bd6cf7d527ec88fdd6cc3f078387683d683d0445.diff \
+        && patch -u -p1 < ../patches/bd6cf7d527ec88fdd6cc3f078387683d683d0445.diff \
         && ./configure --prefix=$BUILD_PREFIX \
         && make -j4 \
         && make install)
