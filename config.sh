@@ -21,6 +21,7 @@ JSONC_VERSION=0.12
 PROJ_VERSION=4.9.3
 SQLITE_VERSION=sqlite-autoconf-3240000
 GDAL_VERSION=2.2.4
+LIBCURL_VERSION=7.61.0
 
 
 function build_geos {
@@ -54,6 +55,18 @@ function build_sqlite {
 
 
 function build_gdal {
+    build_jpeg
+    build_tiff
+    build_libpng
+    build_openjpeg
+    build_libwebp
+    build_geos
+    build_jsonc
+    build_proj
+    build_netcdf
+    build_sqlite
+    build_curl
+
     if [ -e gdal-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
@@ -102,10 +115,6 @@ function pre_build {
         # Update to latest zlib for OSX build
         build_new_zlib
     fi
-    build_jpeg
-    build_tiff
-    build_libpng
-    build_openjpeg
 
 #    if [ -n "$IS_OSX" ]; then
 #        # Fix openjpeg library install id
@@ -113,12 +122,7 @@ function pre_build {
 #        install_name_tool -id $BUILD_PREFIX/lib/libopenjp2.7.dylib $BUILD_PREFIX/lib/libopenjp2.2.1.0.dylib
 #    fi
 
-    build_libwebp
-    build_geos
-    build_jsonc
-    build_proj
-    build_netcdf
-    build_sqlite
+    build_gdal
 }
 
 
