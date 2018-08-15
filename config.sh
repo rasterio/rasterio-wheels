@@ -3,7 +3,8 @@
 # Test for OSX with [ -n "$IS_OSX" ].
 
 ARCHIVE_SDIR=rasterio
-MACOSX_DEPLOYMENT_TARGET=10.9
+
+export MACOSX_DEPLOYMENT_TARGET=10.9
 
 # Package versions for fresh source builds.
 # Copied from Pillow wheels project.
