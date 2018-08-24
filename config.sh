@@ -26,7 +26,13 @@ function build_proj {
 
 
 function build_sqlite {
-    build_simple sqlite $SQLITE_VERSION https://www.sqlite.org/2018 tar.gz
+    if [ -e sqlite-stamp ]; then return; fi
+    fetch_unpack https://www.sqlite.org/2018/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
+    (cd sqlite-autoconf-${SQLITE_VERSION} \
+        && ./configure --prefix=$BUILD_PREFIX \
+        && make -j4 \
+        && make install)
+    touch sqlite-stamp
 }
 
 
