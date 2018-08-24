@@ -36,6 +36,22 @@ function build_sqlite {
 }
 
 
+function get_cmake {
+    local cmake=cmake
+    if [ -n "$IS_OSX" ]; then
+        brew install cmake > /dev/null
+    else
+        fetch_unpack https://www.cmake.org/files/v3.12/cmake-3.12.1.tar.gz
+        (cd cmake-3.12.1 \
+            ./bootstrap --prefix=$BUILD_PREFIX \
+            && make -j4 \
+            && make install)
+        cmake=/usr/local/bin/cmake
+    fi
+    echo $cmake
+}
+
+
 function build_gdal {
     build_jpeg
     build_tiff
