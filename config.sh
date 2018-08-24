@@ -41,11 +41,11 @@ function get_cmake {
     if [ -n "$IS_OSX" ]; then
         brew install cmake > /dev/null
     else
-        fetch_unpack https://www.cmake.org/files/v3.12/cmake-3.12.1.tar.gz
+        fetch_unpack https://www.cmake.org/files/v3.12/cmake-3.12.1.tar.gz > /dev/null
         (cd cmake-3.12.1 \
-            ./bootstrap --prefix=$BUILD_PREFIX \
-            && make -j4 \
-            && make install)
+            && ./bootstrap --prefix=$BUILD_PREFIX > /dev/null \
+            && make -j4 > /dev/null \
+            && make install > /dev/null)
         cmake=/usr/local/bin/cmake
     fi
     echo $cmake
