@@ -27,10 +27,10 @@ addons:
             - $(ls wheels/*.whl)
 
 matrix:
-  exclude:
-      # Exclude the default Python 3.5 build
-      - python: 3.5
-  include:
+    exclude:
+    # Exclude the default Python 3.5 build
+    - python: 3.5
+    include:
 #     - os: linux
 #       env:
 #         - MB_PYTHON_VERSION=3.7
@@ -53,11 +53,12 @@ matrix:
 #         - PLAT=i686
 #         - NP_BUILD_DEP=numpy==1.10.4
 #         - NP_TEST_DEP=numpy==1.10.4
-    - os: linux
-       env:
-         - MB_PYTHON_VERSION=3.6
-         - NP_BUILD_DEP=numpy==1.11.3
-         - NP_TEST_DEP=numpy==1.11.3
+    - name: "Python 3.6 64-bit linux"
+      os: linux
+      env:
+      - MB_PYTHON_VERSION=3.6
+      - NP_BUILD_DEP=numpy==1.11.3
+      - NP_TEST_DEP=numpy==1.11.3
 #     - os: linux
 #       env:
 #         - MB_PYTHON_VERSION=3.6
