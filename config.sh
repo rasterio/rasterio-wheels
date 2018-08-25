@@ -139,8 +139,8 @@ function pre_build {
 #        install_name_tool -id $BUILD_PREFIX/lib/libopenjp2.7.dylib $BUILD_PREFIX/lib/libopenjp2.2.1.0.dylib
 #    fi
 
-    ls -l /usr/local/bin
     build_gdal
+    /usr/local/bin/gdal-config --formats
 }
 
 
