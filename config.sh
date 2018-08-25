@@ -72,16 +72,22 @@ function build_openjpeg {
 
 
 function build_gdal {
-    build_jpeg
-    build_tiff
-    build_libpng
-    build_openjpeg
-    build_libwebp
-    build_geos
-    build_jsonc
-    build_proj
-    build_netcdf
-    build_sqlite
+
+    start_spinner
+
+    suppress build_jpeg
+    suppress build_tiff
+    suppress build_libpng
+    suppress build_openjpeg
+    suppress build_libwebp
+    suppress build_geos
+    suppress build_jsonc
+    suppress build_proj
+    suppress build_netcdf
+    suppress build_sqlite
+
+    stop_spinner
+
     build_curl
 
     if [ -e gdal-stamp ]; then return; fi
@@ -140,6 +146,7 @@ function pre_build {
 #    fi
 
     build_gdal
+
     /usr/local/bin/gdal-config --formats
 }
 
