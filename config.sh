@@ -52,6 +52,25 @@ function get_cmake {
 }
 
 
+function build_openjpeg {
+    if [ -e openjpeg-stamp ]; then return; fi
+    build_zlib
+    build_libpng
+    build_tiff
+    build_lcms2
+    local cmake=$(get_cmake)
+    local archive_prefix="v"
+    if [ $(lex_ver $OPENJPEG_VERSION) -lt $(lex_ver 2.1.1) ]; then
+        archive_prefix="version."
+    fi
+    local out_dir=$(fetch_unpack https://github.com/uclouvain/openjpeg/archive/${archive_prefix}${OPENJPEG_VERSION}.tar.gz)
+    (cd $out_dir \
+        && $cmake -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && make install)
+    touch openjpeg-stamp
+}
+
+
 function build_gdal {
     build_jpeg
     build_tiff
@@ -79,7 +98,7 @@ function build_gdal {
             --without-jasper \
             --without-python \
             --with-netcdf=${BUILD_PREFIX}/netcdf \
-            --with-openjpeg=${BUILD_PREFIX}/openjpeg \
+            --with-openjpeg=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX}/tiff \
             --with-webp=${BUILD_PREFIX}/webp \
             --with-jpeg \
@@ -120,6 +139,7 @@ function pre_build {
 #        install_name_tool -id $BUILD_PREFIX/lib/libopenjp2.7.dylib $BUILD_PREFIX/lib/libopenjp2.2.1.0.dylib
 #    fi
 
+    ls -l /usr/local/bin
     build_gdal
 }
 
