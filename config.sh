@@ -124,7 +124,7 @@ function build_gdal {
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
             --with-curl=${BUILD_PREFIX}/bin/curl-config \
-        && make -j4 \
+        && make \
         && make install)
     touch gdal-stamp
 }
