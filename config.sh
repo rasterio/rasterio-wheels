@@ -102,6 +102,12 @@ function build_gdal {
 
     stop_spinner
 
+    if [ -n "$IS_OSX" ]; then
+        export EXPAT_PREFIX="/usr"
+    else
+        export EXPAT_PREFIX=$BUILD_PREFIX
+    fi
+
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && ./configure \
@@ -131,7 +137,7 @@ function build_gdal {
             --with-pam \
             --with-geos=${BUILD_PREFIX}/bin/geos-config \
             --with-static-proj4=${BUILD_PREFIX}/proj4 \
-            --with-expat=/usr \
+            --with-expat=${EXPAT_PREFIX} \
             --with-libjson-c=${BUILD_PREFIX}/json-c \
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
