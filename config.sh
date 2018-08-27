@@ -72,6 +72,7 @@ function build_openjpeg {
 
 
 function build_gdal {
+    if [ -e gdal-stamp ]; then return; fi
 
     start_spinner
 
@@ -85,12 +86,10 @@ function build_gdal {
     suppress build_proj
     suppress build_netcdf
     suppress build_sqlite
+    suppress build_curl
 
     stop_spinner
 
-    build_curl
-
-    if [ -e gdal-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && ./configure \
@@ -124,7 +123,7 @@ function build_gdal {
             --with-libjson-c=${BUILD_PREFIX}/json-c \
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
-            --with-curl=curl-config \
+            --with-curl=${BUILD_PREFIX}/bin/curl-config \
         && make -j4 \
         && make install)
     touch gdal-stamp
@@ -145,9 +144,7 @@ function pre_build {
 #        install_name_tool -id $BUILD_PREFIX/lib/libopenjp2.7.dylib $BUILD_PREFIX/lib/libopenjp2.2.1.0.dylib
 #    fi
 
-    build_gdal
-
-    /usr/local/bin/gdal-config --formats
+    build_gdal && /usr/local/bin/gdal-config --formats
 }
 
 
