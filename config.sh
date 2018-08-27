@@ -36,6 +36,17 @@ function build_sqlite {
 }
 
 
+function build_expat {
+    if [ -e expat-stamp ]; then return; fi
+    fetch_unpack https://github.com/libexpat/libexpat/releases/download/R_2_2_6/expat-${EXPAT_VERSION}.tar.bz2
+    (cd expat-${EXPAT_VERSION} \
+        && ./configure --prefix=$BUILD_PREFIX \
+        && make -j4 \
+        && make install)
+    touch expat-stamp
+}
+
+
 function get_cmake {
     local cmake=cmake
     if [ -n "$IS_OSX" ]; then
@@ -87,6 +98,7 @@ function build_gdal {
     suppress build_netcdf
     suppress build_sqlite
     suppress build_curl
+    suppress build_expat
 
     stop_spinner
 
