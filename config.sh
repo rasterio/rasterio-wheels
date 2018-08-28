@@ -161,6 +161,9 @@ function pre_build {
 
 
 function run_tests {
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    sudo apt-get install -y gdal-bin
     cd ../rasterio
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
