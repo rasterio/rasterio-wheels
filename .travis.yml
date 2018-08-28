@@ -7,14 +7,7 @@ services: docker
 env:
     global:
         - REPO_DIR=rasterio
-        # Commit from your-project that you want to build
         - BUILD_COMMIT=1.0.3
-        # pip dependencies to _build_ your project
-        - BUILD_DEPENDS="Cython numpy"
-        # pip dependencies to _test_ your project.  Include any dependencies
-        # that you need, that are also specified in BUILD_DEPENDS, this will be
-        # a separate install.
-        - TEST_DEPENDS="matplotlib numpy pytest"
         - PLAT=x86_64
         - UNICODE_WIDTH=32
         - NP_BUILD_DEP="numpy==1.10.0"
@@ -85,8 +78,8 @@ matrix:
 #         - NP_TEST_DEP=numpy==1.14.5
 
 before_install:
-    - BUILD_DEPENDS="$NP_BUILD_DEP"
-    - TEST_DEPENDS="$NP_TEST_DEP rasterio $GEN_DEPS"
+    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.28.3"
+    - TEST_DEPENDS="$NP_TEST_DEP rasterio pytest $GEN_DEPS"
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - before_install

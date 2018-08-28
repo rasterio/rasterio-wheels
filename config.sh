@@ -168,5 +168,5 @@ function pre_build {
 
 function run_tests {
     # Runs tests on installed distribution from an empty directory
-    cd ../rasterio && python -m pytest -vv
+    python -m install pytest && cd ../rasterio && python -m pytest -vv
 }
