@@ -156,17 +156,16 @@ function pre_build {
         build_new_zlib
     fi
 
-#    if [ -n "$IS_OSX" ]; then
-#        # Fix openjpeg library install id
-#        # https://code.google.com/p/openjpeg/issues/detail?id=367
-#        install_name_tool -id $BUILD_PREFIX/lib/libopenjp2.7.dylib $BUILD_PREFIX/lib/libopenjp2.2.1.0.dylib
-#    fi
-
     build_gdal && /usr/local/bin/gdal-config --formats
 }
 
 
 function run_tests {
-    # Runs tests on installed distribution from an empty directory
-    cd ../rasterio && python -m pytest -vv
+    cd ../rasterio
+    mkdir -p /tmp/rasterio
+    cp -R tests /tmp/rasterio
+    cd /tmp/rasterio
+    python -m pytest -vv tests
+    rio --version
+    rio env --formats
 }
