@@ -161,6 +161,7 @@ function pre_build {
 
 
 function run_tests {
+    unset PROJ_LIB
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
     sudo apt-get update
