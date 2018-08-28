@@ -13,11 +13,16 @@ env:
         - NP_BUILD_DEP="numpy==1.10.0"
         - NP_TEST_DEP="numpy==1.10.0"
         - ARTIFACTS_BUCKET="rasterio-wheels"
+        - LC_ALL=C.UTF-8
+        - LANG=C.UTF-8
 
 addons:
     artifacts:
         paths:
             - $(ls wheels/*.whl)
+    apt:
+        packages:
+        - gdal-bin
 
 matrix:
     exclude:
