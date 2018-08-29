@@ -166,6 +166,7 @@ function run_tests {
     unset PROJ_LIB
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
+    export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificate.crt
     sudo apt-get update
     sudo apt-get install -y gdal-bin
     cd ../rasterio
