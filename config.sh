@@ -82,6 +82,13 @@ function build_openjpeg {
 }
 
 
+function build_tiff {
+    build_zlib
+    build_jpeg
+    build_simple tiff $TIFF_VERSION https://download.osgeo.org/libtiff
+}
+
+
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
