@@ -156,7 +156,11 @@ function pre_build {
         build_new_zlib
     fi
 
-    build_gdal && /usr/local/bin/gdal-config --formats
+    start spinner
+    suppress build_gdal
+    stop spinner
+
+    /usr/local/bin/gdal-config --formats
 }
 
 
