@@ -167,6 +167,7 @@ function run_tests {
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
     export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificate.crt
+    export CAINFO=/etc/ssl/certs/ca-certificate.crt
     sudo apt-get update
     sudo apt-get install -y gdal-bin ca-certificates
     cd ../rasterio
