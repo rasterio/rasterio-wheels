@@ -168,7 +168,7 @@ function run_tests {
     export LANG=C.UTF-8
     export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificate.crt
     sudo apt-get update
-    sudo apt-get install -y gdal-bin
+    sudo apt-get install -y gdal-bin ca-certificates
     cd ../rasterio
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
