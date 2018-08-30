@@ -10,12 +10,11 @@ env:
         - BUILD_COMMIT=1.0.3
         - PLAT=x86_64
         - UNICODE_WIDTH=32
-        - ARTIFACTS_BUCKET="rasterio-wheels"
 
 addons:
     artifacts:
         paths:
-        - $(ls wheels/*.whl)
+        - $(ls wheelhouse/*.whl)
 
 matrix:
     exclude:
