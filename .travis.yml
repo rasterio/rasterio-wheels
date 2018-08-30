@@ -76,6 +76,7 @@ matrix:
 #         - NP_TEST_DEP=numpy==1.14.5
 
 before_install:
+    - python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
     - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.28.3"
     - TEST_DEPENDS="$NP_TEST_DEP pytest boto3 packaging hypothesis $GEN_DEPS"
     - source multibuild/common_utils.sh
