@@ -118,6 +118,7 @@ function build_gdal {
     suppress build_geos
     suppress build_jsonc
     suppress build_proj
+    suppress build_hdf5
     suppress build_netcdf
     suppress build_sqlite
     suppress build_curl
