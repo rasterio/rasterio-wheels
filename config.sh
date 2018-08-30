@@ -173,9 +173,13 @@ function run_tests {
     unset PROJ_LIB
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
-    export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-    sudo apt-get update
-    sudo apt-get install -y gdal-bin ca-certificates
+    if [ -n "$IS_OSX" ]; then
+        export PATH=${BUILD_PREFIX}/bin:$PATH
+    else
+        export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+        sudo apt-get update
+        sudo apt-get install -y gdal-bin ca-certificates
+    fi
     cd ../rasterio
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
