@@ -89,6 +89,22 @@ function build_tiff {
 }
 
 
+function build_hdf5 {
+    if [ -e hdf5-stamp ]; then return; fi
+    build_zlib
+    # libaec is a drop-in replacement for szip
+    build_libaec
+    local hdf5_url=https://support.hdfgroup.org/ftp/HDF5/releases
+    local short=$(echo $HDF5_VERSION | awk -F "." '{printf "%d.%d", $1, $2}')
+    fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
+    (cd hdf5-$HDF5_VERSION \
+        && ./configure --enable-shared --enable-build-mode=production --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
+        && make -j2 \
+        && make install)
+    touch hdf5-stamp
+}
+
+
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
