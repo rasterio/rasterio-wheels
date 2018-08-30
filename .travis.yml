@@ -13,7 +13,8 @@ env:
 
 addons:
     artifacts:
-        working_dir: wheelhouse
+        paths:
+        - $(ls wheelhouse/*.whl)
 
 matrix:
     exclude:
