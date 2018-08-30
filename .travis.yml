@@ -5,21 +5,22 @@ dist: trusty
 services: docker
 
 env:
-    global:
-        - REPO_DIR=rasterio
-        - BUILD_COMMIT=1.0.3
-        - PLAT=x86_64
-        - UNICODE_WIDTH=32
+  global:
+  - REPO_DIR=rasterio
+  - BUILD_COMMIT=1.0.3
+  - PLAT=x86_64
+  - UNICODE_WIDTH=32
 
 addons:
-    artifacts:
-        paths:
-        - $(ls wheelhouse/*.whl)
+  artifacts:
+    paths:
+    - $(ls wheelhouse/*.whl)
 
 matrix:
-    exclude:
-    - python: 3.5
-    include:
+  exclude:
+  - python: 3.5
+
+  include:
 #     - os: linux
 #       env:
 #         - MB_PYTHON_VERSION=3.7
@@ -42,12 +43,12 @@ matrix:
 #         - PLAT=i686
 #         - NP_BUILD_DEP=numpy==1.10.4
 #         - NP_TEST_DEP=numpy==1.10.4
-    - name: "Python 3.6 64-bit linux"
-      os: linux
-      env:
-      - MB_PYTHON_VERSION=3.6
-      - NP_BUILD_DEP=numpy==1.11.3
-      - NP_TEST_DEP=numpy==1.11.3
+  - name: "Python 3.6 64-bit linux"
+    os: linux
+    env:
+    - MB_PYTHON_VERSION=3.6
+    - NP_BUILD_DEP=numpy==1.11.3
+    - NP_TEST_DEP=numpy==1.11.3
 #     - os: linux
 #       env:
 #         - MB_PYTHON_VERSION=3.6
@@ -60,7 +61,7 @@ matrix:
 #         - MB_PYTHON_VERSION=3.5
 #         - NP_BUILD_DEP=numpy==1.10.4
 #         - NP_TEST_DEP=numpy==1.10.4
-    - name: "Python 3.6 osx"
+  - name: "Python 3.6 osx"
     os: osx
     language: generic
     env:
