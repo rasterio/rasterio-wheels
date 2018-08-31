@@ -182,7 +182,7 @@ function build_gdal {
             --with-geos=${BUILD_PREFIX}/bin/geos-config \
             --with-static-proj4=${BUILD_PREFIX}/proj4 \
             --with-expat=${EXPAT_PREFIX} \
-            --with-libjson-c=${BUILD_PREFIX}/json-c \
+            --with-libjson-c=${BUILD_PREFIX} \
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
             --with-curl=${BUILD_PREFIX}/bin/curl-config \
