@@ -5,6 +5,10 @@ dist: trusty
 services: docker
 filter_secrets: false
 
+cache:
+  directories:
+   - $HOME/.ccache
+
 env:
   global:
   - REPO_DIR=rasterio
@@ -50,6 +54,7 @@ matrix:
     - MB_PYTHON_VERSION=3.6
     - NP_BUILD_DEP=numpy==1.11.3
     - NP_TEST_DEP=numpy==1.11.3
+    - USE_CCACHE=1
 #     - os: linux
 #       env:
 #         - MB_PYTHON_VERSION=3.6
@@ -69,6 +74,7 @@ matrix:
     - MB_PYTHON_VERSION=3.6
     - NP_BUILD_DEP=numpy==1.11.3
     - NP_TEST_DEP=numpy==1.11.3
+    - USE_CCACHE=1
 #     - os: osx
 #       language: generic
 #       env:

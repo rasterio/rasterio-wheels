@@ -151,6 +151,9 @@ function build_gdal {
 
     stop_spinner
 
+    # Return before building GDAL so the dependencies get cached.
+    return
+
     if [ -n "$IS_OSX" ]; then
         export EXPAT_PREFIX="/usr"
     else
