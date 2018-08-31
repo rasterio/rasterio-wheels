@@ -105,6 +105,26 @@ function build_hdf5 {
 }
 
 
+function build_curl {
+    if [ -e curl-stamp ]; then return; fi
+    local flags="--prefix=$BUILD_PREFIX"
+    if [ -n "$IS_OSX" ]; then
+        flags="$flags --with-darwinssl"
+    else  # manylinux
+        flags="$flags --with-ssl"
+        build_openssl
+    fi
+    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
+    (cd curl-${CURL_VERSION} \
+        && if [ -z "$IS_OSX" ]; then \
+        LIBS=-ldl ./configure $flags; else \
+        ./configure $flags; fi\
+        && make -j4 CFLAGS=-Wno-error \
+        && make install)
+    touch curl-stamp
+}
+
+
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
