@@ -3,6 +3,7 @@ python: 3.5
 sudo: required
 dist: trusty
 services: docker
+filter_secrets: false
 
 env:
   global:
