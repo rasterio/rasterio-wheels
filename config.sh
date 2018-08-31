@@ -38,11 +38,15 @@ function build_sqlite {
 
 function build_expat {
     if [ -e expat-stamp ]; then return; fi
-    fetch_unpack https://github.com/libexpat/libexpat/releases/download/R_2_2_6/expat-${EXPAT_VERSION}.tar.bz2
-    (cd expat-${EXPAT_VERSION} \
-        && ./configure --prefix=$BUILD_PREFIX \
-        && make -j4 \
-        && make install)
+    if [ -n "$IS_OSX" ]; then
+        :
+    else
+        fetch_unpack https://github.com/libexpat/libexpat/releases/download/R_2_2_6/expat-${EXPAT_VERSION}.tar.bz2
+        (cd expat-${EXPAT_VERSION} \
+            && ./configure --prefix=$BUILD_PREFIX \
+            && make -j4 \
+            && make install)
+    fi
     touch expat-stamp
 }
 
@@ -77,6 +81,7 @@ function build_openjpeg {
     local out_dir=$(fetch_unpack https://github.com/uclouvain/openjpeg/archive/${archive_prefix}${OPENJPEG_VERSION}.tar.gz)
     (cd $out_dir \
         && $cmake -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && make -j4 \
         && make install)
     touch openjpeg-stamp
 }
@@ -99,7 +104,7 @@ function build_hdf5 {
     fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
     (cd hdf5-$HDF5_VERSION \
         && ./configure --enable-shared --enable-build-mode=production --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
-        && make -j2 \
+        && make -j4 \
         && make install)
     touch hdf5-stamp
 }
