@@ -158,7 +158,9 @@ function build_gdal {
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
         (cd / && sudo untar deps.zip)
+        DEPS_PREFIX=/gdal
     else
+        DEPS_PREFIX=$BUILD_PREFIX
         start_spinner
         suppress build_geos
         suppress build_hdf5
@@ -167,9 +169,9 @@ function build_gdal {
     fi
 
     if [ -n "$IS_OSX" ]; then
-        export EXPAT_PREFIX="/usr"
+        EXPAT_PREFIX="/usr"
     else
-        export EXPAT_PREFIX=$BUILD_PREFIX
+        EXPAT_PREFIX=$BUILD_PREFIX
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
@@ -185,7 +187,7 @@ function build_gdal {
             --without-jasper \
             --without-python \
             --with-freexl=no \
-            --with-netcdf=${BUILD_PREFIX}/bin/nc-config \
+            --with-netcdf=${DEPS_PREFIX}/bin/nc-config \
             --with-openjpeg=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX}/tiff \
             --with-webp=${BUILD_PREFIX}/webp \
@@ -200,7 +202,7 @@ function build_gdal {
             --with-bsb \
             --with-grib \
             --with-pam \
-            --with-geos=${BUILD_PREFIX}/bin/geos-config \
+            --with-geos=${DEPS_PREFIX}/bin/geos-config \
             --with-proj=${BUILD_PREFIX}/proj4 \
             --with-expat=${EXPAT_PREFIX} \
             --with-libjson-c=${BUILD_PREFIX} \
