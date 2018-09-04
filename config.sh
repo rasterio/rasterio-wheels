@@ -4,15 +4,7 @@
 
 
 function build_geos {
-    if [ -e geos-stamp ]; then return; fi
-    if [ -n "$IS_OSX" ]; then
-        curl -fsSL -o geos-3.6.2.zip https://github.com/sgillies/rasterio-wheels/files/2346889/geos-3.6.2-osx.zip
-        untar geos-3.6.2.zip
-        (cd geos && sudo cp -r * /usr/local)
-    else
-        build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
-    fi
-    touch geos-stamp
+    build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
 }
 
 
@@ -157,7 +149,7 @@ function build_gdal {
     # GEOS, HDF5, and NetCDF.
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
-        (cd / && sudo untar deps.zip)
+        (cd / && sudo unzip -qq deps.zip)
         DEPS_PREFIX=/gdal
     else
         DEPS_PREFIX=$BUILD_PREFIX
