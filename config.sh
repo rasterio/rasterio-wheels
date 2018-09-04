@@ -7,7 +7,7 @@ function build_geos {
     if [ -e proj-stamp ]; then return; fi
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o geos-3.6.2.zip https://github.com/sgillies/rasterio-wheels/files/2346889/geos-3.6.2-osx.zip
-        untar geos-3.6.2-osx.zip
+        untar geos-3.6.2.zip
         (cd geos && sudo cp -r * /usr/local)
     else
         build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
