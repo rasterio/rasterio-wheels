@@ -151,13 +151,25 @@ function build_gdal {
     suppress build_geos
     suppress build_jsonc
     suppress build_proj
-    suppress build_hdf5
-    suppress build_netcdf
+
     suppress build_sqlite
     suppress build_curl
     suppress build_expat
 
     stop_spinner
+
+    # NetCDF and HDF5.
+    if [ -n "$IS_OSX" ]; then
+        curl -fsSL -o nc4.zip https://github.com/sgillies/rasterio-wheels/files/2347099/hdf5-netcdf4-osx.zip
+        untar nc4.zip
+        (cd hdf && sudo cp -r * /usr/local)
+        (cd netcdf && sudo cp -r * /usr/local)
+    else
+        start_spinner
+        suppress build_hdf5
+        suppress build_netcdf
+        stop_spinner
+    fi
 
     if [ -n "$IS_OSX" ]; then
         export EXPAT_PREFIX="/usr"
