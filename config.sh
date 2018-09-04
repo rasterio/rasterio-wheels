@@ -148,8 +148,8 @@ function build_gdal {
 
     # GEOS, HDF5, and NetCDF.
     if [ -n "$IS_OSX" ]; then
-        curl -fsSL -o deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
-        (cd / && sudo unzip -qq deps.zip)
+        curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
+        (cd / && sudo unzip -qq /tmp/deps.zip)
         DEPS_PREFIX=/gdal
     else
         DEPS_PREFIX=$BUILD_PREFIX
