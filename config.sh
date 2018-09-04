@@ -4,7 +4,7 @@
 
 
 function build_geos {
-    if [ -e proj-stamp ]; then return; fi
+    if [ -e geos-stamp ]; then return; fi
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o geos-3.6.2.zip https://github.com/sgillies/rasterio-wheels/files/2346889/geos-3.6.2-osx.zip
         untar geos-3.6.2.zip
@@ -142,30 +142,25 @@ function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
     start_spinner
-
     suppress build_jpeg
     suppress build_tiff
     suppress build_libpng
     suppress build_openjpeg
     suppress build_libwebp
-    suppress build_geos
     suppress build_jsonc
     suppress build_proj
-
     suppress build_sqlite
     suppress build_curl
     suppress build_expat
-
     stop_spinner
 
-    # NetCDF and HDF5.
+    # GEOS, HDF5, and NetCDF.
     if [ -n "$IS_OSX" ]; then
-        curl -fsSL -o nc4.zip https://github.com/sgillies/rasterio-wheels/files/2347099/hdf5-netcdf4-osx.zip
-        untar nc4.zip
-        (cd hdf && sudo cp -r * /usr/local)
-        (cd netcdf && sudo cp -r * /usr/local)
+        curl -fsSL -o deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
+        (cd / && sudo untar deps.zip)
     else
         start_spinner
+        suppress build_geos
         suppress build_hdf5
         suppress build_netcdf
         stop_spinner
@@ -189,6 +184,7 @@ function build_gdal {
             --without-jpeg12 \
             --without-jasper \
             --without-python \
+            --with-freexl=no \
             --with-netcdf=${BUILD_PREFIX}/bin/nc-config \
             --with-openjpeg=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX}/tiff \
@@ -205,7 +201,7 @@ function build_gdal {
             --with-grib \
             --with-pam \
             --with-geos=${BUILD_PREFIX}/bin/geos-config \
-            --with-static-proj4=${BUILD_PREFIX}/proj4 \
+            --with-proj=${BUILD_PREFIX}/proj4 \
             --with-expat=${EXPAT_PREFIX} \
             --with-libjson-c=${BUILD_PREFIX} \
             --with-libiconv-prefix=/usr \

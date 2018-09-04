@@ -1,4 +1,4 @@
-# Environment variables for build
+BUILD_PREFIX=/gdal
 LIBPNG_VERSION=1.6.35
 ZLIB_VERSION=1.2.11
 JPEG_VERSION=9c
