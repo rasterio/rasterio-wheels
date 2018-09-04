@@ -4,7 +4,14 @@
 
 
 function build_geos {
-    build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
+    if [ -e proj-stamp ]; then return; fi
+    if [ -n "$IS_OSX" ]; then
+        fetch_unpack https://github.com/sgillies/rasterio-wheels/files/2346727/geos-3.6.2-osx.zip
+        (cd geos && cp -r * /usr/local)
+    else
+        build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
+    fi
+    touch geos-stamp
 }
 
 
