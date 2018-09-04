@@ -189,7 +189,7 @@ function build_gdal {
             --without-jpeg12 \
             --without-jasper \
             --without-python \
-            --with-netcdf=${BUILD_PREFIX}/netcdf \
+            --with-netcdf=${BUILD_PREFIX}/bin/nc-config \
             --with-openjpeg=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX}/tiff \
             --with-webp=${BUILD_PREFIX}/webp \
