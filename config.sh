@@ -217,8 +217,8 @@ function pre_build {
 
 function run_tests {
     unset PROJ_LIB
-    export LC_ALL=C.UTF-8
-    export LANG=C.UTF-8
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
     if [ -n "$IS_OSX" ]; then
         export PATH=$PATH:${BUILD_PREFIX}/bin
     else
