@@ -138,7 +138,6 @@ function build_gdal {
     suppress build_tiff
     suppress build_libpng
     suppress build_openjpeg
-    suppress build_libwebp
     suppress build_jsonc
     suppress build_proj
     suppress build_sqlite
@@ -177,21 +176,19 @@ function build_gdal {
             --without-libgrass \
             --without-jpeg12 \
             --without-jasper \
+            --without-bsb \
             --without-python \
             --with-freexl=no \
             --with-netcdf=${DEPS_PREFIX}/bin/nc-config \
             --with-openjpeg=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX}/tiff \
-            --with-webp=${BUILD_PREFIX}/webp \
             --with-jpeg \
             --with-gif \
             --with-png \
             --with-geotiff=internal \
             --with-sqlite3=${BUILD_PREFIX}/sqlite \
-            --with-pcraster=internal \
-            --with-pcraster=internal \
-            --with-pcidsk=internal \
-            --with-bsb \
+            --with-pcraster=no \
+            --with-pcidsk=no \
             --with-grib \
             --with-pam \
             --with-geos=${DEPS_PREFIX}/bin/geos-config \
@@ -210,14 +207,11 @@ function build_gdal {
 function pre_build {
     # Any stuff that you need to do before you start building the wheels
     # Runs in the root directory of this repository.
-    if [ -n "$IS_OSX" ]; then
-        # Update to latest zlib for OSX build
-        build_new_zlib
-    fi
-
+    #if [ -n "$IS_OSX" ]; then
+    #    # Update to latest zlib for OSX build
+    #    build_new_zlib
+    #fi
     build_gdal
-
-    /usr/local/bin/gdal-config --formats
 }
 
 
@@ -236,6 +230,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
+    gdal-config --formats
     python -m pytest -vv tests
     rio --version
     rio env --formats
