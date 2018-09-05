@@ -226,7 +226,7 @@ function run_tests {
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
     if [ -n "$IS_OSX" ]; then
-        export PATH=${BUILD_PREFIX}/bin:$PATH
+        export PATH=$PATH:${BUILD_PREFIX}/bin
     else
         export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
         sudo apt-get update
