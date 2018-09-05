@@ -130,26 +130,12 @@ function build_curl {
 }
 
 
-function build_gdal {
-    if [ -e gdal-stamp ]; then return; fi
-
-    start_spinner
-    suppress build_jpeg
-    suppress build_tiff
-    suppress build_libpng
-    suppress build_openjpeg
-    suppress build_jsonc
-    suppress build_proj
-    suppress build_sqlite
-    suppress build_curl
-    suppress build_expat
-    stop_spinner
-
-    # GEOS, HDF5, and NetCDF.
+function build_bundled_deps {
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
         (cd / && sudo unzip -qq /tmp/deps.zip)
         DEPS_PREFIX=/gdal
+        touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
     else
         DEPS_PREFIX=$BUILD_PREFIX
         start_spinner
@@ -158,6 +144,21 @@ function build_gdal {
         suppress build_netcdf
         stop_spinner
     fi
+}
+
+
+function build_gdal {
+    if [ -e gdal-stamp ]; then return; fi
+    build_jpeg
+    build_tiff
+    build_libpng
+    build_openjpeg
+    build_jsonc
+    build_proj
+    build_sqlite
+    build_curl
+    build_expat
+    build_bundled_deps
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX="/usr"
@@ -198,7 +199,7 @@ function build_gdal {
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
             --with-curl=${BUILD_PREFIX}/bin/curl-config \
-        && make -j4 \
+        && make -j4 --quiet \
         && make install)
     touch gdal-stamp
 }
@@ -211,17 +212,32 @@ function pre_build {
     #    # Update to latest zlib for OSX build
     #    build_new_zlib
     #fi
+
+    build_bundled_deps
+    start_spinner
+    suppress build_jpeg
+    suppress build_tiff
+    suppress build_libpng
+    suppress build_openjpeg
+    suppress build_jsonc
+    suppress build_proj
+    suppress build_sqlite
+    suppress build_curl
+    suppress build_expat
     build_gdal
+    stop_spinner
 }
 
 
 function run_tests {
     unset PROJ_LIB
-    export LC_ALL=en_US.UTF-8
-    export LANG=en_US.UTF-8
     if [ -n "$IS_OSX" ]; then
         export PATH=$PATH:${BUILD_PREFIX}/bin
+        export LC_ALL=en_US.UTF-8
+        export LANG=en_US.UTF-8
     else
+        export LC_ALL=C.UTF-8
+        export LANG=C.UTF-8
         export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
         sudo apt-get update
         sudo apt-get install -y gdal-bin ca-certificates
