@@ -230,7 +230,6 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    gdal-config --formats
     python -m pytest -vv tests
     rio --version
     rio env --formats
