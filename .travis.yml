@@ -28,30 +28,28 @@ matrix:
   - python: 3.5
 
   include:
+  - name: "Python 2.7 x86_64 linux"
+    os: linux
+    env:
+    - MB_PYTHON_VERSION=2.7
+    - NP_BUILD_DEP=numpy==1.10.4
+    - NP_TEST_DEP=numpy==1.11.3
+  - name: "Python 3.4 x86_64 linux"
+    os: linux
+    env:
+    - MB_PYTHON_VERSION=3.4
+    - NP_BUILD_DEP=numpy==1.10.4
+    - NP_TEST_DEP=numpy==1.11.3
   - name: "Python 3.5 x86_64 linux"
     os: linux
     env:
     - MB_PYTHON_VERSION=3.5
     - NP_BUILD_DEP=numpy==1.10.4
-    - NP_TEST_DEP=numpy==1.10.4
-  - name: "Python 3.5 i686 linux"
-    os: linux
-    env:
-    - MB_PYTHON_VERSION=3.5
-    - PLAT=i686
-    - NP_BUILD_DEP=numpy==1.10.4
-    - NP_TEST_DEP=numpy==1.10.4
-  - name: "Python 3.6 64-bit linux"
-    os: linux
-    env:
-    - MB_PYTHON_VERSION=3.6
-    - NP_BUILD_DEP=numpy==1.11.3
     - NP_TEST_DEP=numpy==1.11.3
-  - name: "Python 3.6 i686 linux"
+  - name: "Python 3.6 x86_64 linux"
     os: linux
     env:
     - MB_PYTHON_VERSION=3.6
-    - PLAT=i686
     - NP_BUILD_DEP=numpy==1.11.3
     - NP_TEST_DEP=numpy==1.11.3
   - name: "Python 3.7 x86_64 linux"
@@ -60,20 +58,27 @@ matrix:
     - MB_PYTHON_VERSION=3.7
     - NP_BUILD_DEP=numpy==1.14.5
     - NP_TEST_DEP=numpy==1.14.5
-  - name: "Python 3.7 i686 linux"
-    os: linux
+  - name: "Python 2.7 osx"
+    os: osx
+    language: generic
     env:
-    - MB_PYTHON_VERSION=3.7
-    - PLAT=i686
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
+    - MB_PYTHON_VERSION=2.7
+    - NP_BUILD_DEP=numpy==1.10.4
+    - NP_TEST_DEP=numpy==1.11.3
+  - name: "Python 3.4 osx"
+    os: osx
+    language: generic
+    env:
+    - MB_PYTHON_VERSION=3.4
+    - NP_BUILD_DEP=numpy==1.10.4
+    - NP_TEST_DEP=numpy==1.11.3
   - name: "Python 3.5 osx"
     os: osx
     language: generic
     env:
     - MB_PYTHON_VERSION=3.5
     - NP_BUILD_DEP=numpy==1.10.4
-    - NP_TEST_DEP=numpy==1.10.4
+    - NP_TEST_DEP=numpy==1.11.3
   - name: "Python 3.6 osx"
     os: osx
     language: generic
