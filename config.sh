@@ -226,8 +226,9 @@ function pre_build {
     suppress build_sqlite
     suppress build_curl
     suppress build_expat
-    build_gdal
     stop_spinner
+
+    build_gdal
 }
 
 
