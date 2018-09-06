@@ -133,7 +133,7 @@ function build_curl {
 function build_bundled_deps {
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
-        (cd / && sudo unzip -o -q /tmp/deps.zip)
+        (cd / && sudo unzip -o /tmp/deps.zip)
         /gdal/bin/nc-config --libs
         touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
     else
@@ -160,11 +160,11 @@ function build_gdal {
     build_bundled_deps
 
     if [ -n "$IS_OSX" ]; then
-        export EXPAT_PREFIX=/usr
-        export DEPS_PREFIX=/gdal
+        EXPAT_PREFIX=/usr
+        DEPS_PREFIX=/gdal
     else
-        export EXPAT_PREFIX=$BUILD_PREFIX
-        export DEPS_PREFIX=$BUILD_PREFIX
+        EXPAT_PREFIX=$BUILD_PREFIX
+        DEPS_PREFIX=$BUILD_PREFIX
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
