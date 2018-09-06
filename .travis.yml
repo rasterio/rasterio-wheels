@@ -34,12 +34,12 @@ matrix:
     - MB_PYTHON_VERSION=2.7
     - NP_BUILD_DEP=numpy==1.10.4
     - NP_TEST_DEP=numpy==1.11.3
-  - name: "Python 3.4 x86_64 linux"
-    os: linux
-    env:
-    - MB_PYTHON_VERSION=3.4
-    - NP_BUILD_DEP=numpy==1.10.4
-    - NP_TEST_DEP=numpy==1.11.3
+#  - name: "Python 3.4 x86_64 linux"
+#    os: linux
+#    env:
+#    - MB_PYTHON_VERSION=3.4
+#    - NP_BUILD_DEP=numpy==1.10.4
+#    - NP_TEST_DEP=numpy==1.11.3
   - name: "Python 3.5 x86_64 linux"
     os: linux
     env:
