@@ -161,8 +161,8 @@ function build_gdal {
     build_bundled_deps
 
     if [ -n "$IS_OSX" ]; then
-        EXPAT_PREFIX="/usr"
-        DEPS_PREFIX="/gdal"
+        EXPAT_PREFIX=/usr
+        DEPS_PREFIX=/gdal
     else
         EXPAT_PREFIX=$BUILD_PREFIX
         DEPS_PREFIX=$BUILD_PREFIX
@@ -192,6 +192,7 @@ function build_gdal {
             --with-sqlite3=${BUILD_PREFIX}/sqlite \
             --with-pcraster=no \
             --with-pcidsk=no \
+            --with-sfcgal=no \
             --with-grib \
             --with-pam \
             --with-geos=${DEPS_PREFIX}/bin/geos-config \
