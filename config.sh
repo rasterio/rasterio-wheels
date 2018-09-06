@@ -134,10 +134,9 @@ function build_bundled_deps {
     if [ -n "$IS_OSX" ]; then
         curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
         (cd / && sudo unzip -o -q /tmp/deps.zip)
-        DEPS_PREFIX=/gdal
+        /gdal/bin/nc-config --libs
         touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
     else
-        DEPS_PREFIX=$BUILD_PREFIX
         start_spinner
         suppress build_geos
         suppress build_hdf5
@@ -217,6 +216,7 @@ function pre_build {
     #fi
 
     build_bundled_deps
+
     start_spinner
     suppress build_jpeg
     suppress build_tiff
