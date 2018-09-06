@@ -181,7 +181,7 @@ function build_gdal {
             --without-bsb \
             --without-python \
             --with-freexl=no \
-            --with-netcdf=${DEPS_PREFIX}/bin/nc-config \
+            --with-netcdf=${DEPS_PREFIX} \
             --with-openjpeg=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX}/tiff \
             --with-jpeg \
