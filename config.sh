@@ -252,7 +252,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    python -m pytest -vv -k "not test_open_https_vsicurl" tests
+    python -m pytest -vv tests
     rio --version
     rio env --formats
 }
