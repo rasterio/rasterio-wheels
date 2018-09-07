@@ -217,6 +217,8 @@ function pre_build {
 
     build_bundled_deps
 
+    build_curl
+
     start_spinner
     suppress build_jpeg
     suppress build_tiff
@@ -225,7 +227,6 @@ function pre_build {
     suppress build_jsonc
     suppress build_proj
     suppress build_sqlite
-    suppress build_curl
     suppress build_expat
     stop_spinner
 
