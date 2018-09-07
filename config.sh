@@ -193,6 +193,7 @@ function build_gdal {
             --with-pcraster=no \
             --with-pcidsk=no \
             --with-sfcgal=no \
+            --with-pg=no \
             --with-grib \
             --with-pam \
             --with-geos=${DEPS_PREFIX}/bin/geos-config \
