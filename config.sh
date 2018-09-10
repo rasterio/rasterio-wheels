@@ -114,7 +114,8 @@ function build_curl {
     if [ -e curl-stamp ]; then return; fi
     local flags="--prefix=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
-        flags="$flags --with-darwinssl"
+        return
+        # flags="$flags --with-darwinssl"
     else  # manylinux
         flags="$flags --with-ssl"
         build_openssl
@@ -192,6 +193,7 @@ function build_gdal {
             --with-pcraster=no \
             --with-pcidsk=no \
             --with-sfcgal=no \
+            --with-pg=no \
             --with-grib \
             --with-pam \
             --with-geos=${DEPS_PREFIX}/bin/geos-config \
@@ -200,7 +202,7 @@ function build_gdal {
             --with-libjson-c=${BUILD_PREFIX} \
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
-            --with-curl=${BUILD_PREFIX}/bin/curl-config \
+            --with-curl=curl-config \
         && make -j4 \
         && make install)
     touch gdal-stamp
@@ -251,7 +253,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    python -m pytest -vv -k "not test_open_https_vsicurl" tests
+    python -m pytest -vv tests
     rio --version
     rio env --formats
 }
