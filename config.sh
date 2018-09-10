@@ -197,7 +197,7 @@ function build_gdal {
             --with-grib \
             --with-pam \
             --with-geos=${DEPS_PREFIX}/bin/geos-config \
-            --with-proj=${BUILD_PREFIX}/proj4 \
+            --with-static-proj=${BUILD_PREFIX}/proj4 \
             --with-expat=${EXPAT_PREFIX} \
             --with-libjson-c=${BUILD_PREFIX} \
             --with-libiconv-prefix=/usr \
