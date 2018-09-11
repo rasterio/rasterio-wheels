@@ -225,13 +225,14 @@ function pre_build {
     suppress build_jpeg
     suppress build_tiff
     suppress build_libpng
-    suppress build_openjpeg
+#    suppress build_openjpeg
     suppress build_jsonc
     suppress build_proj
     suppress build_sqlite
     suppress build_expat
     stop_spinner
 
+    build_openjpeg
     build_gdal
 }
 
