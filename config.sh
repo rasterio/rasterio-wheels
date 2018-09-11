@@ -183,7 +183,7 @@ function build_gdal {
             --without-python \
             --with-freexl=no \
             --with-netcdf=${DEPS_PREFIX} \
-            --with-openjpeg=${BUILD_PREFIX} \
+            --with-openjpeg \
             --with-libtiff=${BUILD_PREFIX}/tiff \
             --with-jpeg \
             --with-gif \
