@@ -3,11 +3,6 @@
 # Test for OSX with [ -n "$IS_OSX" ].
 
 
-function build_pkgconfig {
-    build_simple pkg-config $PKGCONFIG_VERSION https://pkgconfig.freedesktop.org/releases tar.gz
-}
-
-
 function build_geos {
     build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
 }
@@ -164,7 +159,6 @@ function build_gdal {
     build_curl
     build_expat
     build_bundled_deps
-    build_pkgconfig
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
