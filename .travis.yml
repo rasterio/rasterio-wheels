@@ -13,7 +13,7 @@ cache:
 env:
   global:
   - REPO_DIR=rasterio
-  - BUILD_COMMIT=1.0.7
+  - BUILD_COMMIT=1.0.8
   - PLAT=x86_64
   - UNICODE_WIDTH=32
   - USE_CCACHE=1
@@ -32,6 +32,12 @@ matrix:
     os: linux
     env:
     - MB_PYTHON_VERSION=2.7
+    - NP_BUILD_DEP=numpy==1.10.4
+    - NP_TEST_DEP=numpy==1.11.3
+  - name: "Python 3.4 x86_64 linux"
+    os: linux
+    env:
+    - MB_PYTHON_VERSION=3.4
     - NP_BUILD_DEP=numpy==1.10.4
     - NP_TEST_DEP=numpy==1.11.3
   - name: "Python 3.5 x86_64 linux"
@@ -90,8 +96,8 @@ matrix:
 
 before_install:
     - python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
-    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.28.3"
-    - TEST_DEPENDS="$NP_TEST_DEP pytest boto3 packaging hypothesis $GEN_DEPS"
+    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.28.3 wheel==0.31.1"
+    - TEST_DEPENDS="$NP_TEST_DEP pytest boto3 packaging hypothesis wheel==0.31.1 $GEN_DEPS"
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - before_install
