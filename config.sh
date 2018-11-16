@@ -254,7 +254,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    python -m pytest -vv tests
+    python -m pytest -vv tests -k "not test_ensure_env_decorator_sets_gdal_data_prefix"
     rio --version
     rio env --formats
 }
