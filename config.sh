@@ -109,10 +109,19 @@ function build_hdf5 {
     touch hdf5-stamp
 }
 
+function build_nghttp2 {
+    if [ -e nghttp2-stamp ]; then return; fi
+    fetch_unpack https://github.com/nghttp2/nghttp2/releases/download/v${NGHTTP2_VERSION}/nghttp2-${NGHTTP2_VERSION}.tar.gz
+    (cd nghttp2-${NGHTTP2_VERSION}  \
+        && ./configure --enable-lib-only --prefix=$BUILD_PREFIX \
+        && make -j4 \
+        && make install)
+    touch nghttp2-stamp
+}
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
-    local flags="--prefix=$BUILD_PREFIX"
+    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
         return
         # flags="$flags --with-darwinssl"
@@ -156,6 +165,7 @@ function build_gdal {
     build_jsonc
     build_proj
     build_sqlite
+    build_nghttp2
     build_curl
     build_expat
     build_bundled_deps
