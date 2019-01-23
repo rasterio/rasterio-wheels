@@ -96,7 +96,7 @@ matrix:
 
 before_install:
     - python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
-    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.28.3 wheel==0.31.1"
+    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.29.2 wheel==0.31.1"
     - TEST_DEPENDS="$NP_TEST_DEP pytest boto3 packaging hypothesis wheel==0.31.1 $GEN_DEPS"
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
