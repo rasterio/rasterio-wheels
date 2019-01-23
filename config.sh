@@ -70,8 +70,6 @@ function get_cmake {
 function build_openjpeg {
     if [ -e openjpeg-stamp ]; then return; fi
     build_zlib
-    build_libpng
-    build_tiff
     build_lcms2
     local cmake=$(get_cmake)
     local archive_prefix="v"
@@ -87,10 +85,8 @@ function build_openjpeg {
 }
 
 
-function build_tiff {
-    build_zlib
-    build_jpeg
-    build_simple tiff $TIFF_VERSION https://download.osgeo.org/libtiff
+function build_libwebp {
+    build_simple libwebp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp/
 }
 
 
@@ -149,16 +145,15 @@ function build_bundled_deps {
 
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
-    build_jpeg
-    build_tiff
-    build_libpng
-    build_openjpeg
-    build_jsonc
-    build_proj
-    build_sqlite
+    build_bundled_deps
     build_curl
     build_expat
-    build_bundled_deps
+    build_jpeg
+    build_jsonc
+    build_libwebp
+    build_openjpeg
+    build_proj
+    build_sqlite
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
@@ -171,39 +166,40 @@ function build_gdal {
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && ./configure \
-            --prefix=$BUILD_PREFIX \
-            --with-threads \
+	    --with-crypto=yes \
+	    --with-webp=${BUILD_PREFIX} \
             --disable-debug \
             --disable-static \
-            --without-grass \
-            --without-libgrass \
-            --without-jpeg12 \
-            --without-jasper \
-            --without-bsb \
-            --without-python \
+            --prefix=$BUILD_PREFIX \
+            --with-curl=curl-config \
+            --with-expat=${EXPAT_PREFIX} \
             --with-freexl=no \
+            --with-geos=${DEPS_PREFIX}/bin/geos-config \
+            --with-geotiff=internal \
+            --with-gif \
+            --with-grib \
+            --with-jpeg \
+            --with-libiconv-prefix=/usr \
+            --with-libjson-c=${BUILD_PREFIX} \
+            --with-libtiff=internal \
+            --with-libz=/usr \
             --with-netcdf=${DEPS_PREFIX} \
             --with-openjpeg \
-            --with-libtiff=${BUILD_PREFIX}/tiff \
-            --with-jpeg \
-            --with-gif \
-            --with-png \
-            --with-geotiff=internal \
-            --with-sqlite3=${BUILD_PREFIX}/sqlite \
-            --with-pcraster=no \
-            --with-pcidsk=no \
-            --with-sfcgal=no \
-            --with-pg=no \
-            --with-grib \
             --with-pam \
-            --with-geos=${DEPS_PREFIX}/bin/geos-config \
+            --with-pcidsk=no \
+            --with-pcraster=no \
+            --with-pg=no \
+            --with-png \
             --with-proj=${BUILD_PREFIX}/proj4 \
-            --with-expat=${EXPAT_PREFIX} \
-            --with-libjson-c=${BUILD_PREFIX} \
-            --with-libiconv-prefix=/usr \
-            --with-libz=/usr \
-            --with-curl=curl-config \
-	    --with-crypto=yes \
+            --with-sfcgal=no \
+            --with-sqlite3=${BUILD_PREFIX}/sqlite \
+            --with-threads \
+            --without-bsb \
+            --without-grass \
+            --without-jasper \
+            --without-jpeg12 \
+            --without-libgrass \
+            --without-python \
         && make -j4 \
         && make install)
     touch gdal-stamp
@@ -224,8 +220,6 @@ function pre_build {
 
     start_spinner
     suppress build_jpeg
-    suppress build_tiff
-    suppress build_libpng
     suppress build_openjpeg
     suppress build_jsonc
     suppress build_proj
