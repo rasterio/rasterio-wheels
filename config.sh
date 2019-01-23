@@ -170,7 +170,6 @@ function build_gdal {
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && patch -p2 < ../patches/340ad0d703534a256ec3de94176c95b0cf20cbd4.diff \
         && ./configure \
             --prefix=$BUILD_PREFIX \
             --with-threads \
@@ -204,6 +203,7 @@ function build_gdal {
             --with-libiconv-prefix=/usr \
             --with-libz=/usr \
             --with-curl=curl-config \
+	    --with-crypto=yes \
         && make -j4 \
         && make install)
     touch gdal-stamp
