@@ -86,7 +86,7 @@ function build_openjpeg {
 
 
 function build_libwebp {
-    build_simple libwebp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp/
+    build_simple libwebp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz
 }
 
 
@@ -145,15 +145,16 @@ function build_bundled_deps {
 
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
-    build_bundled_deps
-    build_curl
-    build_expat
+
     build_jpeg
-    build_jsonc
-    build_libwebp
+    build_libpng
     build_openjpeg
+    build_jsonc
     build_proj
     build_sqlite
+    build_curl
+    build_expat
+    build_bundled_deps
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
