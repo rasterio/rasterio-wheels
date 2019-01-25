@@ -226,6 +226,7 @@ function pre_build {
     suppress build_proj
     suppress build_sqlite
     suppress build_expat
+    suppress build_libwebp
     stop_spinner
 
     build_gdal
@@ -250,16 +251,6 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-
-    cat > tests/pytest.ini << EOF
-[pytest]
-filterwarnings =
-    ignore::rasterio.errors.NotGeoreferencedWarning
-    ignore::rasterio.errors.RasterioDeprecationWarning
-    ignore:numpy.ufunc size changed
-    ignore:numpy.dtype size changed
-EOF
-
     python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix"
     rio --version
     rio env --formats
