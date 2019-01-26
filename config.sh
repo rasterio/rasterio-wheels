@@ -117,6 +117,7 @@ function build_nghttp2 {
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
+    build_nghttp2
     local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
         return
@@ -155,14 +156,13 @@ function build_bundled_deps {
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
+    build_curl
     build_jpeg
     build_libpng
     build_openjpeg
     build_jsonc
     build_proj
     build_sqlite
-    build_nghttp2
-    build_curl
     build_expat
     build_bundled_deps
 
@@ -225,8 +225,6 @@ function pre_build {
     #    build_new_zlib
     #fi
 
-    build_bundled_deps
-
     build_curl
 
     start_spinner
@@ -238,6 +236,8 @@ function pre_build {
     suppress build_expat
     suppress build_libwebp
     stop_spinner
+
+    build_bundled_deps
 
     build_gdal
 }
