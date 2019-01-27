@@ -131,7 +131,7 @@ function build_curl {
         && if [ -z "$IS_OSX" ]; then \
         LIBS=-ldl ./configure $flags; else \
         ./configure $flags; fi\
-        && make -j4 CFLAGS=-Wno-error \
+        && make -j4 \
         && make install)
     touch curl-stamp
 }
