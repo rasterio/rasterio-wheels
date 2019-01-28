@@ -117,6 +117,7 @@ function build_nghttp2 {
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
+    build_nghttp2
     local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
         return
@@ -125,12 +126,12 @@ function build_curl {
         flags="$flags --with-ssl"
         build_openssl
     fi
-    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
+#    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
         LIBS=-ldl ./configure $flags; else \
         ./configure $flags; fi\
-        && make -j4 CFLAGS=-Wno-error \
+        && make -j4 \
         && make install)
     touch curl-stamp
 }
@@ -155,14 +156,13 @@ function build_bundled_deps {
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
+    build_curl
     build_jpeg
     build_libpng
     build_openjpeg
     build_jsonc
     build_proj
     build_sqlite
-    build_nghttp2
-    build_curl
     build_expat
     build_bundled_deps
 
@@ -225,7 +225,17 @@ function pre_build {
     #    build_new_zlib
     #fi
 
-    build_bundled_deps
+    build_nghttp2
+    if [ -n "$IS_OSX" ]; then
+	:
+    else  # manylinux
+        build_openssl
+    fi
+
+    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
+
+    # Remove previously installed curl.
+    rm -rf /usr/local/lib/libcurl*
 
     build_curl
 
@@ -238,6 +248,8 @@ function pre_build {
     suppress build_expat
     suppress build_libwebp
     stop_spinner
+
+    build_bundled_deps
 
     build_gdal
 }
