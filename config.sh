@@ -225,6 +225,9 @@ function pre_build {
     #    build_new_zlib
     #fi
 
+    # Remove previously installed curl.
+    rm -rf /usr/local/lib/libcurl*
+
     build_curl
 
     start_spinner
