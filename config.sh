@@ -226,6 +226,7 @@ function pre_build {
     #fi
 
     build_nghttp2
+    build_openssl
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
