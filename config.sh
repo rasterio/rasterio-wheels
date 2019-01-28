@@ -225,6 +225,8 @@ function pre_build {
     #    build_new_zlib
     #fi
 
+    build_nghttp2
+
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
     # Remove previously installed curl.
