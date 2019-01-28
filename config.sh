@@ -126,7 +126,7 @@ function build_curl {
         flags="$flags --with-ssl"
         build_openssl
     fi
-    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
+#    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
         LIBS=-ldl ./configure $flags; else \
@@ -224,6 +224,8 @@ function pre_build {
     #    # Update to latest zlib for OSX build
     #    build_new_zlib
     #fi
+
+    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
