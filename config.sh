@@ -267,13 +267,13 @@ function run_tests {
         export LANG=C.UTF-8
         export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
         sudo apt-get update
-        sudo apt-get install -y ca-certificates gdb
+        sudo apt-get install -y ca-certificates
     fi
     cd ../rasterio
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    gdb -batch -ex "run" -ex "bt" --args python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix"
+    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix"
     rio --version
     rio env --formats
 }
