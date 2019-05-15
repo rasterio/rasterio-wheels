@@ -273,7 +273,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix"
+    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize"
     rio --version
     rio env --formats
 }
