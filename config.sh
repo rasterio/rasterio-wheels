@@ -225,6 +225,10 @@ function pre_build {
     #    build_new_zlib
     #fi
 
+    if [ -z "$IS_OSX" ]; then
+        export LDFLAGS="-shared -Wl,-strip-all"
+    fi
+
     build_nghttp2
     if [ -n "$IS_OSX" ]; then
 	:
