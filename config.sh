@@ -225,10 +225,6 @@ function pre_build {
     #    build_new_zlib
     #fi
 
-    if [ -z "$IS_OSX" ]; then
-        export LDFLAGS="-shared -Wl,-strip-all"
-    fi
-
     build_nghttp2
     if [ -n "$IS_OSX" ]; then
 	:
@@ -254,6 +250,10 @@ function pre_build {
     stop_spinner
 
     build_bundled_deps
+
+    if [ -z "$IS_OSX" ]; then
+        export LDFLAGS="-shared -Wl,-strip-all"
+    fi
 
     build_gdal
 }
