@@ -2,6 +2,9 @@
 #
 # Test for OSX with [ -n "$IS_OSX" ].
 
+MULTIBUILD_DIR=$(dirname "${BASH_SOURCE[0]}")/multibuild
+source $MULTIBUILD_DIR/configure_build.sh
+
 
 function build_geos {
     build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
@@ -250,10 +253,6 @@ function pre_build {
     stop_spinner
 
     build_bundled_deps
-
-    if [ -z "$IS_OSX" ]; then
-        export LDFLAGS="-shared -Wl,-strip-all"
-    fi
 
     build_gdal
 }
