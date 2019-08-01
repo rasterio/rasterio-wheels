@@ -2,10 +2,6 @@
 #
 # Test for OSX with [ -n "$IS_OSX" ].
 
-MULTIBUILD_DIR=$(dirname "${BASH_SOURCE[0]}")/multibuild
-source $MULTIBUILD_DIR/configure_build.sh
-
-
 function build_geos {
     build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
 }
@@ -169,12 +165,22 @@ function build_gdal {
     build_expat
     build_bundled_deps
 
+# Default compilation flags for OSX
+# IS_OSX is defined in common_utils.sh
+if [ -n "$IS_OSX" ]; then
+    :
+else
+fi
+
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
         DEPS_PREFIX=/gdal
     else
         EXPAT_PREFIX=$BUILD_PREFIX
         DEPS_PREFIX=$BUILD_PREFIX
+        export CFLAGS="${CFLAGS} -Wc,-strip-all"
+        export CXXFLAGS="${CXXFLAGS} -Wc,strip-all"
+        export FFLAGS="${FFLAGS} -Wc,strip-all"
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
