@@ -165,13 +165,6 @@ function build_gdal {
     build_expat
     build_bundled_deps
 
-# Default compilation flags for OSX
-# IS_OSX is defined in common_utils.sh
-if [ -n "$IS_OSX" ]; then
-    :
-else
-fi
-
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
         DEPS_PREFIX=/gdal
