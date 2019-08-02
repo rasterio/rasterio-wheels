@@ -212,8 +212,14 @@ function build_gdal {
             --without-python \
         && make -j4 \
         && make install)
+
+    if [ -n "$IS_OSX" ]; then
+        strip -v --strip-all ${BUILD_PREFIX}/lib/libgdal*.dylib
+    else
+        strip -v --strip-all ${BUILD_PREFIX}/lib/libgdal.so.*
+    fi
+
     touch gdal-stamp
-    strip ${BUILD_PREFIX}/lib/libgdal.so.*
 }
 
 
