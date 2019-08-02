@@ -171,9 +171,6 @@ function build_gdal {
     else
         EXPAT_PREFIX=$BUILD_PREFIX
         DEPS_PREFIX=$BUILD_PREFIX
-        export CFLAGS="${CFLAGS} -Wc,-strip-all"
-        export CXXFLAGS="${CXXFLAGS} -Wc,strip-all"
-        export FFLAGS="${FFLAGS} -Wc,strip-all"
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
@@ -216,6 +213,7 @@ function build_gdal {
         && make -j4 \
         && make install)
     touch gdal-stamp
+    strip ${BUILD_PREFIX}/lib/libgdal.so.*
 }
 
 
