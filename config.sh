@@ -188,6 +188,7 @@ function build_gdal {
             --with-geotiff=internal \
             --with-gif \
             --with-grib \
+	    --with-hide-internal-symbols \
             --with-jpeg \
             --with-libiconv-prefix=/usr \
             --with-libjson-c=${BUILD_PREFIX} \
@@ -212,13 +213,6 @@ function build_gdal {
             --without-python \
         && make -j4 \
         && make install)
-
-    if [ -n "$IS_OSX" ]; then
-        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal*.dylib
-    else
-        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.*
-    fi
-
     touch gdal-stamp
 }
 
