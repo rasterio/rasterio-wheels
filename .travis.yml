@@ -38,8 +38,8 @@ matrix:
     os: linux
     env:
     - MB_PYTHON_VERSION=3.5
-    - NP_BUILD_DEP=numpy==1.13.3
-    - NP_TEST_DEP=numpy==1.13.3
+    - NP_BUILD_DEP=numpy==1.14.5
+    - NP_TEST_DEP=numpy==1.14.5
   - name: "Python 3.6 x86_64 linux"
     os: linux
     env:
@@ -64,8 +64,8 @@ matrix:
     language: generic
     env:
     - MB_PYTHON_VERSION=3.5
-    - NP_BUILD_DEP=numpy==1.13.3
-    - NP_TEST_DEP=numpy==1.13.3
+    - NP_BUILD_DEP=numpy==1.14.5
+    - NP_TEST_DEP=numpy==1.14.5
   - name: "Python 3.6 osx"
     os: osx
     language: generic
