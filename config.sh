@@ -2,7 +2,6 @@
 #
 # Test for OSX with [ -n "$IS_OSX" ].
 
-
 function build_geos {
     build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
 }
@@ -189,6 +188,7 @@ function build_gdal {
             --with-geotiff=internal \
             --with-gif \
             --with-grib \
+	    --with-hide-internal-symbols \
             --with-jpeg \
             --with-libiconv-prefix=/usr \
             --with-libjson-c=${BUILD_PREFIX} \
