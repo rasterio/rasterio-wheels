@@ -259,7 +259,7 @@ function pre_build {
 
     build_bundled_deps
 
-    build_gdal
+    # build_gdal
 }
 
 
