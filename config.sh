@@ -213,10 +213,10 @@ function build_gdal {
             --without-python \
         && make -j4 \
         && make install)
-    if [ -n "$IS_OSX" ]; then	
+    if [ -n "$IS_OSX" ]; then
         :
-    else	
-        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.*	
+    else
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.*
     fi
     touch gdal-stamp
 }
@@ -229,6 +229,9 @@ function pre_build {
     #    # Update to latest zlib for OSX build
     #    build_new_zlib
     #fi
+
+    CFLAGS="$CFLAGS -g -O2"
+    CXXFLAGS="$CXXFLAGS -g -O2"
 
     build_nghttp2
     if [ -n "$IS_OSX" ]; then
