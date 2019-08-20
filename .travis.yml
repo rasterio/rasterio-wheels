@@ -6,6 +6,7 @@ services: docker
 filter_secrets: false
 
 cache:
+  ccache: true
   directories:
   - $HOME/.ccache
   - $HOME/.cache/pip
