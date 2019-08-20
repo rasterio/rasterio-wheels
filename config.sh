@@ -143,11 +143,9 @@ function build_bundled_deps {
         /gdal/bin/nc-config --libs
         touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
     else
-        start_spinner
         suppress build_geos
         suppress build_hdf5
         suppress build_netcdf
-        stop_spinner
     fi
 }
 
@@ -233,13 +231,11 @@ function pre_build {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
 
-    start_spinner
-
     suppress build_nghttp2
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
-        build_openssl
+        suppress build_openssl
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
@@ -249,7 +245,6 @@ function pre_build {
 
     suppress build_curl
 
-    start_spinner
     suppress build_jpeg
     suppress build_openjpeg
     suppress build_jsonc
@@ -257,13 +252,10 @@ function pre_build {
     suppress build_sqlite
     suppress build_expat
     suppress build_libwebp
-    stop_spinner
 
-    build_bundled_deps
+    suppress build_bundled_deps
 
-    start_spinner
     suppress build_gdal
-    stop_spinner
 }
 
 
