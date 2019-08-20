@@ -233,7 +233,9 @@ function pre_build {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
 
-    build_nghttp2
+    start_spinner
+
+    suppress build_nghttp2
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
@@ -245,7 +247,7 @@ function pre_build {
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    build_curl
+    suppress build_curl
 
     start_spinner
     suppress build_jpeg
@@ -259,7 +261,9 @@ function pre_build {
 
     build_bundled_deps
 
-    build_gdal
+    start_spinner
+    suppress build_gdal
+    stop_spinner
 }
 
 
