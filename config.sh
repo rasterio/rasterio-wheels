@@ -188,7 +188,7 @@ function build_gdal {
             --with-geotiff=internal \
             --with-gif \
             --with-grib \
-	    --with-hide-internal-symbols \
+	        --with-hide-internal-symbols \
             --with-jpeg \
             --with-libiconv-prefix=/usr \
             --with-libjson-c=${BUILD_PREFIX} \
