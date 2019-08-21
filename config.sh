@@ -174,19 +174,18 @@ function build_gdal {
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && ./configure \
-	    --with-crypto=yes \
-	    --with-webp=${BUILD_PREFIX} \
+	        --with-crypto=yes \
+	        --with-hide-internal-symbols \
+	        --with-webp=${BUILD_PREFIX} \
             --disable-debug \
             --disable-static \
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
-            --with-freexl=no \
             --with-geos=${DEPS_PREFIX}/bin/geos-config \
             --with-geotiff=internal \
             --with-gif \
             --with-grib \
-	        --with-hide-internal-symbols \
             --with-jpeg \
             --with-libiconv-prefix=/usr \
             --with-libjson-c=${BUILD_PREFIX} \
@@ -195,20 +194,42 @@ function build_gdal {
             --with-netcdf=${DEPS_PREFIX} \
             --with-openjpeg \
             --with-pam \
-            --with-pcidsk=no \
-            --with-pcraster=no \
-            --with-pg=no \
             --with-png \
             --with-proj=${BUILD_PREFIX}/proj4 \
             --with-sfcgal=no \
             --with-sqlite3=${BUILD_PREFIX}/sqlite \
             --with-threads \
             --without-bsb \
+            --without-cfitsio \
+            --without-dwgdirect \
+            --without-ecw \
+            --without-fme \
+            --without-freexl \
+            --without-gnm \
             --without-grass \
+            --without-ingres \
             --without-jasper \
+            --without-jp2mrsid \
             --without-jpeg12 \
+            --without-kakadu \
             --without-libgrass \
+            --without-libgrass \
+            --without-libkml \
+            --without-mrf \
+            --without-mrsid \
+            --without-mysql \
+            --without-odbc \
+            --without-ogdi \
+            --without-pcidsk \
+            --without-pcraster \
+            --without-perl \
+            --without-pg \
+            --without-php \
             --without-python \
+            --without-qhull \
+            --without-sde \
+            --without-xerces \
+            --without-xml2
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
