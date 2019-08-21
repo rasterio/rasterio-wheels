@@ -163,6 +163,9 @@ function build_gdal {
     build_expat
     build_bundled_deps
 
+    CFLAGS="$CFLAGS -g -O2"
+    CXXFLAGS="$CXXFLAGS -g -O2"
+
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
         DEPS_PREFIX=/gdal
@@ -248,9 +251,6 @@ function pre_build {
     #    # Update to latest zlib for OSX build
     #    build_new_zlib
     #fi
-
-    CFLAGS="$CFLAGS -g -O2"
-    CXXFLAGS="$CXXFLAGS -g -O2"
 
     suppress build_nghttp2
     if [ -n "$IS_OSX" ]; then
