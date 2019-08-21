@@ -229,7 +229,7 @@ function build_gdal {
             --without-qhull \
             --without-sde \
             --without-xerces \
-            --without-xml2
+            --without-xml2 \
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
