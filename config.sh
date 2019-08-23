@@ -304,7 +304,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-#    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex"
+    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex"
     rio --version
     rio env --formats
 }
@@ -329,9 +329,9 @@ function build_wheel_cmd {
     start_spinner
     if [ -n "$(is_function "pre_build")" ]; then pre_build; fi
     stop_spinner
-    #if [ -n "$BUILD_DEPENDS" ]; then
-    #    pip install $(pip_opts) $BUILD_DEPENDS
-    #fi
-    #(cd $repo_dir && $cmd $wheelhouse)
-    #repair_wheelhouse $wheelhouse
+    if [ -n "$BUILD_DEPENDS" ]; then
+        pip install $(pip_opts) $BUILD_DEPENDS
+    fi
+    (cd $repo_dir && $cmd $wheelhouse)
+    repair_wheelhouse $wheelhouse
 }
