@@ -90,8 +90,8 @@ matrix:
 
 before_install:
     - python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
-    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.29.5 wheel==0.31.1"
-    - TEST_DEPENDS="$NP_TEST_DEP attrs==19.1.0 pytest==4.0.2 mock boto3 packaging hypothesis==4.38.1 wheel==0.31.1 $GEN_DEPS"
+    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.29.14 wheel==0.33.6"
+    - TEST_DEPENDS="$NP_TEST_DEP attrs==19.1.0 pytest==4.0.2 mock boto3 packaging hypothesis==4.38.1 wheel==0.33.6 $GEN_DEPS"
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - before_install
@@ -99,9 +99,8 @@ before_install:
 install:
     - clean_code $REPO_DIR $BUILD_COMMIT
     - build_wheel $REPO_DIR $PLAT
-#    - ls -l ${TRAVIS_BUILD_DIR}/wheelhouse/
-#    - unzip -l ${TRAVIS_BUILD_DIR}/wheelhouse/*.whl
+    - ls -l ${TRAVIS_BUILD_DIR}/wheelhouse/
+    - unzip -l ${TRAVIS_BUILD_DIR}/wheelhouse/*.whl
 
 script:
-    - echo "pass"
-#    - install_run $PLAT
+    - install_run $PLAT
