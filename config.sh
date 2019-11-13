@@ -283,7 +283,7 @@ function pre_build {
 
     suppress build_bundled_deps
 
-    suppress build_gdal
+#    suppress build_gdal
 }
 
 
