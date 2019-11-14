@@ -97,5 +97,4 @@ install:
     - unzip -l ${TRAVIS_BUILD_DIR}/wheelhouse/*.whl
 
 script:
-    - echo "pass"
-#    - install_run $PLAT
+    - install_run $PLAT
