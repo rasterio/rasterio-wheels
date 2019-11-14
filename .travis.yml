@@ -19,10 +19,10 @@ env:
   - UNICODE_WIDTH=32
   - USE_CCACHE=1
 
-#addons:
-#  artifacts:
-#    paths:
-#    - $(ls wheelhouse/*.whl)
+addons:
+  artifacts:
+    paths:
+    - $(ls wheelhouse/*.whl)
 
 matrix:
   exclude:
