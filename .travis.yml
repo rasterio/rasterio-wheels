@@ -19,10 +19,10 @@ env:
   - UNICODE_WIDTH=32
   - USE_CCACHE=1
 
-#addons:
-#  artifacts:
-#    paths:
-#    - $(ls wheelhouse/*.whl)
+addons:
+  artifacts:
+    paths:
+    - $(ls wheelhouse/*.whl)
 
 matrix:
   exclude:
@@ -97,5 +97,4 @@ install:
     - unzip -l ${TRAVIS_BUILD_DIR}/wheelhouse/*.whl
 
 script:
-    - echo "pass"
-#    - install_run $PLAT
+    - install_run $PLAT
