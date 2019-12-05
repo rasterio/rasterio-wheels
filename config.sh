@@ -143,16 +143,16 @@ function build_curl {
 
 
 function build_bundled_deps {
-    if [ -n "$IS_OSX" ]; then
-        curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
-        (cd / && sudo unzip -o /tmp/deps.zip)
-        /gdal/bin/nc-config --libs
-        touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
-    else
-        suppress build_geos
-        suppress build_hdf5
-        suppress build_netcdf
-    fi
+#    if [ -n "$IS_OSX" ]; then
+#        curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
+#        (cd / && sudo unzip -o /tmp/deps.zip)
+#        /gdal/bin/nc-config --libs
+#        touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
+#    else
+    suppress build_geos
+    suppress build_hdf5
+    suppress build_netcdf
+#    fi
 }
 
 
