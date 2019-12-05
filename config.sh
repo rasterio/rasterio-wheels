@@ -143,16 +143,16 @@ function build_curl {
 
 
 function build_bundled_deps {
-    if [ -n "$IS_OSX" ]; then
-        curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
-        (cd / && sudo unzip -o /tmp/deps.zip)
-        /gdal/bin/nc-config --libs
-        touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
-    else
-        suppress build_geos
-        suppress build_hdf5
-        suppress build_netcdf
-    fi
+#    if [ -n "$IS_OSX" ]; then
+#        curl -fsSL -o /tmp/deps.zip https://github.com/sgillies/rasterio-wheels/files/2350174/gdal-deps.zip
+#        (cd / && sudo unzip -o /tmp/deps.zip)
+#        /gdal/bin/nc-config --libs
+#        touch geos-stamp && touch hdf5-stamp && touch netcdf-stamp
+#    else
+    suppress build_geos
+    suppress build_hdf5
+    suppress build_netcdf
+#    fi
 }
 
 
@@ -305,7 +305,7 @@ function run_tests {
     mkdir -p /tmp/rasterio
     cp -R tests /tmp/rasterio
     cd /tmp/rasterio
-    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex"
+    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
     rio --version
     rio env --formats
 }
