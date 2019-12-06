@@ -266,7 +266,7 @@ function pre_build {
     suppress build_jpeg
     suppress build_openjpeg
     suppress build_jsonc
-    build_proj
+    suppress build_proj
     suppress build_sqlite
     suppress build_expat
     suppress build_libwebp
