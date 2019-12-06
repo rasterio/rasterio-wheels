@@ -1,6 +1,15 @@
 Changes
 =======
 
+(2019-12-05)
+------------
+
+* Add 64-bit manylinux1 and macosx Python 3.8 builds.
+* Build HDF5, GEOS, and NetCDF for OS X insteading of using pre-built versions.
+  This increases our build time to ~75 minutes, but Travis CI has graciously
+  increased the limit for this project to 90.
+* Update multibuild commit to 4491026 for Python 3.8 support.
+
 (2019-11-13)
 ------------
 
