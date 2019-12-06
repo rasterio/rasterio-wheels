@@ -1,6 +1,11 @@
 Changes
 =======
 
+(2019-12-06)
+------------
+
+* Build PROJ with the proj-datumgrid-1.8 package (#33).
+
 (2019-12-05)
 ------------
 
