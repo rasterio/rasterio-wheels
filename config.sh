@@ -110,6 +110,28 @@ function build_hdf5 {
     touch hdf5-stamp
 }
 
+
+function build_hdf4 {
+    if [ -e hdf4-stamp ]; then return; fi
+    fetch_unpack https://support.hdfgroup.org/ftp/HDF/HDF_Current/src/hdf-$HDF4_VERSION.tar.gz
+    (cd hdf-$HDF4_VERSION \
+     && ./configure --enable-shared --disable-netcdf --disable-fortran --prefix=$BUILD_PREFIX \
+     && make install)
+    touch hdf4-stamp
+}
+
+
+function build_netcdf {
+    if [ -e netcdf-stamp ]; then return; fi
+    build_hdf4
+    fetch_unpack https://github.com/Unidata/netcdf-c/archive/v$NETCDF_VERSION.tar.gz
+    (cd netcdf-c-$NETCDF_VERSION \
+        $$ CPPFLAGS="-I${BUILD_PREFIX}/include" LDFLAGS="-L${BUILD_PREFIX}/lib" ./configure --enable-hdf4 --enable-hdf4-file-tests --prefix $BUILD_PREFIX \
+        && make install)
+    touch netcdf-stamp
+}
+
+
 function build_nghttp2 {
     if [ -e nghttp2-stamp ]; then return; fi
     fetch_unpack https://github.com/nghttp2/nghttp2/releases/download/v${NGHTTP2_VERSION}/nghttp2-${NGHTTP2_VERSION}.tar.gz
