@@ -191,6 +191,7 @@ function build_gdal {
             --with-libjson-c=${BUILD_PREFIX} \
             --with-libtiff=internal \
             --with-libz=/usr \
+            --with-liblzma=yes \
             --with-netcdf=${DEPS_PREFIX} \
             --with-openjpeg \
             --with-pam \
