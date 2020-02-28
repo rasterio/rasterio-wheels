@@ -135,9 +135,7 @@ function build_curl {
     fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
-        && if [ -z "$IS_OSX" ]; then \
-        LIBS=-ldl ./configure $flags; else \
-        ./configure $flags; fi\
+        ./configure $flags \
         && make -j4 \
         && make install)
     touch curl-stamp
@@ -260,7 +258,11 @@ function pre_build {
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    suppress build_curl
+    if [ -n "$IS_OSX" ]; then
+	:
+    else  # manylinux
+        build_curl
+    fi
 
     suppress build_jpeg
     suppress build_openjpeg
