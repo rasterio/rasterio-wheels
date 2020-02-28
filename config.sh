@@ -135,7 +135,7 @@ function build_curl {
     fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
-        ./configure $flags \
+        LIBS=-ldl ./configure $flags \
         && make -j4 \
         && make install)
     touch curl-stamp
