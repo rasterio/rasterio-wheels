@@ -1,8 +1,8 @@
 language: python
 python: 3.5
-sudo: required
 dist: trusty
 services: docker
+os: linux
 filter_secrets: false
 
 cache:
@@ -24,7 +24,7 @@ addons:
     paths:
     - $(ls wheelhouse/*.whl)
 
-matrix:
+jobs:
   exclude:
   - python: 3.5
 
