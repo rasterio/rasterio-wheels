@@ -251,7 +251,7 @@ function pre_build {
     rm -rf /usr/local/lib/libcurl*
 
     if [ -n "$IS_OSX" ]; then
-	:
+        touch curl-stamp
     else  # manylinux
         build_curl
     fi
