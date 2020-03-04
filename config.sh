@@ -121,15 +121,16 @@ function build_curl {
     build_nghttp2
     local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
-        return
-        # flags="$flags --with-darwinssl"
+        flags="$flags --with-darwinssl"
     else  # manylinux
         flags="$flags --with-ssl"
         build_openssl
     fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
-        LIBS=-ldl ./configure $flags \
+        && if [ -z "$IS_OSX" ]; then \
+        LIBS=-ldl ./configure $flags; else \
+        ./configure $flags; fi\
         && make -j4 \
         && make install)
     touch curl-stamp
