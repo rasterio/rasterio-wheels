@@ -3,8 +3,6 @@
 # Test for OSX with [ -n "$IS_OSX" ].
 
 function build_geos {
-    CFLAGS="$CFLAGS -g -O2"
-    CXXFLAGS="$CXXFLAGS -g -O2"
     build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
 }
 
@@ -15,8 +13,6 @@ function build_jsonc {
 
 
 function build_proj {
-    CFLAGS="$CFLAGS -g -O2"
-    CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e proj-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
@@ -122,8 +118,6 @@ function build_nghttp2 {
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
-    CFLAGS="$CFLAGS -g -O2"
-    CXXFLAGS="$CXXFLAGS -g -O2"
     build_nghttp2
     local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
@@ -156,9 +150,6 @@ function build_gdal {
     build_geos
     build_hdf5
     build_netcdf
-
-    CFLAGS="$CFLAGS -g -O2"
-    CXXFLAGS="$CXXFLAGS -g -O2"
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
