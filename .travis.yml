@@ -1,9 +1,9 @@
 language: python
 python: 3.5
-sudo: required
 dist: trusty
 services: docker
 filter_secrets: false
+os: linux
 
 cache:
   ccache: true
@@ -24,10 +24,7 @@ addons:
     paths:
     - $(ls wheelhouse/*.whl)
 
-matrix:
-  exclude:
-  - python: 3.5
-
+jobs:
   include:
   - name: "Python 2.7 x86_64 linux"
     os: linux
