@@ -14,7 +14,7 @@ cache:
 env:
   global:
   - REPO_DIR=rasterio
-  - BUILD_COMMIT=a1a803d
+  - BUILD_COMMIT=c6c1bf8
   - PLAT=x86_64
   - UNICODE_WIDTH=32
   - USE_CCACHE=1
