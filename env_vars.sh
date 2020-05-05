@@ -17,6 +17,4 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 export GDAL_CONFIG=/usr/local/bin/gdal-config
 export PACKAGE_DATA=1
 export PROJ_LIB=/usr/local/share/proj
-export PIP_NO_BUILD_ISOLATION=0
-export PIP_USE_PEP517=0
 export AUDITWHEEL_EXTRA_LIB_NAME_TAG=rasterio
