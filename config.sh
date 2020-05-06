@@ -315,6 +315,14 @@ function build_wheel_cmd {
     #     WHEEL_SDIR  (optional, default "wheelhouse")
     #     BUILD_DEPENDS (optional, default "")
     #     MANYLINUX_URL (optional, default "") (via pip_opts function)
+
+    # Update the container's auditwheel with our patched version.
+    if [ -n "$IS_OSX" ]; then
+	:
+    else  # manylinux
+        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
+    fi
+
     local cmd=${1:-pip_wheel_cmd}
     local repo_dir=${2:-$REPO_DIR}
     [ -z "$repo_dir" ] && echo "repo_dir not defined" && exit 1
