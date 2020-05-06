@@ -323,8 +323,8 @@ function build_wheel_cmd {
     if [ -n "$(is_function "pre_build")" ]; then pre_build; fi
     stop_spinner
     if [ -n "$BUILD_DEPENDS" ]; then
-        PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 pip install $(pip_opts) $BUILD_DEPENDS
+        pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && $cmd $wheelhouse)
+    (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
     repair_wheelhouse $wheelhouse
 }
