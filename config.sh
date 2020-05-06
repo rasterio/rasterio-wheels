@@ -273,9 +273,9 @@ function pre_build {
     suppress build_libwebp
     suppress build_geos
     suppress build_hdf5
-    suppress build_netcdf
+    build_netcdf
 
-    suppress build_gdal
+    build_gdal
 }
 
 
