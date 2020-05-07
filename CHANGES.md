@@ -1,6 +1,13 @@
 Changes
 =======
 
+## 2020-05-06
+
+* Ensure that shared libraries in repaired wheels have a "rasterio" tag in SONAME to prevent conflicts with librairies in fiona wheels (#44).
+* Prevent HDF5 errors from printing to terminal (#39).
+* Patch GDAL to fix /vsis3 cache bug (#43).
+* Update netCDF to 4.6.2 (#41).
+
 ## 2019-01-27
 
 * Update multibuild commit to 6b0bbd5 for pip 20 support.
