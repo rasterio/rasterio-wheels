@@ -164,10 +164,8 @@ function build_gdal {
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
-        DEPS_PREFIX=/gdal
     else
         EXPAT_PREFIX=$BUILD_PREFIX
-        DEPS_PREFIX=$BUILD_PREFIX
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
@@ -183,7 +181,7 @@ function build_gdal {
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
-            --with-geos=${DEPS_PREFIX}/bin/geos-config \
+            --with-geos=${BUILD_PREFIX}/bin/geos-config \
             --with-geotiff=internal \
             --with-gif \
             --with-grib \
@@ -192,7 +190,7 @@ function build_gdal {
             --with-libjson-c=${BUILD_PREFIX} \
             --with-libtiff=internal \
             --with-libz=/usr \
-            --with-netcdf=${DEPS_PREFIX} \
+            --with-netcdf=${BUILD_PREFIX} \
             --with-openjpeg \
             --with-pam \
             --with-png \
