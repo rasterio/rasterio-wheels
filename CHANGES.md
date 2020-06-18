@@ -1,9 +1,16 @@
 Changes
 =======
 
+## 2020-06-18
+
+* Disable GEOS support in the GDAL library builds for OS X to prevent conflicts
+  with shapely wheels on PyPI.
+* Test rasterio and shapely wheels together to check for this conflict.
+
 ## 2020-05-06
 
-* Ensure that shared libraries in repaired wheels have a "rasterio" tag in SONAME to prevent conflicts with librairies in fiona wheels (#44).
+* Ensure that shared libraries in repaired wheels have a "rasterio" tag in
+  SONAME to prevent conflicts with librairies in fiona wheels (#44).
 * Prevent HDF5 errors from printing to terminal (#39).
 * Patch GDAL to fix /vsis3 cache bug (#43).
 * Update netCDF to 4.6.2 (#41).
