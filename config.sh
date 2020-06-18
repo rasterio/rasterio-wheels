@@ -164,8 +164,10 @@ function build_gdal {
 
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
+        GEOS_CONFIG="--without-geos"
     else
         EXPAT_PREFIX=$BUILD_PREFIX
+        GEOS_CONFIG="--with-geos=${BUILD_PREFIX}/bin/geos-config"
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
@@ -181,7 +183,7 @@ function build_gdal {
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
-            --with-geos=${BUILD_PREFIX}/bin/geos-config \
+            ${GEOS_CONFIG} \
             --with-geotiff=internal \
             --with-gif \
             --with-grib \
@@ -291,13 +293,11 @@ function run_tests {
         sudo apt-get update
         sudo apt-get install -y ca-certificates
     fi
-    cd ../rasterio
-    mkdir -p /tmp/rasterio
-    cp -R tests /tmp/rasterio
-    cd /tmp/rasterio
+    cp -R ../rasterio/tests ./tests
     python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
     rio --version
     rio env --formats
+    pip install shapely && python ../tests_fiona_issue383.py
 }
 
 function build_wheel_cmd {
