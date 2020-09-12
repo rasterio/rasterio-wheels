@@ -20,12 +20,14 @@ function build_proj {
     if [ -e proj-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
-        && curl -qq -O https://download.osgeo.org/proj/proj-datumgrid-${PROJ_DATUMGRID_VERSION}.zip \
-        && unzip proj-datumgrid-${PROJ_DATUMGRID_VERSION}.zip -d nad \
-        && patch -u -p1 < ../patches/bd6cf7d527ec88fdd6cc3f078387683d683d0445.diff \
         && ./configure --prefix=$BUILD_PREFIX \
         && make -j4 \
         && make install)
+    if [ -n "$IS_OSX" ]; then
+        :
+    else
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libproj.so.*
+    fi
     touch proj-stamp
 }
 
@@ -172,8 +174,6 @@ function build_gdal {
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && patch -u -p2 < ../patches/1937d70990182aef316ac76f0c7c8fb3647259b2.diff \
-        && patch -u -p2 < ../patches/2310.diff \
         && ./configure \
 	        --with-crypto=yes \
 	        --with-hide-internal-symbols \
@@ -196,7 +196,7 @@ function build_gdal {
             --with-openjpeg \
             --with-pam \
             --with-png \
-            --with-proj=${BUILD_PREFIX}/proj4 \
+            --with-proj=${BUILD_PREFIX} \
             --with-sfcgal=no \
             --with-sqlite3=${BUILD_PREFIX}/sqlite \
             --with-threads \
