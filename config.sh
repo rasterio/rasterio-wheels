@@ -294,7 +294,7 @@ function run_tests {
         sudo apt-get install -y ca-certificates
     fi
     cp -R ../rasterio/tests ./tests
-    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
+    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
     rio --version
     rio env --formats
     pip install shapely && python ../test_fiona_issue383.py
