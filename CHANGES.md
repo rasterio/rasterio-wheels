@@ -1,6 +1,11 @@
 Changes
 =======
 
+## 2020-09-14
+
+* Upgrade sqlite to 3.33.
+* Patch GDAL 2.4.4 to fix issues with VRT overviews and background values.
+
 ## 2020-06-18
 
 * Disable GEOS support in the GDAL library builds for OS X to prevent conflicts
