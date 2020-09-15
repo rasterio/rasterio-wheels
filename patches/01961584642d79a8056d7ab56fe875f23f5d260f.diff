@@ -1,0 +1,98 @@
+diff --git a/autotest/gcore/vrt_read.py b/autotest/gcore/vrt_read.py
+index eca296af7fa..f862ae0a2e2 100755
+--- a/autotest/gcore/vrt_read.py
++++ b/autotest/gcore/vrt_read.py
+@@ -1356,3 +1356,55 @@ def test_vrt_source_no_dstrect():
+     ds = None
+     gdal.Unlink(filename)
+ 
++
++def test_vrt_dataset_rasterio_non_nearest_resampling_source_with_ovr():
++
++    ds = gdal.GetDriverByName('GTiff').Create('/vsimem/src.tif', 10, 10, 3)
++    ds.GetRasterBand(1).Fill(255)
++    ds.BuildOverviews('NONE', [2])
++    ds.GetRasterBand(1).GetOverview(0).Fill(10)
++    ds = None
++
++    vrt_text = """<VRTDataset rasterXSize="10" rasterYSize="10">
++  <VRTRasterBand dataType="Byte" band="1">
++    <ColorInterp>Red</ColorInterp>
++    <!-- two sources to avoid virtual overview to be created on the VRTRasterBand -->
++    <ComplexSource>
++      <SourceFilename>/vsimem/src.tif</SourceFilename>
++      <SourceBand>1</SourceBand>
++      <SrcRect xOff="0" yOff="0" xSize="10" ySize="5" />
++      <DstRect xOff="0" yOff="0" xSize="10" ySize="5" />
++    </ComplexSource>
++    <ComplexSource>
++      <SourceFilename>/vsimem/src.tif</SourceFilename>
++      <SourceBand>1</SourceBand>
++      <SrcRect xOff="0" yOff="5" xSize="10" ySize="5" />
++      <DstRect xOff="0" yOff="5" xSize="10" ySize="5" />
++    </ComplexSource>
++  </VRTRasterBand>
++  <VRTRasterBand dataType="Byte" band="2">
++    <ColorInterp>Green</ColorInterp>
++    <ComplexSource>
++      <SourceFilename>/vsimem/src.tif</SourceFilename>
++      <SourceBand>2</SourceBand>
++    </ComplexSource>
++  </VRTRasterBand>
++  <VRTRasterBand dataType="Byte" band="3">
++    <ColorInterp>Blue</ColorInterp>
++    <ComplexSource>
++      <SourceFilename>/vsimem/src.tif</SourceFilename>
++      <SourceBand>3</SourceBand>
++    </ComplexSource>
++  </VRTRasterBand>
++</VRTDataset>"""
++    ds = gdal.Open(vrt_text)
++
++    got_data = ds.ReadRaster(0,0,10,10,4,4)
++    got_data = struct.unpack('B' * 4 * 4 * 3, got_data)
++    assert got_data[0] == 10
++
++    got_data = ds.ReadRaster(0,0,10,10,4,4,resample_alg=gdal.GRIORA_Cubic)
++    got_data = struct.unpack('B' * 4 * 4 * 3, got_data)
++    assert got_data[0] == 10
++
++    gdal.Unlink('/vsimem/src.tif')
+diff --git a/gdal/frmts/vrt/vrtdataset.cpp b/gdal/frmts/vrt/vrtdataset.cpp
+index c6479d06170..00531d34e57 100644
+--- a/gdal/frmts/vrt/vrtdataset.cpp
++++ b/gdal/frmts/vrt/vrtdataset.cpp
+@@ -1907,12 +1907,32 @@ CPLErr VRTDataset::IRasterIO( GDALRWFlag eRWFlag,
+         return eErr;
+     }
+ 
+-    return GDALDataset::IRasterIO( eRWFlag, nXOff, nYOff, nXSize, nYSize,
++    CPLErr eErr;
++    if( eRWFlag == GF_Read &&
++        psExtraArg->eResampleAlg != GRIORA_NearestNeighbour &&
++        nBufXSize < nXSize && nBufYSize < nYSize && nBandCount > 1 )
++    {
++        // Force going through VRTSourcedRasterBand::IRasterIO(), otherwise
++        // GDALDataset::IRasterIOResampled() would be used without source
++        // overviews being potentially used.
++        eErr = GDALDataset::BandBasedRasterIO(
++                                   eRWFlag, nXOff, nYOff, nXSize, nYSize,
+                                    pData, nBufXSize, nBufYSize,
+                                    eBufType,
+                                    nBandCount, panBandMap,
+                                    nPixelSpace, nLineSpace, nBandSpace,
+                                    psExtraArg );
++    }
++    else
++    {
++        eErr = GDALDataset::IRasterIO( eRWFlag, nXOff, nYOff, nXSize, nYSize,
++                                    pData, nBufXSize, nBufYSize,
++                                    eBufType,
++                                    nBandCount, panBandMap,
++                                    nPixelSpace, nLineSpace, nBandSpace,
++                                    psExtraArg );
++    }
++    return eErr;
+ }
+ 
+ /************************************************************************/

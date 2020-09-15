@@ -32,7 +32,7 @@ function build_proj {
 
 function build_sqlite {
     if [ -e sqlite-stamp ]; then return; fi
-    fetch_unpack https://www.sqlite.org/2018/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
+    fetch_unpack https://www.sqlite.org/2020/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
     (cd sqlite-autoconf-${SQLITE_VERSION} \
         && ./configure --prefix=$BUILD_PREFIX \
         && make -j4 \
@@ -174,6 +174,8 @@ function build_gdal {
     (cd gdal-${GDAL_VERSION} \
         && patch -u -p2 < ../patches/1937d70990182aef316ac76f0c7c8fb3647259b2.diff \
         && patch -u -p2 < ../patches/2310.diff \
+        && (patch -u -p2 --force < ../patches/01961584642d79a8056d7ab56fe875f23f5d260f.diff || true) \
+        && (patch -u -p2 --force < ../patches/507451e25decfeaf7cfa8fd6696a2c4bf9488d76.diff || true) \
         && ./configure \
 	        --with-crypto=yes \
 	        --with-hide-internal-symbols \
