@@ -1,6 +1,12 @@
 Changes
 =======
 
+## 2020-09-29
+
+* Patch GDAL 2.4.4 to get the fix in GDAL PR #2510.
+* Update to the lastest multibuild (commit bc8e01e).
+* Continue to use OpenSSL 1.0.2u.
+
 ## 2020-09-14
 
 * Upgrade sqlite to 3.33.
