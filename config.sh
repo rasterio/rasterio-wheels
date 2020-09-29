@@ -257,7 +257,7 @@ function pre_build {
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
-        suppress build_openssl
+        build_openssl
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
