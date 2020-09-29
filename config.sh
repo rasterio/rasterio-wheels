@@ -265,7 +265,7 @@ function pre_build {
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    suppress build_curl
+    build_curl
 
     suppress build_jpeg
     suppress build_openjpeg
