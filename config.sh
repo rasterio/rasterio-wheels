@@ -257,7 +257,7 @@ function pre_build {
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
-        build_openssl
+        suppress build_openssl
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
@@ -265,7 +265,7 @@ function pre_build {
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    build_curl
+    suppress build_curl
 
     suppress build_jpeg
     suppress build_openjpeg
