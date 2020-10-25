@@ -5,7 +5,6 @@
      int iBufYOff;
      int iBufXOff;
 -    int iSrcY;
-+    //int iSrcY;
      int nBlockXSize = 1;
      int nBlockYSize = 1;
      CPLErr eErr = CE_None;
@@ -58,8 +57,6 @@
 -    double dfSrcY = 0.0;
 +    constexpr double EPS = 1e-10;
 +
-+    //double dfSrcX = 0.0;
-+    //double dfSrcY = 0.0;
  /* -------------------------------------------------------------------- */
  /*      Loop over buffer computing source locations.                    */
  /* -------------------------------------------------------------------- */
