@@ -1,6 +1,6 @@
 --- a/gcore/rasterio.cpp	2020-10-20 03:50:21.000000000 -0600
-+++ b/gcore/rasterio.cpp	2020-10-24 20:32:53.075210995 -0600
-@@ -3800,12 +3800,19 @@
++++ b/gcore/rasterio.cpp	2020-10-25 11:07:55.668622252 -0600
+@@ -3800,12 +3800,18 @@
      int nLBlockY = -1;
      int iBufYOff;
      int iBufXOff;
@@ -20,7 +20,7 @@
  /* -------------------------------------------------------------------- */
  /*      Ensure that all bands share a common block size and data type.  */
  /* -------------------------------------------------------------------- */
-@@ -3862,7 +3869,7 @@
+@@ -3862,7 +3868,7 @@
  /*      called before proceeding to the next.                           */
  /* ==================================================================== */
  
@@ -29,7 +29,7 @@
      {
          GDALRasterIOExtraArg sDummyExtraArg;
          INIT_RASTERIO_EXTRA_ARG(sDummyExtraArg);
-@@ -3970,14 +3977,28 @@
+@@ -3970,14 +3976,26 @@
                                  GetBlockSize( &nBlockXSize, &nBlockYSize );
      }
  
@@ -52,15 +52,15 @@
 -    const double dfSrcYInc = nYSize / static_cast<double>( nBufYSize );
 +    const double dfSrcXInc = dfXSize / static_cast<double>( nBufXSize );
 +    const double dfSrcYInc = dfYSize / static_cast<double>( nBufYSize );
++
++    constexpr double EPS = 1e-10;
  
 -    double dfSrcX = 0.0;
 -    double dfSrcY = 0.0;
-+    constexpr double EPS = 1e-10;
-+
  /* -------------------------------------------------------------------- */
  /*      Loop over buffer computing source locations.                    */
  /* -------------------------------------------------------------------- */
-@@ -3985,16 +4006,18 @@
+@@ -3985,16 +4003,18 @@
      {
          GPtrDiff_t  iSrcOffset;
  
@@ -71,8 +71,7 @@
 +        const int iSrcY = static_cast<int>(std::min(std::max(0.0, dfSrcY),
 +                                    static_cast<double>(nRasterYSize - 1)));
  
--        GPtrDiff_t iBufOffset = static_cast<GPtrDiff_t>(iBufYOff) * static_cast<GPtrDiff_t>(nLineSpace);
-+	GPtrDiff_t iBufOffset = static_cast<GPtrDiff_t>(iBufYOff) * static_cast<GPtrDiff_t>(nLineSpace);
+         GPtrDiff_t iBufOffset = static_cast<GPtrDiff_t>(iBufYOff) * static_cast<GPtrDiff_t>(nLineSpace);
  
          for( iBufXOff = 0; iBufXOff < nBufXSize; iBufXOff++ )
          {
