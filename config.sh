@@ -177,6 +177,7 @@ function build_gdal {
         && patch -u -p2 < ../patches/2510.diff \
         && (patch -u -p2 --force < ../patches/01961584642d79a8056d7ab56fe875f23f5d260f.diff || true) \
         && (patch -u -p2 --force < ../patches/507451e25decfeaf7cfa8fd6696a2c4bf9488d76.diff || true) \
+        && patch -u -p1 < ../patches/3102-1.diff \
         && ./configure \
 	        --with-crypto=yes \
 	        --with-hide-internal-symbols \
