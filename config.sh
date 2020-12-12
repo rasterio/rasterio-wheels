@@ -275,7 +275,7 @@ function pre_build {
     suppress build_hdf5
     suppress build_netcdf
 
-    build_gdal
+    suppress build_gdal
 }
 
 
@@ -301,27 +301,7 @@ function run_tests {
     python ../test_fiona_issue383.py
 }
 
-function repair_wheelhouse {
-    local wheelhouse=$1
-    install_delocate
-    delocate-listdeps --all --depending $wheelhouse/*.whl # copies library dependencies into wheel
-    delocate-wheel $wheelhouse/*.whl # copies library dependencies into wheel
-}
-
 function build_wheel_cmd {
-    # Builds wheel with named command, puts into $WHEEL_SDIR
-    #
-    # Parameters:
-    #     cmd  (optional, default "pip_wheel_cmd"
-    #        Name of command for building wheel
-    #     repo_dir  (optional, default $REPO_DIR)
-    #
-    # Depends on
-    #     REPO_DIR  (or via input argument)
-    #     WHEEL_SDIR  (optional, default "wheelhouse")
-    #     BUILD_DEPENDS (optional, default "")
-    #     MANYLINUX_URL (optional, default "") (via pip_opts function)
-
     # Update the container's auditwheel with our patched version.
     if [ -n "$IS_OSX" ]; then
 	:
