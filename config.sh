@@ -304,7 +304,7 @@ function run_tests {
 function repair_wheelhouse {
     local wheelhouse=$1
     install_delocate
-    delocate-listdeps --all $wheelhouse/*.whl # copies library dependencies into wheel
+    delocate-listdeps --all --depending $wheelhouse/*.whl # copies library dependencies into wheel
     delocate-wheel $wheelhouse/*.whl # copies library dependencies into wheel
 }
 
@@ -340,7 +340,6 @@ function build_wheel_cmd {
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
     (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
-    unzip -l $wheelhouse/*.whl
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
