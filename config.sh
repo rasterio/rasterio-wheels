@@ -304,7 +304,7 @@ function run_tests {
 function repair_wheelhouse {
     local wheelhouse=$1
     install_delocate
-    delocate-listdeps $wheelhouse/*.whl # copies library dependencies into wheel
+    delocate-listdeps --all $wheelhouse/*.whl # copies library dependencies into wheel
     delocate-wheel $wheelhouse/*.whl # copies library dependencies into wheel
 }
 
