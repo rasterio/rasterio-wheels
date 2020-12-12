@@ -301,6 +301,13 @@ function run_tests {
     python ../test_fiona_issue383.py
 }
 
+function repair_wheelhouse {
+    local wheelhouse=$1
+    install_delocate
+    delocate-listdeps $wheelhouse/*.whl # copies library dependencies into wheel
+    delocate-wheel $wheelhouse/*.whl # copies library dependencies into wheel
+}
+
 function build_wheel_cmd {
     # Builds wheel with named command, puts into $WHEEL_SDIR
     #
@@ -333,5 +340,10 @@ function build_wheel_cmd {
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
     (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    if [ -n "$IS_OSX" ]; then
+	:
+    else  # manylinux
+        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
+    fi
     repair_wheelhouse $wheelhouse
 }
