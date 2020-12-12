@@ -275,7 +275,7 @@ function pre_build {
     suppress build_hdf5
     suppress build_netcdf
 
-    suppress build_gdal
+    build_gdal
 }
 
 
@@ -340,6 +340,7 @@ function build_wheel_cmd {
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
     (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    unzip -l $wheelhouse/*.whl
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
