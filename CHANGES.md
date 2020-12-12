@@ -1,6 +1,10 @@
 Changes
 =======
 
+## 2020-10-25
+
+* Patch GDAL 2.4.4 to get the fix for GDAL #3101 and rasterio #2022.
+
 ## 2020-09-29
 
 * Patch GDAL 2.4.4 to get the fix in GDAL PR #2510.
