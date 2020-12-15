@@ -26,6 +26,15 @@ addons:
 
 jobs:
   include:
+  - name: "Python 3.9 ARM64 linux"
+    os: linux
+    arch: arm64
+    env:
+    - PLAT=aarch64
+    - MB_ML_VER=2014
+    - MB_PYTHON_VERSION=3.9
+    - DEBUG_PRINT=1
+    - DOCKER_TEST_IMAGE=multibuild/xenial_{PLAT}
   - name: "Python 3.6 x86_64 linux"
     os: linux
     env:
