@@ -20,12 +20,14 @@ function build_proj {
     if [ -e proj-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
-        && curl -qq -O https://download.osgeo.org/proj/proj-datumgrid-${PROJ_DATUMGRID_VERSION}.zip \
-        && unzip proj-datumgrid-${PROJ_DATUMGRID_VERSION}.zip -d nad \
-        && patch -u -p1 < ../patches/bd6cf7d527ec88fdd6cc3f078387683d683d0445.diff \
         && ./configure --prefix=$BUILD_PREFIX \
         && make -j4 \
         && make install)
+    if [ -n "$IS_OSX" ]; then
+        :
+    else
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libproj.so.*
+    fi
     touch proj-stamp
 }
 
@@ -172,12 +174,6 @@ function build_gdal {
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && patch -u -p2 < ../patches/1937d70990182aef316ac76f0c7c8fb3647259b2.diff \
-        && patch -u -p2 < ../patches/2310.diff \
-        && patch -u -p2 < ../patches/2510.diff \
-        && (patch -u -p2 --force < ../patches/01961584642d79a8056d7ab56fe875f23f5d260f.diff || true) \
-        && (patch -u -p2 --force < ../patches/507451e25decfeaf7cfa8fd6696a2c4bf9488d76.diff || true) \
-        && patch -u -p1 < ../patches/3102-1.diff \
         && ./configure \
 	        --with-crypto=yes \
 	        --with-hide-internal-symbols \
@@ -200,9 +196,9 @@ function build_gdal {
             --with-openjpeg \
             --with-pam \
             --with-png \
-            --with-proj=${BUILD_PREFIX}/proj4 \
+            --with-proj=${BUILD_PREFIX} \
             --with-sfcgal=no \
-            --with-sqlite3=${BUILD_PREFIX}/sqlite \
+            --with-sqlite3=${BUILD_PREFIX} \
             --with-threads \
             --without-bsb \
             --without-cfitsio \
@@ -298,26 +294,14 @@ function run_tests {
         sudo apt-get install -y ca-certificates
     fi
     cp -R ../rasterio/tests ./tests
-    python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
+    pip install shapely
+    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
     rio --version
     rio env --formats
-    pip install shapely && python ../test_fiona_issue383.py
+    python ../test_fiona_issue383.py
 }
 
 function build_wheel_cmd {
-    # Builds wheel with named command, puts into $WHEEL_SDIR
-    #
-    # Parameters:
-    #     cmd  (optional, default "pip_wheel_cmd"
-    #        Name of command for building wheel
-    #     repo_dir  (optional, default $REPO_DIR)
-    #
-    # Depends on
-    #     REPO_DIR  (or via input argument)
-    #     WHEEL_SDIR  (optional, default "wheelhouse")
-    #     BUILD_DEPENDS (optional, default "")
-    #     MANYLINUX_URL (optional, default "") (via pip_opts function)
-
     # Update the container's auditwheel with our patched version.
     if [ -n "$IS_OSX" ]; then
 	:
@@ -336,5 +320,10 @@ function build_wheel_cmd {
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
     (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    if [ -n "$IS_OSX" ]; then
+	:
+    else  # manylinux
+        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
+    fi
     repair_wheelhouse $wheelhouse
 }

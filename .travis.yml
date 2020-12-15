@@ -1,5 +1,5 @@
 language: python
-python: 3.5
+python: 3.6
 dist: trusty
 services: docker
 filter_secrets: false
@@ -14,7 +14,7 @@ cache:
 env:
   global:
   - REPO_DIR=rasterio
-  - BUILD_COMMIT=1.1.8
+  - BUILD_COMMIT=master
   - PLAT=x86_64
   - UNICODE_WIDTH=32
   - USE_CCACHE=1
@@ -26,69 +26,74 @@ addons:
 
 jobs:
   include:
-  - name: "Python 2.7 x86_64 linux"
-    os: linux
-    env:
-    - MB_PYTHON_VERSION=2.7
-    - NP_BUILD_DEP=numpy==1.10.4
-    - NP_TEST_DEP=numpy==1.11.3
-  - name: "Python 3.5 x86_64 linux"
-    os: linux
-    env:
-    - MB_PYTHON_VERSION=3.5
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
   - name: "Python 3.6 x86_64 linux"
     os: linux
     env:
     - MB_PYTHON_VERSION=3.6
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
+    - NP_BUILD_DEP=numpy==1.15.4
+    - NP_TEST_DEP=numpy==1.15.4
   - name: "Python 3.7 x86_64 linux"
     os: linux
     env:
     - MB_PYTHON_VERSION=3.7
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
+    - NP_BUILD_DEP=numpy==1.15.4
+    - NP_TEST_DEP=numpy==1.15.4
   - name: "Python 3.8 x86_64 linux"
     os: linux
     env:
     - MB_PYTHON_VERSION=3.8
-    - NP_BUILD_DEP=numpy==1.17.3
-    - NP_TEST_DEP=numpy==1.17.3
-  - name: "Python 3.5 osx"
-    os: osx
-    language: generic
+    - NP_BUILD_DEP=numpy==1.17.5
+    - NP_TEST_DEP=numpy==1.17.5
+  - name: "Python 3.9 x86_64 linux"
+    os: linux
     env:
-    - MB_PYTHON_VERSION=3.5
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
+    - MB_PYTHON_VERSION=3.9
+    - NP_BUILD_DEP=numpy==1.19.4
+    - NP_TEST_DEP=numpy==1.19.4
   - name: "Python 3.6 osx"
     os: osx
     language: generic
+    osx_image: xcode9.3
     env:
     - MB_PYTHON_VERSION=3.6
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
+    - NP_BUILD_DEP=numpy==1.15.4
+    - NP_TEST_DEP=numpy==1.15.4
   - name: "Python 3.7 osx"
     os: osx
     language: generic
+    osx_image: xcode9.3
     env:
     - MB_PYTHON_VERSION=3.7
-    - NP_BUILD_DEP=numpy==1.14.5
-    - NP_TEST_DEP=numpy==1.14.5
+    - NP_BUILD_DEP=numpy==1.15.4
+    - NP_TEST_DEP=numpy==1.15.4
   - os: osx
     language: generic
-    osx_image: xcode10.1
+    osx_image: xcode9.3
     env:
     - MB_PYTHON_VERSION=3.8
-    - NP_BUILD_DEP=numpy==1.17.3
-    - NP_TEST_DEP=numpy==1.17.3
+    - NP_BUILD_DEP=numpy==1.17.5
+    - NP_TEST_DEP=numpy==1.17.5
+    - MB_PYTHON_OSX_VER=10.9
+  - os: osx
+    language: generic
+    osx_image: xcode9.3
+    env:
+    - MB_PYTHON_VERSION=3.8
+    - NP_BUILD_DEP=numpy==1.17.5
+    - NP_TEST_DEP=numpy==1.17.5
+    - MB_PYTHON_OSX_VER=10.9
+  - os: osx
+    language: generic
+    osx_image: xcode9.3
+    env:
+    - MB_PYTHON_VERSION=3.9
+    - NP_BUILD_DEP=numpy==1.19.4
+    - NP_TEST_DEP=numpy==1.19.4
     - MB_PYTHON_OSX_VER=10.9
 
 before_install:
     - python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
-    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.29.14 wheel==0.34.2"
+    - BUILD_DEPENDS="$NP_BUILD_DEP cython==0.29.21 wheel==0.34.2"
     - TEST_DEPENDS="$NP_TEST_DEP attrs==19.1.0 pytest==4.0.2 click==7.0.0 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2 $GEN_DEPS"
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
