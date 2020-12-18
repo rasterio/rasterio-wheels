@@ -159,7 +159,7 @@ function build_zstd {
 function build_libdeflate {
     if [ -e deflate-stamp ]; then return; fi
     fetch_unpack https://github.com/ebiggers/libdeflate/archive/v${LIBDEFLATE_VERSION}.tar.gz
-    (cd v${LIBDEFLATE_VERSION}  \
+    (cd libdeflate-v${LIBDEFLATE_VERSION}  \
         && make -j4 PREFIX=$BUILD_PREFIX \
         && make install)
     touch deflate-stamp
