@@ -145,6 +145,16 @@ function build_curl {
     touch curl-stamp
 }
 
+function build_zstd {
+    CFLAGS="$CFLAGS -g -O2"
+    CXXFLAGS="$CXXFLAGS -g -O2"
+    if [ -e zstd-stamp ]; then return; fi
+    fetch_unpack https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
+    (cd zstd-${ZSTD_VERSION}  \
+        && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
+        && make install)
+    touch zstd-stamp
+
 function build_libdeflate {
     if [ -e deflate-stamp ]; then return; fi
     fetch_unpack https://github.com/ebiggers/libdeflate/archive/v${LIBDEFLATE_VERSION}.tar.gz
@@ -168,6 +178,7 @@ function build_gdal {
     build_geos
     build_hdf5
     build_netcdf
+    build_zstd
     build_libdeflate
 
     CFLAGS="$CFLAGS -g -O2"
@@ -208,6 +219,7 @@ function build_gdal {
             --with-proj=${BUILD_PREFIX} \
             --with-sfcgal=no \
             --with-sqlite3=${BUILD_PREFIX} \
+            --with-zstd=${BUILD_PREFIX} \
             --with-libdeflate=${BUILD_PREFIX} \
             --with-threads \
             --without-bsb \
@@ -284,6 +296,7 @@ function pre_build {
     suppress build_geos
     suppress build_hdf5
     suppress build_netcdf
+    suppress build_zstd
     suppress build_libdeflate
 
     suppress build_gdal
