@@ -154,6 +154,7 @@ function build_zstd {
         && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
         && make install)
     touch zstd-stamp
+}
 
 function build_libdeflate {
     if [ -e deflate-stamp ]; then return; fi
