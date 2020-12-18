@@ -145,6 +145,14 @@ function build_curl {
     touch curl-stamp
 }
 
+function build_libdeflate {
+    if [ -e deflate-stamp ]; then return; fi
+    fetch_unpack https://github.com/ebiggers/libdeflate/archive/v${LIBDEFLATE_VERSION}.tar.gz
+    (cd v${LIBDEFLATE_VERSION}  \
+        && make -j4 PREFIX=$BUILD_PREFIX \
+        && make install)
+    touch deflate-stamp
+}
 
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
@@ -160,6 +168,7 @@ function build_gdal {
     build_geos
     build_hdf5
     build_netcdf
+    build_libdeflate
 
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
@@ -199,6 +208,7 @@ function build_gdal {
             --with-proj=${BUILD_PREFIX} \
             --with-sfcgal=no \
             --with-sqlite3=${BUILD_PREFIX} \
+            --with-libdeflate=${BUILD_PREFIX} \
             --with-threads \
             --without-bsb \
             --without-cfitsio \
@@ -274,6 +284,7 @@ function pre_build {
     suppress build_geos
     suppress build_hdf5
     suppress build_netcdf
+    suppress build_libdeflate
 
     suppress build_gdal
 }
