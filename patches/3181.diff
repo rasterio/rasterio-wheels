@@ -1,0 +1,207 @@
+diff --git a/autotest/gcore/overviewds.py b/autotest/gcore/overviewds.py
+index f740f4be54a..f431ee8d868 100755
+--- a/autotest/gcore/overviewds.py
++++ b/autotest/gcore/overviewds.py
+@@ -42,8 +42,6 @@
+ 
+ 
+ def test_overviewds_1():
+-    ds = gdal.OpenEx('data/byte.tif', open_options=['OVERVIEW_LEVEL=-1'])
+-    assert ds is None
+     ds = gdal.OpenEx('data/byte.tif', open_options=['OVERVIEW_LEVEL=0'])
+     assert ds is None
+ 
+@@ -56,13 +54,27 @@ def test_overviewds_2():
+     shutil.copy('data/byte.tif', 'tmp')
+     ds = gdal.Open('tmp/byte.tif')
+     ds.BuildOverviews('NEAR', overviewlist=[2, 4])
++    ds.GetRasterBand(1).WriteRaster(2, 2, 5, 5, b'\0' * 25)
++    ds.GetRasterBand(1).WriteRaster(2, 2, 1, 1, b'\0')
++    ds = None
++
++    src_ds = gdal.Open('tmp/byte.tif')
++
++    ds = gdal.OpenEx('data/byte.tif', open_options=['OVERVIEW_LEVEL=NONE'])
++    assert ds.RasterXSize == 20 and ds.RasterYSize == 20 and ds.RasterCount == 1
++    assert ds.GetRasterBand(1).GetOverviewCount() == 0
++    assert ds.GetProjectionRef() == src_ds.GetProjectionRef()
++    assert ds.GetGeoTransform() == src_ds.GetGeoTransform()
++    assert ds.ReadRaster() == src_ds.ReadRaster()
++    # Check that subsampled request doesn't use source overviews
++    assert ds.ReadRaster(0, 0, 20, 20, 10, 10) != src_ds.GetRasterBand(1).GetOverview(0).ReadRaster()
+     ds = None
+ 
+     ds = gdal.OpenEx('tmp/byte.tif', open_options=['OVERVIEW_LEVEL=0only'])
++    assert ds.RasterXSize == 10 and ds.RasterYSize == 10 and ds.RasterCount == 1
+     assert ds.GetRasterBand(1).GetOverviewCount() == 0
+     ds = None
+ 
+-    src_ds = gdal.Open('tmp/byte.tif')
+     ds = gdal.OpenEx('tmp/byte.tif', open_options=['OVERVIEW_LEVEL=0'])
+     assert ds is not None
+     assert ds.RasterXSize == 10 and ds.RasterYSize == 10 and ds.RasterCount == 1
+@@ -73,14 +85,16 @@ def test_overviewds_2():
+     for i in range(6):
+         assert expected_gt[i] == pytest.approx(gt[i], abs=1e-5)
+     assert ds.GetGCPCount() == 0 and ds.GetGCPProjection() == src_ds.GetGCPProjection() and not ds.GetGCPs()
+-    expected_data = src_ds.ReadRaster(0, 0, 20, 20, 10, 10)
+-    got_data = ds.ReadRaster(0, 0, 10, 10)
++    expected_data = src_ds.GetRasterBand(1).GetOverview(0).ReadRaster()
++    got_data = ds.ReadRaster()
+     assert expected_data == got_data
+-    got_data = ds.GetRasterBand(1).ReadRaster(0, 0, 10, 10)
++    got_data = ds.GetRasterBand(1).ReadRaster()
+     assert expected_data == got_data
+     assert ds.GetRasterBand(1).GetOverviewCount() == 1
+-    expected_data = src_ds.ReadRaster(0, 0, 20, 20, 5, 5)
+-    got_data = ds.GetRasterBand(1).GetOverview(0).ReadRaster(0, 0, 5, 5)
++    expected_data = src_ds.GetRasterBand(1).GetOverview(1).ReadRaster()
++    got_data = ds.GetRasterBand(1).GetOverview(0).ReadRaster()
++    assert expected_data == got_data
++    got_data = ds.ReadRaster(0, 0, 10, 10, 5, 5)
+     assert expected_data == got_data
+     assert ds.GetRasterBand(1).GetMaskFlags() == gdal.GMF_ALL_VALID
+     assert ds.GetRasterBand(1).GetMaskBand()
+diff --git a/gdal/gcore/gdaldataset.cpp b/gdal/gcore/gdaldataset.cpp
+index 44f85da672e..a04c2a0f60a 100644
+--- a/gdal/gcore/gdaldataset.cpp
++++ b/gdal/gcore/gdaldataset.cpp
+@@ -3223,6 +3223,8 @@ GDALOpen( const char * pszFilename, GDALAccess eAccess )
+  * VALIDATE_OPEN_OPTIONS can be set to NO to avoid such warnings. Alternatively,
+  * since GDAL 2.1, an option name can be preceded by the @ character to indicate
+  * that it may not cause a warning if the driver doesn't declare this option.
++ * Starting with GDAL 3.3, OVERVIEW_LEVEL=NONE is supported to indicate that
++ * no overviews should be exposed.
+  *
+  * @param papszSiblingFiles NULL, or a NULL terminated list of strings that are
+  * filenames that are auxiliary to the main filename. If NULL is passed, a
+@@ -3486,9 +3488,9 @@ GDALDatasetH CPL_STDCALL GDALOpenEx( const char *pszFilename,
+             {
+                 CPLString osVal(
+                     CSLFetchNameValue(papszOpenOptions, "OVERVIEW_LEVEL"));
+-                const int nOvrLevel = atoi(osVal);
++                const int nOvrLevel = EQUAL(osVal, "NONE") ? -1 : atoi(osVal);
+                 const bool bThisLevelOnly =
+-                    osVal.ifind("only") != std::string::npos;
++                    nOvrLevel == -1 || osVal.ifind("only") != std::string::npos;
+                 GDALDataset *poOvrDS = GDALCreateOverviewDataset(
+                     poDS, nOvrLevel, bThisLevelOnly);
+                 poDS->ReleaseRef();
+diff --git a/gdal/gcore/gdaloverviewdataset.cpp b/gdal/gcore/gdaloverviewdataset.cpp
+index 783f59a4049..e78cab1015a 100644
+--- a/gdal/gcore/gdaloverviewdataset.cpp
++++ b/gdal/gcore/gdaloverviewdataset.cpp
+@@ -133,11 +133,24 @@ class GDALOverviewBand final: public GDALProxyRasterBand
+     CPL_DISALLOW_COPY_ASSIGN(GDALOverviewBand)
+ };
+ 
++/************************************************************************/
++/*                           GetOverviewEx()                            */
++/************************************************************************/
++
++static GDALRasterBand* GetOverviewEx(GDALRasterBand* poBand, int nLevel)
++{
++    if( nLevel == -1 )
++        return poBand;
++    return poBand->GetOverview(nLevel);
++}
++
+ /************************************************************************/
+ /*                       GDALCreateOverviewDataset()                    */
+ /************************************************************************/
+ 
+ // Takes a reference on poMainDS in case of success.
++// nOvrLevel=-1 means the full resolution dataset (only useful if
++// bThisLevelOnly = false to expose a dataset without its overviews)
+ GDALDataset* GDALCreateOverviewDataset( GDALDataset* poMainDS, int nOvrLevel,
+                                         int bThisLevelOnly )
+ {
+@@ -146,16 +159,16 @@ GDALDataset* GDALCreateOverviewDataset( GDALDataset* poMainDS, int nOvrLevel,
+     if( nBands == 0 )
+         return nullptr;
+ 
++    auto poFirstBand = GetOverviewEx(poMainDS->GetRasterBand(1), nOvrLevel);
+     for( int i = 1; i<= nBands; ++i )
+     {
+-        if( poMainDS->GetRasterBand(i)->GetOverview(nOvrLevel) == nullptr )
++        auto poBand = GetOverviewEx(poMainDS->GetRasterBand(i), nOvrLevel);
++        if( poBand == nullptr )
+         {
+             return nullptr;
+         }
+-        if( poMainDS->GetRasterBand(i)->GetOverview(nOvrLevel)->GetXSize() !=
+-            poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetXSize() ||
+-            poMainDS->GetRasterBand(i)->GetOverview(nOvrLevel)->GetYSize() !=
+-            poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetYSize() )
++        if( poBand->GetXSize() != poFirstBand->GetXSize() ||
++            poBand->GetYSize() != poFirstBand->GetYSize() )
+         {
+             return nullptr;
+         }
+@@ -177,12 +190,11 @@ GDALOverviewDataset::GDALOverviewDataset( GDALDataset* poMainDSIn,
+ {
+     poMainDSIn->Reference();
+     eAccess = poMainDS->GetAccess();
+-    nRasterXSize =
+-        poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetXSize();
+-    nRasterYSize =
+-        poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetYSize();
+-    poOvrDS = poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetDataset();
+-    if( poOvrDS != nullptr && poOvrDS == poMainDS )
++    auto poFirstBand = GetOverviewEx(poMainDS->GetRasterBand(1), nOvrLevel);
++    nRasterXSize = poFirstBand->GetXSize();
++    nRasterYSize = poFirstBand->GetYSize();
++    poOvrDS = poFirstBand->GetDataset();
++    if( nOvrLevel != -1 && poOvrDS != nullptr && poOvrDS == poMainDS )
+     {
+         CPLDebug( "GDAL",
+                   "Dataset of overview is the same as the main band. "
+@@ -195,9 +207,9 @@ GDALOverviewDataset::GDALOverviewDataset( GDALDataset* poMainDSIn,
+         SetBand(i+1, new GDALOverviewBand(this, i+1));
+     }
+ 
+-    if( poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetMaskFlags() == GMF_PER_DATASET )
++    if( poFirstBand->GetMaskFlags() == GMF_PER_DATASET )
+     {
+-        auto poOvrMaskBand = poMainDS->GetRasterBand(1)->GetOverview(nOvrLevel)->GetMaskBand();
++        auto poOvrMaskBand = poFirstBand->GetMaskBand();
+         if( poOvrMaskBand  && poOvrMaskBand->GetXSize() == nRasterXSize &&
+             poOvrMaskBand->GetYSize() == nRasterYSize )
+         {
+@@ -224,7 +236,8 @@ GDALOverviewDataset::GDALOverviewDataset( GDALDataset* poMainDSIn,
+     papszOpenOptions = CSLDuplicate(poMainDS->GetOpenOptions());
+     // Add OVERVIEW_LEVEL if not called from GDALOpenEx(), but directly.
+     papszOpenOptions = CSLSetNameValue(papszOpenOptions, "OVERVIEW_LEVEL",
+-                                       CPLSPrintf("%d", nOvrLevel));
++        nOvrLevel == -1 ? "NONE" :
++        CPLSPrintf("%d%s", nOvrLevel, bThisLevelOnly ? " only" :""));
+ }
+ 
+ /************************************************************************/
+@@ -309,7 +322,7 @@ CPLErr GDALOverviewDataset::IRasterIO( GDALRWFlag eRWFlag,
+ {
+     // In case the overview bands are really linked to a dataset, then issue
+     // the request to that dataset.
+-    if( poOvrDS != nullptr )
++    if( nOvrLevel != -1 && poOvrDS != nullptr )
+     {
+         return poOvrDS->RasterIO(
+             eRWFlag, nXOff, nYOff, nXSize, nYSize, pData, nBufXSize, nBufYSize,
+@@ -558,13 +571,13 @@ GDALOverviewBand::GDALOverviewBand( GDALOverviewDataset* poDSIn, int nBandIn )
+     nRasterYSize = poDSIn->nRasterYSize;
+     if( nBandIn == 0 )
+     {
+-        poUnderlyingBand = poDSIn->poMainDS->GetRasterBand(1)->
+-                            GetOverview(poDSIn->nOvrLevel)->GetMaskBand();
++        poUnderlyingBand = 
++            GetOverviewEx(poDSIn->poMainDS->GetRasterBand(1), poDSIn->nOvrLevel)->GetMaskBand();
+     }
+     else
+     {
+-        poUnderlyingBand = poDSIn->poMainDS->GetRasterBand(nBandIn)->
+-                            GetOverview(poDSIn->nOvrLevel);
++        poUnderlyingBand =
++            GetOverviewEx(poDSIn->poMainDS->GetRasterBand(nBandIn), poDSIn->nOvrLevel);
+     }
+     eDataType = poUnderlyingBand->GetRasterDataType();
+     poUnderlyingBand->GetBlockSize(&nBlockXSize, &nBlockYSize);
