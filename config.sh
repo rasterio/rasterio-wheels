@@ -150,9 +150,14 @@ function build_zstd {
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e zstd-stamp ]; then return; fi
     fetch_unpack https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
+    if [ -n "$IS_OSX" ]; then
+        :
+    else
+        SED_ERE_OPT="-r"
+    fi
     (cd zstd-${ZSTD_VERSION}  \
         && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
-        && make install SED_ERE_OPT="-r")
+        && make install)
     touch zstd-stamp
 }
 
