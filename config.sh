@@ -304,7 +304,7 @@ function pre_build {
     suppress build_hdf5
     suppress build_netcdf
     build_zstd
-    suppress build_libdeflate
+    build_libdeflate
 
     suppress build_gdal
 }
