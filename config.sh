@@ -151,8 +151,8 @@ function build_zstd {
     if [ -e zstd-stamp ]; then return; fi
     fetch_unpack https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
     (cd zstd-${ZSTD_VERSION}  \
-        && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 SED_ERE_OPT="-r" \
-        && make install)
+        && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
+        && make install SED_ERE_OPT="-r")
     touch zstd-stamp
 }
 
