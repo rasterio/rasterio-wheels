@@ -151,13 +151,13 @@ function build_zstd {
     if [ -e zstd-stamp ]; then return; fi
     fetch_unpack https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
     if [ -n "$IS_OSX" ]; then
-        :
+        sed_ere_opt="-E"
     else
-        SED_ERE_OPT="-r"
+        sed_ere_opt="-r"
     fi
     (cd zstd-${ZSTD_VERSION}  \
         && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
-        && make install)
+        && make install SED_ERE_OPT=$sed_ere_opt)
     touch zstd-stamp
 }
 
