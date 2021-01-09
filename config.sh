@@ -292,7 +292,7 @@ function pre_build {
     suppress build_geos
     suppress build_hdf5
     suppress build_netcdf
-    supress build_zstd
+    suppress build_zstd
 
     suppress build_gdal
 }
