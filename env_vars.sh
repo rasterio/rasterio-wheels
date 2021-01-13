@@ -20,4 +20,5 @@ OPENSSL_HASH=ecd0c6ffb493dd06707d38b14bb4d8c2288bb7033735606569d8f90f89669d16
 export MACOSX_DEPLOYMENT_TARGET=10.9
 export GDAL_CONFIG=/usr/local/bin/gdal-config
 export PACKAGE_DATA=1
+export PROJ_LIB=/usr/local/share/proj
 export AUDITWHEEL_EXTRA_LIB_NAME_TAG=rasterio
