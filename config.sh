@@ -197,7 +197,7 @@ function build_gdal {
 	        --with-webp=${BUILD_PREFIX} \
             --disable-debug \
             --disable-static \
-	    --disable-driver-elastic \
+	        --disable-driver-elastic \
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
