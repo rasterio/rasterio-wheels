@@ -3,8 +3,9 @@ Changes
 
 ## 2021-05-26
 
-* Update GDAL to 3.3.0.
 * Update GEOS to 3.9.1.
+* Update GDAL to 3.3.0.
+* Apply patch for GDAL PR #3786
 
 ## 2021-04-26
 
