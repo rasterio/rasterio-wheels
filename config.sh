@@ -215,7 +215,6 @@ function build_gdal {
             --with-pam \
             --with-png \
             --with-proj=${BUILD_PREFIX} \
-            --with-sfcgal=no \
             --with-sqlite3=${BUILD_PREFIX} \
             --with-zstd=${BUILD_PREFIX} \
             --with-threads \
@@ -248,6 +247,7 @@ function build_gdal {
             --without-python \
             --without-qhull \
             --without-sde \
+            --without-sfcgal \
             --without-xerces \
             --without-xml2 \
         && make -j4 \
