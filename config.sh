@@ -190,9 +190,6 @@ function build_gdal {
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && (patch -u -p2 --force < ../patches/3181.diff || true) \
-        && (patch -u -p2 --force < ../patches/3786.diff || true) \
-        && (patch -u -p2 --force < ../patches/4003.diff || true) \
         && ./configure \
 	        --with-crypto=yes \
 	        --with-hide-internal-symbols \

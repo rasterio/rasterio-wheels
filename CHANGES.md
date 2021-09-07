@@ -1,6 +1,10 @@
 Changes
 =======
 
+## 2021-09-07
+
+* Update GDAL to 3.3.2.
+
 ## 2021-06-17
 
 * Apply patch for GDAL PR #4003.
