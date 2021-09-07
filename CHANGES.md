@@ -1,6 +1,24 @@
 Changes
 =======
 
+## 2021-09-07
+
+* Update GDAL to 3.3.2.
+
+## 2021-06-17
+
+* Apply patch for GDAL PR #4003.
+
+## 2021-05-26
+
+* Update GEOS to 3.9.1.
+* Update GDAL to 3.3.0.
+* Apply patch for GDAL PR #3786.
+
+## 2021-04-26
+
+* Update GDAL to 3.2.2.
+
 ## 2020-10-25
 
 * Patch GDAL 2.4.4 to get the fix for GDAL #3101 and rasterio #2022.

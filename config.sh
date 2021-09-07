@@ -150,18 +150,15 @@ function build_zstd {
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e zstd-stamp ]; then return; fi
     fetch_unpack https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
+    if [ -n "$IS_OSX" ]; then
+        sed_ere_opt="-E"
+    else
+        sed_ere_opt="-r"
+    fi
     (cd zstd-${ZSTD_VERSION}  \
         && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
-        && make install)
+        && make install SED_ERE_OPT=$sed_ere_opt)
     touch zstd-stamp
-
-function build_libdeflate {
-    if [ -e deflate-stamp ]; then return; fi
-    fetch_unpack https://github.com/ebiggers/libdeflate/archive/v${LIBDEFLATE_VERSION}.tar.gz
-    (cd v${LIBDEFLATE_VERSION}  \
-        && make -j4 PREFIX=$BUILD_PREFIX \
-        && make install)
-    touch deflate-stamp
 }
 
 function build_gdal {
@@ -179,7 +176,6 @@ function build_gdal {
     build_hdf5
     build_netcdf
     build_zstd
-    build_libdeflate
 
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
@@ -200,6 +196,7 @@ function build_gdal {
 	        --with-webp=${BUILD_PREFIX} \
             --disable-debug \
             --disable-static \
+	        --disable-driver-elastic \
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
@@ -217,10 +214,8 @@ function build_gdal {
             --with-pam \
             --with-png \
             --with-proj=${BUILD_PREFIX} \
-            --with-sfcgal=no \
             --with-sqlite3=${BUILD_PREFIX} \
             --with-zstd=${BUILD_PREFIX} \
-            --with-libdeflate=${BUILD_PREFIX} \
             --with-threads \
             --without-bsb \
             --without-cfitsio \
@@ -251,6 +246,7 @@ function build_gdal {
             --without-python \
             --without-qhull \
             --without-sde \
+            --without-sfcgal \
             --without-xerces \
             --without-xml2 \
         && make -j4 \
@@ -297,7 +293,6 @@ function pre_build {
     suppress build_hdf5
     suppress build_netcdf
     suppress build_zstd
-    suppress build_libdeflate
 
     suppress build_gdal
 }
