@@ -273,6 +273,7 @@ function pre_build {
 	:
     else  # manylinux
         suppress build_openssl
+        find / -name openssl.pc
         pkg-config --libs openssl
     fi
 
