@@ -152,7 +152,7 @@ function build_curl {
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
-        echo "curl configure flags: $flags\n" && LIBS=-ldl ./configure $flags; else \
+        LD_LIBRARY_PATH=${BUILD_PREFIX}/lib LIBS=-ldl ./configure $flags; else \
         ./configure $flags; fi\
         && make -j4 \
         && make install)
