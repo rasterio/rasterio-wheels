@@ -112,6 +112,7 @@ function build_hdf5 {
     touch hdf5-stamp
 }
 
+
 function build_nghttp2 {
     if [ -e nghttp2-stamp ]; then return; fi
     fetch_unpack https://github.com/nghttp2/nghttp2/releases/download/v${NGHTTP2_VERSION}/nghttp2-${NGHTTP2_VERSION}.tar.gz
@@ -121,6 +122,19 @@ function build_nghttp2 {
         && make install)
     touch nghttp2-stamp
 }
+
+
+function build_openssl {
+    if [ -e openssl-stamp ]; then return; fi
+    fetch_unpack ${OPENSSL_DOWNLOAD_URL}/${OPENSSL_ROOT}.tar.gz
+    check_sha256sum $ARCHIVE_SDIR/${OPENSSL_ROOT}.tar.gz ${OPENSSL_HASH}
+    (cd ${OPENSSL_ROOT} \
+        && ./config no-ssl2 -fPIC --prefix=$BUILD_PREFIX \
+        && make -j4 \
+        && make install)
+    touch openssl-stamp
+}
+
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
@@ -132,7 +146,7 @@ function build_curl {
         return
         # flags="$flags --with-darwinssl"
     else  # manylinux
-        flags="$flags --with-ssl=${BUILD_PREFIX}"
+        flags="$flags --with-ssl"
         build_openssl
     fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
