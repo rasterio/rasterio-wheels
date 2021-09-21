@@ -207,7 +207,7 @@ function build_gdal {
             --with-jpeg \
             --with-libiconv-prefix=/usr \
             --with-libjson-c=${BUILD_PREFIX} \
-            --with-libtiff=internal \
+            --with-libtiff=${BUILD_PREFIX} \
             --with-libz=/usr \
             --with-netcdf=${BUILD_PREFIX} \
             --with-openjpeg \
