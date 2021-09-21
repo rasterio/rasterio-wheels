@@ -132,7 +132,7 @@ function build_curl {
         return
         # flags="$flags --with-darwinssl"
     else  # manylinux
-        flags="$flags --with-ssl"
+        flags="$flags --with-ssl=${BUILD_PREFIX}"
         build_openssl
     fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
