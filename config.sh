@@ -273,8 +273,8 @@ function pre_build {
 	:
     else  # manylinux
         suppress build_openssl
-        find / -name openssl.pc
-        pkg-config --libs openssl
+        ls -l ${BUILD_PREFIX}
+        ls -l ${BUILD_PREFIX}/lib/
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
