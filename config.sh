@@ -12,7 +12,7 @@ function build_geos {
 function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
-    (cd json-c-${JSONC_VERSON} \
+    (cd json-c-${JSONC_VERSION} \
         && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
