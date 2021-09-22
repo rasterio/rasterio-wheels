@@ -277,6 +277,7 @@ function pre_build {
         suppress build_openssl
         ls -l ${BUILD_PREFIX}
         ls -l ${BUILD_PREFIX}/lib/
+        ls -l ${BUILD_PREFIX}/lib64/
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
