@@ -140,7 +140,7 @@ function build_curl {
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
-        LD_LIBRARY_PATH=$BUILD_PREFIX ./configure $flags; else \
+        LD_LIBRARY_PATH="$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64" ./configure $flags; else \
         ./configure $flags; fi\
         && make -j4 \
         && make install)
