@@ -13,9 +13,14 @@ function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
-        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && /usr/local/bin/cmake -DCMAKE_INSTALL_NAME_DIR=/usr/local/lib -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
+    if [ -n "$IS_OSX" ]; then
+        for lib in $(ls ${BUILD_PREFIX}/lib/libjson-c*.dylib); do
+            install_name_tool -id $lib $lib
+        done
+    fi
     touch jsonc-stamp
 }
 
@@ -330,12 +335,6 @@ function run_tests {
     rio --version
     rio env --formats
     python ../test_fiona_issue383.py
-}
-
-
-function install_delocate {
-    check_pip
-    $PIP_CMD install "delocate==0.9.1"
 }
 
 
