@@ -332,6 +332,13 @@ function run_tests {
     python ../test_fiona_issue383.py
 }
 
+
+function install_delocate {
+    check_pip
+    $PIP_CMD install "delocate==0.9.1"
+}
+
+
 function build_wheel_cmd {
     # Update the container's auditwheel with our patched version.
     if [ -n "$IS_OSX" ]; then
