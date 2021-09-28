@@ -112,7 +112,7 @@ function build_hdf5 {
     local short=$(echo $HDF5_VERSION | awk -F "." '{printf "%d.%d", $1, $2}')
     fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
     (cd hdf5-$HDF5_VERSION \
-        && LD_LIBRARY_PATH="$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64" ./configure --enable-shared --enable-build-mode=production --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
+        && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure --enable-shared --enable-build-mode=production --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
         && make -j4 \
         && make install)
     touch hdf5-stamp
@@ -146,7 +146,7 @@ function build_curl {
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
-        LD_LIBRARY_PATH="$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64" ./configure $flags; else \
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
         ./configure $flags; fi\
         && make -j4 \
         && make install)
