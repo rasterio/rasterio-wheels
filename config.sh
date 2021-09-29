@@ -366,7 +366,5 @@ function build_wheel_cmd {
         /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi
 
-    ls -l /usr/local/lib
-    find /usr -name libjson-c.5.dylib
     repair_wheelhouse $wheelhouse
 }
