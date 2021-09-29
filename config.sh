@@ -13,11 +13,14 @@ function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
-        && /usr/local/bin/cmake -DCMAKE_INSTALL_NAME_DIR=/usr/local/lib -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
-        for lib in $(ls ${BUILD_PREFIX}/lib/libjson-c*.dylib); do
+        for lib in $(ls ${BUILD_PREFIX}/lib/libjson-c.5*.dylib); do
+            install_name_tool -id $lib $lib
+        done
+        for lib in $(ls ${BUILD_PREFIX}/lib/libjson-c.dylib); do
             install_name_tool -id $lib $lib
         done
     fi
