@@ -290,9 +290,6 @@ function pre_build {
 	:
     else  # manylinux
         suppress build_openssl
-        ls -l ${BUILD_PREFIX}
-        ls -l ${BUILD_PREFIX}/lib/
-        ls -l ${BUILD_PREFIX}/lib64/
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
@@ -365,6 +362,5 @@ function build_wheel_cmd {
     else  # manylinux
         /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi
-
     repair_wheelhouse $wheelhouse
 }
