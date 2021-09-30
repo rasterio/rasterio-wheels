@@ -10,7 +10,21 @@ function build_geos {
 
 
 function build_jsonc {
-    build_simple json-c $JSONC_VERSION https://s3.amazonaws.com/json-c_releases/releases tar.gz
+    if [ -e jsonc-stamp ]; then return; fi
+    fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
+    (cd json-c-${JSONC_VERSION} \
+        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && make -j4 \
+        && make install)
+    if [ -n "$IS_OSX" ]; then
+        for lib in $(ls ${BUILD_PREFIX}/lib/libjson-c.5*.dylib); do
+            install_name_tool -id $lib $lib
+        done
+        for lib in $(ls ${BUILD_PREFIX}/lib/libjson-c.dylib); do
+            install_name_tool -id $lib $lib
+        done
+    fi
+    touch jsonc-stamp
 }
 
 
@@ -106,11 +120,13 @@ function build_hdf5 {
     local short=$(echo $HDF5_VERSION | awk -F "." '{printf "%d.%d", $1, $2}')
     fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
     (cd hdf5-$HDF5_VERSION \
+        && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 \
         && ./configure --enable-shared --enable-build-mode=production --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
         && make -j4 \
         && make install)
     touch hdf5-stamp
 }
+
 
 function build_nghttp2 {
     if [ -e nghttp2-stamp ]; then return; fi
@@ -121,6 +137,7 @@ function build_nghttp2 {
         && make install)
     touch nghttp2-stamp
 }
+
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
@@ -138,7 +155,7 @@ function build_curl {
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
-        LIBS=-ldl ./configure $flags; else \
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
         ./configure $flags; fi\
         && make -j4 \
         && make install)
@@ -207,7 +224,7 @@ function build_gdal {
             --with-jpeg \
             --with-libiconv-prefix=/usr \
             --with-libjson-c=${BUILD_PREFIX} \
-            --with-libtiff=internal \
+            --with-libtiff=${BUILD_PREFIX} \
             --with-libz=/usr \
             --with-netcdf=${BUILD_PREFIX} \
             --with-openjpeg \
@@ -319,6 +336,7 @@ function run_tests {
     rio env --formats
     python ../test_fiona_issue383.py
 }
+
 
 function build_wheel_cmd {
     # Update the container's auditwheel with our patched version.

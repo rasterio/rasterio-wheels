@@ -14,7 +14,7 @@ cache:
 env:
   global:
   - REPO_DIR=rasterio
-  - BUILD_COMMIT=1.2.7
+  - BUILD_COMMIT=1.2.8
   - PLAT=x86_64
   - UNICODE_WIDTH=32
   - USE_CCACHE=1
@@ -29,24 +29,28 @@ jobs:
   - name: "Python 3.6 x86_64 linux"
     os: linux
     env:
+    - MB_ML_VER=2014
     - MB_PYTHON_VERSION=3.6
     - NP_BUILD_DEP=numpy==1.15.4
     - NP_TEST_DEP=numpy==1.15.4
   - name: "Python 3.7 x86_64 linux"
     os: linux
     env:
+    - MB_ML_VER=2014
     - MB_PYTHON_VERSION=3.7
     - NP_BUILD_DEP=numpy==1.15.4
     - NP_TEST_DEP=numpy==1.15.4
   - name: "Python 3.8 x86_64 linux"
     os: linux
     env:
+    - MB_ML_VER=2014
     - MB_PYTHON_VERSION=3.8
     - NP_BUILD_DEP=numpy==1.17.5
     - NP_TEST_DEP=numpy==1.17.5
   - name: "Python 3.9 x86_64 linux"
     os: linux
     env:
+    - MB_ML_VER=2014
     - MB_PYTHON_VERSION=3.9
     - NP_BUILD_DEP=numpy==1.19.4
     - NP_TEST_DEP=numpy==1.19.4
