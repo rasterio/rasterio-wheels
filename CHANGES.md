@@ -1,6 +1,21 @@
 Changes
 =======
 
+## 2021-09-29
+
+Major changes!
+
+* Dropping manylinux1 and switching to manylinux2014 unlocks upgrades to all of
+  GDAL's dependencies. We can now build and link current versions of curl and
+  openssl, for example.
+* PROJ is updated to 8.1.1.
+* Curl is updated to 7.79.1.
+* json-c is updated to 0.15.
+* Nghttp2 is updated to 1.45.1.
+* Zstd is updated to 1.5.0.
+* OpenSSL is updated to 1.1.1l.
+* GDAL and PROJ now link the same external libtiff version 4.3.0.
+
 ## 2021-09-07
 
 * Update GDAL to 3.3.2.
