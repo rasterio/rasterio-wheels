@@ -2,6 +2,45 @@
 #
 # Test for OSX with [ -n "$IS_OSX" ].
 
+function fetch_unpack {
+    # Fetch input archive name from input URL
+    # Parameters
+    #    url - URL from which to fetch archive
+    #    archive_fname (optional) archive name
+    #
+    # Echos unpacked directory and file names.
+    #
+    # If `archive_fname` not specified then use basename from `url`
+    # If `archive_fname` already present at download location, use that instead.
+    local url=$1
+    if [ -z "$url" ];then echo "url not defined"; exit 1; fi
+    local archive_fname=${2:-$(basename $url)}
+    local arch_sdir="${ARCHIVE_SDIR:-archives}"
+    # Make the archive directory in case it doesn't exist
+    mkdir -p $arch_sdir
+    local out_archive="${arch_sdir}/${archive_fname}"
+    # If the archive is not already in the archives directory, get it.
+    if [ ! -f "$out_archive" ]; then
+        # Source it from multibuild archives if available.
+        local our_archive="${MULTIBUILD_DIR}/archives/${archive_fname}"
+        if [ -f "$our_archive" ]; then
+            ln -s $our_archive $out_archive
+        else
+            # Otherwise download it.
+            curl --insecure -L $url > $out_archive
+        fi
+    fi
+    # Unpack archive, refreshing contents, echoing dir and file
+    # names.
+    rm_mkdir arch_tmp
+    install_rsync
+    (cd arch_tmp && \
+        untar ../$out_archive && \
+        ls -1d * &&
+        rsync --delete -ah * ..)
+}
+
+
 function build_geos {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
@@ -207,6 +246,7 @@ function build_gdal {
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
+        && (patch -u -p2 --force < ../patches/4646.diff || true) \
         && ./configure \
 	        --with-crypto=yes \
 	        --with-hide-internal-symbols \
@@ -331,7 +371,7 @@ function run_tests {
     fi
     cp -R ../rasterio/tests ./tests
     pip install shapely
-    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon"
+    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation"
     rio --version
     rio env --formats
     python ../test_fiona_issue383.py

@@ -1,6 +1,10 @@
 Changes
 =======
 
+## 2021-10-14
+
+* Apply patch for GDAL PR #4646.
+
 ## 2021-09-29
 
 Major changes!
