@@ -6,6 +6,7 @@ on: [push, pull_request, workflow_dispatch]
 env:
   REPO_DIR: rasterio
   WHEEL_SDIR: wheelhouse
+  SETUPTOOLS_USE_DISTUTILS: stdlib
 
 jobs:
   build:
@@ -46,8 +47,8 @@ jobs:
       PLAT: "${{ matrix.platform }}"
       MB_PYTHON_VERSION: "${{ matrix.python }}"
       MB_ML_VER: "2014"
-      BUILD_DEPENDS: "oldest-supported-numpy cython==0.29.26 setuptools==59.6.0 wheel==0.34.2"
-      TEST_DEPENDS: "oldest-supported-numpy attrs==19.1.0 pytest==4.0.2 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 setuptools==59.6.0 wheel==0.34.2"
+      BUILD_DEPENDS: "oldest-supported-numpy cython==0.29.26 wheel==0.34.2"
+      TEST_DEPENDS: "oldest-supported-numpy attrs==19.1.0 pytest==4.0.2 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
       TRAVIS_OS_NAME: ${{ matrix.os-name }}
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
     steps:

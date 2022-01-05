@@ -18,8 +18,6 @@ fi
 echo "::group::Install a virtualenv"
   source multibuild/common_utils.sh
   source multibuild/travis_steps.sh
-  python3 -m pip install -U pip
-  python3 -m pip install setuptools==59.6.0
   python3 -m pip install virtualenv
   before_install
 echo "::endgroup::"
