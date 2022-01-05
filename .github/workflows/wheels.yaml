@@ -79,7 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   success:
-    needs: [build, build-latest]
+    needs: [build]
     runs-on: ubuntu-latest
     name: Wheels Successful
     steps:
