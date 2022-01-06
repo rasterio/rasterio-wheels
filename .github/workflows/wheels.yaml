@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ "ubuntu-20.04", "macos-latest" ]
         python: [ "3.7", "3.8", "3.9", "3.10" ]
-        platform: [ "x86_64", "i686" ]
+        platform: [ "x86_64" ]
         macos-target: [ "10.10" ]
         exclude:
           - os: "macos-latest"
@@ -43,7 +43,7 @@ jobs:
             python: "3.8"
             macos-target: "11.0"
     env:
-      BUILD_COMMIT: "1.3a2"
+      BUILD_COMMIT: master
       PLAT: "${{ matrix.platform }}"
       MB_PYTHON_VERSION: "${{ matrix.python }}"
       MB_ML_VER: "2014"
