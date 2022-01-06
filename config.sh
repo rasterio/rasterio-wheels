@@ -130,7 +130,7 @@ function get_cmake {
 function build_openjpeg {
     if [ -e openjpeg-stamp ]; then return; fi
     build_zlib
-    build_png
+    build_libpng
     build_tiff
     build_lcms2
     local cmake=$(get_cmake)
