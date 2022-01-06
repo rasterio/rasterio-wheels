@@ -130,6 +130,8 @@ function get_cmake {
 function build_openjpeg {
     if [ -e openjpeg-stamp ]; then return; fi
     build_zlib
+    build_png
+    build_tiff
     build_lcms2
     local cmake=$(get_cmake)
     local archive_prefix="v"
@@ -138,7 +140,7 @@ function build_openjpeg {
     fi
     local out_dir=$(fetch_unpack https://github.com/uclouvain/openjpeg/archive/${archive_prefix}${OPENJPEG_VERSION}.tar.gz)
     (cd $out_dir \
-        && $cmake -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
     touch openjpeg-stamp
