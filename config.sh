@@ -189,7 +189,6 @@ function build_curl {
     local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
     if [ -n "$IS_OSX" ]; then
         return
-        # flags="$flags --with-darwinssl"
     else  # manylinux
         flags="$flags --with-ssl"
         build_openssl
@@ -197,7 +196,7 @@ function build_curl {
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
+        LIBS=-ldl LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
         ./configure $flags; fi\
         && make -j4 \
         && make install)
