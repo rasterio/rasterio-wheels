@@ -127,6 +127,21 @@ function get_cmake {
 }
 
 
+function build_tiff {
+    if [ -e tiff-stamp ]; then return; fi
+    build_zlib
+    build_jpeg
+    ensure_xz
+    fetch_unpack https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz
+    (cd tiff-${TIFF_VERSION} \
+        && (patch -u -p1 --force < ../patches/tiff-243.patch || true) \
+        && ./configure \
+        && make -j4 \
+        && make install)
+    touch tiff-stamp
+}
+
+
 function build_openjpeg {
     if [ -e openjpeg-stamp ]; then return; fi
     build_zlib
