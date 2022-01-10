@@ -134,7 +134,7 @@ function build_tiff {
     ensure_xz
     fetch_unpack https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz
     (cd tiff-${TIFF_VERSION} \
-        && mv VERSION VERSION.txt
+        && mv VERSION VERSION.txt \
         && (patch -u -p1 --force < ../patches/libtiff-243.patch || true) \
         && ./configure \
         && make -j4 \
@@ -202,7 +202,7 @@ function build_curl {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     build_nghttp2
-    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
+    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz"
     if [ -n "$IS_OSX" ]; then
         return
     else  # manylinux
