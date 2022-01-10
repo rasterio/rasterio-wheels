@@ -134,6 +134,7 @@ function build_tiff {
     ensure_xz
     fetch_unpack https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz
     (cd tiff-${TIFF_VERSION} \
+        && mv VERSION VERSION.txt
         && (patch -u -p1 --force < ../patches/libtiff-243.patch || true) \
         && ./configure \
         && make -j4 \
