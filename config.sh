@@ -348,10 +348,9 @@ function pre_build {
 
     suppress build_nghttp2
     if [ -n "$IS_OSX" ]; then
-	:
+        rm /usr/local/lib/libpng*
     else  # manylinux
         suppress build_openssl
-        rm /usr/local/lib/libpng*
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
