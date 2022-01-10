@@ -146,7 +146,6 @@ function build_tiff {
 function build_openjpeg {
     if [ -e openjpeg-stamp ]; then return; fi
     build_zlib
-    build_libpng
     build_tiff
     build_lcms2
     local cmake=$(get_cmake)
@@ -352,6 +351,7 @@ function pre_build {
 	:
     else  # manylinux
         suppress build_openssl
+        rm /usr/local/lib/libpng*
     fi
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
@@ -361,6 +361,7 @@ function pre_build {
 
     suppress build_curl
 
+    suppress build_libpng
     suppress build_jpeg
     suppress build_openjpeg
     suppress build_jsonc
