@@ -194,11 +194,13 @@ function build_curl {
         build_openssl
     fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
+    ls -l /usr/lib
+    ls -l /usr/lib64
     ls -l $BUILD_PREFIX/lib
     ls -l $BUILD_PREFIX/lib64
     (cd curl-${CURL_VERSION} \
         && if [ -z "$IS_OSX" ]; then \
-        LIBS=-ldl LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
         ./configure $flags; fi\
         && make -j4 \
         && make install)
