@@ -173,7 +173,7 @@ function build_hdf5 {
     # libaec is a drop-in replacement for szip
     build_libaec
     CFLAGS="$CFLAGS -Wno-error=implicit-function-declaration"
-    if [[ -n $IS_OSX && $PLAT == "arm64" ]; then
+    if [[ -n $IS_OSX && $PLAT == "arm64" ]]; then
       export ac_cv_sizeof_long_double=8
       export hdf5_cv_ldouble_to_long_special=no
       export hdf5_cv_long_to_ldouble_special=no
