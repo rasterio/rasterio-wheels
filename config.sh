@@ -201,6 +201,9 @@ function build_hdf5 {
       export PAC_FC_ALL_INTEGER_KINDS_SIZEOF="{1,2,4,8,16}"
       export hdf5_disable_tests="--enable-tests=no"
     fi
+
+    echo $PAC_C_MAX_REAL_PRECISION
+
     local hdf5_url=https://support.hdfgroup.org/ftp/HDF5/releases
     local short=$(echo $HDF5_VERSION | awk -F "." '{printf "%d.%d", $1, $2}')
     fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
