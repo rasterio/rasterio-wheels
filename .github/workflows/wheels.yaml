@@ -1,0 +1,74 @@
+---
+name: Wheels
+
+on: [push, pull_request, workflow_dispatch]
+
+env:
+  REPO_DIR: rasterio
+  WHEEL_SDIR: wheelhouse
+  SETUPTOOLS_USE_DISTUTILS: stdlib
+
+jobs:
+  build:
+    name: ${{ matrix.python }} ${{ matrix.os-name }} ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ "ubuntu-20.04", "macos-latest" ]
+        python: [ "3.7", "3.8", "3.9", "3.10" ]
+        platform: [ "x86_64" ]
+        macos-target: [ "10.10" ]
+        exclude:
+          - os: "macos-latest"
+            platform: "i686"
+        include:
+          - os: "macos-latest"
+            os-name: "osx"
+          - os: "ubuntu-20.04"
+            os-name: "focal"
+    env:
+      BUILD_COMMIT: master
+      PLAT: "${{ matrix.platform }}"
+      MB_PYTHON_VERSION: "${{ matrix.python }}"
+      MB_ML_VER: "2014"
+      BUILD_DEPENDS: "oldest-supported-numpy cython==0.29.26 wheel==0.34.2"
+      TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
+      TRAVIS_OS_NAME: ${{ matrix.os-name }}
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Build Wheel
+        run: .github/workflows/build.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse/*.whl
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: "startsWith(github.ref, 'refs/tags/')"
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+      - name: Upload Release
+        uses: fnkr/github-action-ghr@v1.3
+        env:
+          GHR_PATH: .
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  success:
+    needs: [build]
+    runs-on: ubuntu-latest
+    name: Wheels Successful
+    steps:
+      - name: Success
+        run: echo Wheels Successful

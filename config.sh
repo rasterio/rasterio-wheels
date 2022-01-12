@@ -127,9 +127,26 @@ function get_cmake {
 }
 
 
+function build_tiff {
+    if [ -e tiff-stamp ]; then return; fi
+    build_zlib
+    build_jpeg
+    ensure_xz
+    fetch_unpack https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz
+    (cd tiff-${TIFF_VERSION} \
+        && mv VERSION VERSION.txt \
+        && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
+        && ./configure \
+        && make -j4 \
+        && make install)
+    touch tiff-stamp
+}
+
+
 function build_openjpeg {
     if [ -e openjpeg-stamp ]; then return; fi
     build_zlib
+    build_tiff
     build_lcms2
     local cmake=$(get_cmake)
     local archive_prefix="v"
@@ -138,7 +155,7 @@ function build_openjpeg {
     fi
     local out_dir=$(fetch_unpack https://github.com/uclouvain/openjpeg/archive/${archive_prefix}${OPENJPEG_VERSION}.tar.gz)
     (cd $out_dir \
-        && $cmake -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
     touch openjpeg-stamp
@@ -147,23 +164,6 @@ function build_openjpeg {
 
 function build_libwebp {
     build_simple libwebp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz
-}
-
-
-function build_hdf5 {
-    if [ -e hdf5-stamp ]; then return; fi
-    build_zlib
-    # libaec is a drop-in replacement for szip
-    build_libaec
-    local hdf5_url=https://support.hdfgroup.org/ftp/HDF5/releases
-    local short=$(echo $HDF5_VERSION | awk -F "." '{printf "%d.%d", $1, $2}')
-    fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
-    (cd hdf5-$HDF5_VERSION \
-        && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 \
-        && ./configure --enable-shared --enable-build-mode=production --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
-        && make -j4 \
-        && make install)
-    touch hdf5-stamp
 }
 
 
@@ -183,10 +183,9 @@ function build_curl {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     build_nghttp2
-    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX"
+    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz"
     if [ -n "$IS_OSX" ]; then
         return
-        # flags="$flags --with-darwinssl"
     else  # manylinux
         flags="$flags --with-ssl"
         build_openssl
@@ -248,12 +247,12 @@ function build_gdal {
     (cd gdal-${GDAL_VERSION} \
         && (patch -u -p2 --force < ../patches/4646.diff || true) \
         && ./configure \
-	        --with-crypto=yes \
-	        --with-hide-internal-symbols \
-	        --with-webp=${BUILD_PREFIX} \
+            --with-crypto=yes \
+	    --with-hide-internal-symbols \
+	    --with-webp=${BUILD_PREFIX} \
             --disable-debug \
             --disable-static \
-	        --disable-driver-elastic \
+	    --disable-driver-elastic \
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
@@ -327,7 +326,7 @@ function pre_build {
 
     suppress build_nghttp2
     if [ -n "$IS_OSX" ]; then
-	:
+        rm /usr/local/lib/libpng*
     else  # manylinux
         suppress build_openssl
     fi
@@ -339,6 +338,7 @@ function pre_build {
 
     suppress build_curl
 
+    suppress build_libpng
     suppress build_jpeg
     suppress build_openjpeg
     suppress build_jsonc
@@ -371,7 +371,7 @@ function run_tests {
     fi
     cp -R ../rasterio/tests ./tests
     pip install shapely
-    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation"
+    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353"
     rio --version
     rio env --formats
     python ../test_fiona_issue383.py
