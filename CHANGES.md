@@ -1,6 +1,20 @@
 Changes
 =======
 
+## 2022-01-12
+
+Wheels for x86_64 macos and manylinux2014 are now built using GitHub Actions.
+We do not yet have any solutions for arm64 macos or linux wheels, or Windows
+wheels.
+
+Multibuild has been updated to commit 3903f7f.
+
+Library version changes:
+
+* Curl is updated to 7.80.0.
+* Nghttp2 is updated to 1.46.0.
+* OpenJPEG is updated to 2.4.0.
+
 ## 2021-10-14
 
 * Apply patch for GDAL PR #4646.
