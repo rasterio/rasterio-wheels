@@ -1,6 +1,12 @@
 Changes
 =======
 
+## 2022-02-01
+
+Library version changes:
+
+* GDAL is updated to 3.4.1.
+
 ## 2022-01-12
 
 Wheels for x86_64 macos and manylinux2014 are now built using GitHub Actions.
