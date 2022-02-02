@@ -182,8 +182,6 @@ function build_curl {
     if [ -e curl-stamp ]; then return; fi
     if [ -n "$IS_OSX" ]; then
         brew install curl
-	brew link --force curl
-	brew link --force openssl@1.1
     else
         CFLAGS="$CFLAGS -g -O2"
         CXXFLAGS="$CXXFLAGS -g -O2"
@@ -228,20 +226,8 @@ function build_gdal {
     build_sqlite
     build_expat
     build_geos
-
-    # HDF5 doesn't cross-compile.    
-    if [ -n "$IS_OSX" ]; then
-        if [[ "${PLAT:-}" == "arm64" ]]; then
-            :
-        else
-            build_hdf5
-            build_netcdf
-        fi
-    else
-        build_hdf5
-        build_netcdf
-    fi
-
+    build_hdf5
+    build_netcdf
     build_zstd
 
     CFLAGS="$CFLAGS -g -O2"
@@ -250,15 +236,9 @@ function build_gdal {
     if [ -n "$IS_OSX" ]; then
         EXPAT_PREFIX=/usr
         GEOS_CONFIG="--without-geos"
-        if [[ "${PLAT:-}" == "arm64" ]]; then
-           NETCDF_CONFIG=""
-        else
-           NETCDF_CONFIG="--with-netcdf=${BUILD_PREFIX}"
-        fi
     else
         EXPAT_PREFIX=$BUILD_PREFIX
         GEOS_CONFIG="--with-geos=${BUILD_PREFIX}/bin/geos-config"
-        NETCDF_CONFIG="--with-netcdf=${BUILD_PREFIX}"
     fi
 
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
@@ -283,7 +263,7 @@ function build_gdal {
             --with-libjson-c=${BUILD_PREFIX} \
             --with-libtiff=${BUILD_PREFIX} \
             --with-libz=/usr \
-            ${NETCDF_CONFIG} \
+            --with-netcdf=${BUILD_PREFIX} \
             --with-openjpeg \
             --with-pam \
             --with-png \
@@ -365,23 +345,11 @@ function pre_build {
     suppress build_expat
     suppress build_libwebp
     suppress build_geos
-
-    # HDF5 doesn't cross-compile.    
-    if [ -n "$IS_OSX" ]; then
-        if [[ "${PLAT:-}" == "arm64" ]]; then
-            :
-        else
-            build_hdf5
-            build_netcdf
-        fi
-    else
-        build_hdf5
-        build_netcdf
-    fi
-
+    suppress build_hdf5
+    suppress build_netcdf
     suppress build_zstd
 
-    build_gdal
+    suppress build_gdal
 }
 
 
