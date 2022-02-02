@@ -192,7 +192,7 @@ function build_curl {
         build_openssl
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
         (cd curl-${CURL_VERSION} \
-            && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags
+            && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags \
             && make -j4 \
             && make install)
     fi
@@ -335,7 +335,7 @@ function pre_build {
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    suppress build_curl
+    build_curl
 
     suppress build_libpng
     suppress build_jpeg
@@ -350,7 +350,7 @@ function pre_build {
     suppress build_netcdf
     suppress build_zstd
 
-    suppress build_gdal
+    build_gdal
 }
 
 
