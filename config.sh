@@ -180,23 +180,22 @@ function build_nghttp2 {
 
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
-    CFLAGS="$CFLAGS -g -O2"
-    CXXFLAGS="$CXXFLAGS -g -O2"
-    build_nghttp2
-    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz"
     if [ -n "$IS_OSX" ]; then
-        return
-    else  # manylinux
+        brew install curl
+	brew link curl
+    else
+        CFLAGS="$CFLAGS -g -O2"
+        CXXFLAGS="$CXXFLAGS -g -O2"
+        build_nghttp2
+        local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz"
         flags="$flags --with-ssl"
         build_openssl
-    fi
 #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
-    (cd curl-${CURL_VERSION} \
-        && if [ -z "$IS_OSX" ]; then \
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
-        ./configure $flags; fi\
-        && make -j4 \
-        && make install)
+        (cd curl-${CURL_VERSION} \
+            && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags
+            && make -j4 \
+            && make install)
+    fi
     touch curl-stamp
 }
 
