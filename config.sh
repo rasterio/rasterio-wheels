@@ -183,6 +183,7 @@ function build_curl {
     if [ -n "$IS_OSX" ]; then
         brew install curl
 	brew link curl
+	brew link openssl@1.1
     else
         CFLAGS="$CFLAGS -g -O2"
         CXXFLAGS="$CXXFLAGS -g -O2"
