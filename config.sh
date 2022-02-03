@@ -178,25 +178,30 @@ function build_nghttp2 {
 }
 
 
+function build_openssl {
+    if [ -e openssl-stamp ]; then return; fi
+    fetch_unpack ${OPENSSL_DOWNLOAD_URL}/${OPENSSL_ROOT}.tar.gz
+    check_sha256sum $ARCHIVE_SDIR/${OPENSSL_ROOT}.tar.gz ${OPENSSL_HASH}
+    (cd ${OPENSSL_ROOT} \
+        && ./config no-ssl2 no-shared -fPIC --prefix=$BUILD_PREFIX \
+        && make -j4 \
+        && if [ -n "$IS_OSX" ]; then sudo make install; else make install; fi)
+    touch openssl-stamp
+}
+
+
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     build_nghttp2
-    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz"
-    if [ -n "$IS_OSX" ]; then
-        return
-    else  # manylinux
-        flags="$flags --with-ssl"
-        build_openssl
-    fi
-#    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
+    build_openssl
+    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz --with-ssl"
+    #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
-        && if [ -z "$IS_OSX" ]; then \
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags; else \
-        ./configure $flags; fi\
+        && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags \
         && make -j4 \
-        && make install)
+        && if [ -n "$IS_OSX" ]; then sudo make install; else make install; fi)
     touch curl-stamp
 }
 
@@ -325,11 +330,12 @@ function pre_build {
     #fi
 
     suppress build_nghttp2
+
     if [ -n "$IS_OSX" ]; then
         rm /usr/local/lib/libpng*
-    else  # manylinux
-        suppress build_openssl
     fi
+
+    suppress build_openssl
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
