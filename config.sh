@@ -321,16 +321,21 @@ function pre_build {
 
     if [ -n "$IS_OSX" ]; then
         rm /usr/local/lib/libpng*
+        sudo build_openssl
+    else
+        build_openssl
     fi
-
-    build_openssl
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    build_curl
+    if [ -n "$IS_OSX" ]; then
+        sudo build_curl
+    else
+        build_curl
+    fi
 
     suppress build_libpng
     suppress build_jpeg
