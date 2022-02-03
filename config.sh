@@ -178,6 +178,18 @@ function build_nghttp2 {
 }
 
 
+function build_openssl {
+    if [ -e openssl-stamp ]; then return; fi
+    fetch_unpack ${OPENSSL_DOWNLOAD_URL}/${OPENSSL_ROOT}.tar.gz
+    check_sha256sum $ARCHIVE_SDIR/${OPENSSL_ROOT}.tar.gz ${OPENSSL_HASH}
+    (cd ${OPENSSL_ROOT} \
+        && ./config no-ssl2 no-shared -fPIC --prefix=$BUILD_PREFIX \
+        && make -j4 \
+        && sudo make install)
+    touch openssl-stamp
+}
+
+
 function build_curl {
     if [ -e curl-stamp ]; then return; fi
     CFLAGS="$CFLAGS -g -O2"
@@ -189,7 +201,7 @@ function build_curl {
     (cd curl-${CURL_VERSION} \
         && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags \
         && make -j4 \
-        && make install)
+        && sudo make install)
     touch curl-stamp
 }
 
@@ -321,21 +333,16 @@ function pre_build {
 
     if [ -n "$IS_OSX" ]; then
         rm /usr/local/lib/libpng*
-        sudo build_openssl
-    else
-        build_openssl
     fi
+
+    suppress build_openssl
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
     # Remove previously installed curl.
     rm -rf /usr/local/lib/libcurl*
 
-    if [ -n "$IS_OSX" ]; then
-        sudo build_curl
-    else
-        build_curl
-    fi
+    suppress build_curl
 
     suppress build_libpng
     suppress build_jpeg
