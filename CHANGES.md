@@ -1,11 +1,15 @@
 Changes
 =======
 
-## 2022-02-01
+## 2022-02-02
 
 Library version changes:
 
 * GDAL is updated to 3.4.1.
+
+Changes:
+
+* Openssl, curl, nghttp2 are compiled from source for macos (#77).
 
 ## 2022-01-12
 
