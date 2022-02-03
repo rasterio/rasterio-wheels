@@ -185,7 +185,7 @@ function build_openssl {
     (cd ${OPENSSL_ROOT} \
         && ./config no-ssl2 no-shared -fPIC --prefix=$BUILD_PREFIX \
         && make -j4 \
-        && sudo make install)
+        && if [ -n "$IS_OSX" ]; then sudo make install; else make install; fi)
     touch openssl-stamp
 }
 
@@ -201,7 +201,7 @@ function build_curl {
     (cd curl-${CURL_VERSION} \
         && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags \
         && make -j4 \
-        && sudo make install)
+        && if [ -n "$IS_OSX" ]; then sudo make install; else make install; fi)
     touch curl-stamp
 }
 
