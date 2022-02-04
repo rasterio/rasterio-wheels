@@ -365,7 +365,7 @@ function run_tests {
     unset GDAL_DATA
     unset PROJ_LIB
     if [ -n "$IS_OSX" ]; then
-        if [[ $MB_PYTHON_VERSION == "3.10"]]; then return; fi
+        if [[ $MB_PYTHON_VERSION == "3.10" ]]; then return; fi
         export PATH=$PATH:${BUILD_PREFIX}/bin
         export LC_ALL=en_US.UTF-8
         export LANG=en_US.UTF-8
