@@ -1,11 +1,13 @@
 Changes
 =======
 
-## 2022-02-02
+## 2022-02-04
 
 Library version changes:
 
-* GDAL is updated to 3.4.1.
+* GDAL 3.4.1.
+* GEOS 3.10.2.
+* PROJ 8.2.1.
 
 Changes:
 
