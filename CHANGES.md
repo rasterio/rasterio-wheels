@@ -1,6 +1,13 @@
 Changes
 =======
 
+## 2022-04-20
+
+Library version changes:
+
+* GDAL 3.4.2
+* HDF5 1.12.1
+
 ## 2022-02-04
 
 Library version changes:
