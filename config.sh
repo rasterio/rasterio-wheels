@@ -73,9 +73,18 @@ function build_proj {
     if [ -e proj-stamp ]; then return; fi
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
-        && ./configure --prefix=$BUILD_PREFIX \
-        && make -j4 \
-        && make install)
+        && mkdir build && cd build \
+        && /usr/local/bin/cmake .. \
+        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_IPO=ON \
+        -DBUILD_APPS:BOOL=OFF \
+        -DBUILD_TESTING:BOOL=OFF \
+        -DCMAKE_PREFIX_PATH=$BUILD_PREFIX \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        && cmake --build . -j4 \
+        && cmake --install .)
     if [ -n "$IS_OSX" ]; then
         :
     else
@@ -248,7 +257,7 @@ function build_gdal {
         GEOS_CONFIG="--with-geos=${BUILD_PREFIX}/bin/geos-config"
     fi
 
-    fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
+    fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}rc4.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && (patch -u -p2 --force < ../patches/4646.diff || true) \
         && ./configure \
