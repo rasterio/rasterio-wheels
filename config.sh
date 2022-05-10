@@ -360,6 +360,10 @@ function pre_build {
     suppress build_netcdf
     suppress build_zstd
 
+    if [ -n "$IS_OSX" ]; then
+        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
+    fi
+
     build_gdal
 }
 
