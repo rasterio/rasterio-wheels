@@ -71,18 +71,11 @@ function build_proj {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e proj-stamp ]; then return; fi
+    build_sqlite
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
         && mkdir build && cd build \
-        && /usr/local/bin/cmake .. \
-        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \
-        -DBUILD_SHARED_LIBS=ON \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DENABLE_IPO=ON \
-        -DBUILD_APPS:BOOL=OFF \
-        -DBUILD_TESTING:BOOL=OFF \
-        -DCMAKE_PREFIX_PATH=$BUILD_PREFIX \
-        -DCMAKE_INSTALL_LIBDIR=lib \
+        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIXi:PATH=$BUILD_PREFIX .. \
         && cmake --build . -j4 \
         && cmake --install .)
     if [ -n "$IS_OSX" ]; then
@@ -238,8 +231,8 @@ function build_gdal {
     build_libpng
     build_openjpeg
     build_jsonc
-    build_proj
     build_sqlite
+    build_proj
     build_expat
     build_geos
     build_hdf5
@@ -262,11 +255,11 @@ function build_gdal {
         && (patch -u -p2 --force < ../patches/4646.diff || true) \
         && ./configure \
             --with-crypto=yes \
-	    --with-hide-internal-symbols \
-	    --with-webp=${BUILD_PREFIX} \
+	        --with-hide-internal-symbols \
+	        --with-webp=${BUILD_PREFIX} \
             --disable-debug \
             --disable-static \
-	    --disable-driver-elastic \
+	        --disable-driver-elastic \
             --prefix=$BUILD_PREFIX \
             --with-curl=curl-config \
             --with-expat=${EXPAT_PREFIX} \
@@ -357,8 +350,8 @@ function pre_build {
     suppress build_jpeg
     suppress build_openjpeg
     suppress build_jsonc
-    suppress build_proj
     suppress build_sqlite
+    build_proj
     suppress build_expat
     suppress build_libwebp
     suppress build_geos
