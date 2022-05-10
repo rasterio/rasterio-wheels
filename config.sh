@@ -75,14 +75,15 @@ function build_proj {
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
         && mkdir build && cd build \
-        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIXi:PATH=$BUILD_PREFIX .. \
+        && /usr/local/bin/cmake .. \
+        -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_IPO=ON \
+        -DBUILD_APPS:BOOL=OFF \
+        -DBUILD_TESTING:BOOL=OFF \
         && cmake --build . -j4 \
         && cmake --install .)
-    if [ -n "$IS_OSX" ]; then
-        :
-    else
-        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libproj.so.*
-    fi
     touch proj-stamp
 }
 
@@ -359,7 +360,7 @@ function pre_build {
     suppress build_netcdf
     suppress build_zstd
 
-    suppress build_gdal
+    build_gdal
 }
 
 
