@@ -1,6 +1,13 @@
 Changes
 =======
 
+## 2022-05-20
+
+Library version changes:
+
+* GDAL 3.5.0
+* PROJ 9.0.0
+
 ## 2022-04-20
 
 Library version changes:
