@@ -3,7 +3,8 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   # webp, zstd, xz, libtiff cause a conflict with building webp and libtiff
   # curl from brew requires zstd, use system curl
   # if php is installed, brew tries to reinstall these after installing openblas
-  brew remove --ignore-dependencies webp zstd xz libtiff curl php
+  brew unlink -v webp
+  brew remove -v --ignore-dependencies webp zstd xz libtiff curl php
 fi
 
 if [[ "$MB_PYTHON_VERSION" == pypy3* ]]; then
