@@ -392,6 +392,15 @@ function run_tests {
 }
 
 
+function repair_wheelhouse {
+    local wheelhouse=$1
+    install_delocate
+    delocate-listdeps $wheelhouse/*.whl
+    find / -name libwebp*
+    delocate-wheel $wheelhouse/*.whl # copies library dependencies into wheel
+}
+
+
 function build_wheel_cmd {
     # Update the container's auditwheel with our patched version.
     if [ -n "$IS_OSX" ]; then
