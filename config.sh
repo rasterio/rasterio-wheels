@@ -396,7 +396,7 @@ function repair_wheelhouse {
     local wheelhouse=$1
     install_delocate
     delocate-listdeps $wheelhouse/*.whl
-    find / -name libwebp*
+    ls -l /usr/local/lib
     delocate-wheel $wheelhouse/*.whl # copies library dependencies into wheel
 }
 
