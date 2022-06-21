@@ -332,6 +332,8 @@ function pre_build {
     #    build_new_zlib
     #fi
 
+    build_xz
+
     suppress build_nghttp2
 
     if [ -n "$IS_OSX" ]; then
