@@ -15,9 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-#        os: [ "ubuntu-20.04", "macos-latest" ]
+        os: [ "ubuntu-20.04", "macos-latest" ]
         os: [ "macos-latest" ]
-#        python: [ "3.8" , "3.9", "3.10" ]
+        python: [ "3.8" , "3.9", "3.10" ]
         python: [ "3.8" ]
         platform: [ "x86_64" ]
         macos-target: [ "10.10" ]
@@ -27,8 +27,8 @@ jobs:
         include:
           - os: "macos-latest"
             os-name: "osx"
-#          - os: "ubuntu-20.04"
-#            os-name: "focal"
+          - os: "ubuntu-20.04"
+            os-name: "focal"
     env:
       BUILD_COMMIT: 1.3b1
       PLAT: "${{ matrix.platform }}"
