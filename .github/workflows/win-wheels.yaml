@@ -57,6 +57,8 @@ jobs:
             PACKAGE_DATA=1
             GDAL_DATA="$VCPKG_INSTALL/share/gdal"
             PROJ_LIB="$VCPKG_INSTALL/share/proj4"
+            GDAL_VERSION="3.4"
+            PIP_GLOBAL_OPTION="-I$GDAL_INCLUDE_PATH -lgdal_i -L$GDAL_LIBRARY_PATH"
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --add-path C:/vcpkg/installed/x64-windows/bin -w {dest_dir} {wheel}
 
