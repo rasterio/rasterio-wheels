@@ -30,20 +30,15 @@ jobs:
           fetch-depth: 0
 
       - name: Cache vcpkg
-        uses: actions/cache@v3
+        uses: actions/cache@v1
         id: vcpkgcache
         with:
-          path: |
-            ${{ matrix.vcpkg_cache }}
-          # bump the last digit to avoid using previous build cache
-          key: ${{ matrix.os }}-x86_64-vcpkg-gdal3.4.2-cache4
+          path: C:/vcpkg/installed
+          key: ${{ runner.os }}-vcpkg
 
       - name: Install GDAL
-        env:
-          VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
-        shell: bash
         run: |
-          vcpkg install --overlay-triplets=./ci/custom-triplets --feature-flags="versions,manifests" --x-manifest-root=./ci --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
+          vcpkg install gdal[core]:x64-windows
           vcpkg list
 
       - name: Upload vcpkg build logs
