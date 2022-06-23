@@ -32,7 +32,7 @@ jobs:
       - name: Add to rasterio setup.cfg
         shell: bash
         run: |
-          echo "" >> setup.cfg
+          echo "\n" >> setup.cfg
           echo "[build_ext]" >> setup.cfg
           echo "include_dirs = C:/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal_i" >> setup.cfg
