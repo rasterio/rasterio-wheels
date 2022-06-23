@@ -95,7 +95,7 @@ jobs:
       - name: Install dependencies and rasterio wheel
         shell: bash
         run: |
-          python -m pip install shapely oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2
+          python -m pip install shapely oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel
           python -m pip install --pre --find-links wheelhouse/artifact rasterio
           python -m pip list
 
