@@ -29,6 +29,16 @@ jobs:
           repository: rasterio/rasterio
           fetch-depth: 0
 
+      - name: Add to rasterio setup.cfg
+        shell: bash
+        run: |
+          echo ""
+          echo "[build_ext]"
+          echo "include_dirs = $GDAL_INCLUDE_PATH"
+          echo "libraries = gdal_i"
+          echo "library_dirs = $GDAL_LIBRARY_PATH"
+          cat setup.cfg
+
       - name: Cache vcpkg
         uses: actions/cache@v1
         id: vcpkgcache
@@ -46,16 +56,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: ${{ matrix.vcpkg_logs }}
-
-      - name: Add to rasterio setup.cfg
-        shell: bash
-        run: |
-          echo ""
-          echo "[build_ext]"
-          echo "include_dirs = $GDAL_INCLUDE_PATH"
-          echo "libraries = gdal_i"
-          echo "library_dirs = $GDAL_LIBRARY_PATH"
-          cat setup.cfg
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
