@@ -30,13 +30,18 @@ jobs:
           fetch-depth: 0
 
       - name: Add to rasterio setup.cfg
+        env:
+          CIBW_ENVIRONMENT_WINDOWS:
+            VCPKG_INSTALL="$VCPKG_INSTALLATION_ROOT/installed/x64-windows"
+            GDAL_INCLUDE_PATH="$VCPKG_INSTALL/include"
+            GDAL_LIBRARY_PATH="$VCPKG_INSTALL/lib"
         shell: bash
         run: |
-          echo ""
-          echo "[build_ext]"
-          echo "include_dirs = $GDAL_INCLUDE_PATH"
-          echo "libraries = gdal_i"
-          echo "library_dirs = $GDAL_LIBRARY_PATH"
+          echo "" >> setup.cfg
+          echo "[build_ext]" >> setup.cfg
+          echo "include_dirs = $GDAL_INCLUDE_PATH" >> setup.cfg
+          echo "libraries = gdal_i" >> setup.cfg
+          echo "library_dirs = $GDAL_LIBRARY_PATH" >> setup.cfg
           cat setup.cfg
 
       - name: Cache vcpkg
