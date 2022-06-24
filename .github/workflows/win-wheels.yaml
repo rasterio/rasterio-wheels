@@ -17,7 +17,8 @@ jobs:
       matrix:
         include:
           - os: "windows-2019"
-            triplet: "x64-windows"
+            arch: AMD64
+            msvc_arch: x64
             # windows requires windows-specific paths
             vcpkg_cache: "c:\\vcpkg\\installed"
             vcpkg_logs: "c:\\vcpkg\\buildtrees\\**\\*.log"
