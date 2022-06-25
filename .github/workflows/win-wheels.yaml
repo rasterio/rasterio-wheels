@@ -60,6 +60,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
         env:
+          CIBW_SKIP: "*-win32
           CIBW_ENVIRONMENT_WINDOWS:
             VCPKG_INSTALL="$VCPKG_INSTALLATION_ROOT/installed/x64-windows"
             GDAL_INCLUDE_PATH="$VCPKG_INSTALL/include"
