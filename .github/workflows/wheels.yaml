@@ -1,5 +1,5 @@
 ---
-name: Wheels
+name: Linux and macOS wheels
 
 on: [push, pull_request, workflow_dispatch]
 
