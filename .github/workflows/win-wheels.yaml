@@ -51,6 +51,13 @@ jobs:
           vcpkg install gdal[core]:x64-windows
           vcpkg list
 
+      - name: Debug listing
+        shell: bash
+        run: |
+          ls C:/vcpkg/installed/x64-windows
+          ls C:/vcpkg/installed/x64-windows/lib
+          find c:/vcpkg -name gdal*.lib
+
       - name: Upload vcpkg build logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
