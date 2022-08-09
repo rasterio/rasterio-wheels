@@ -1,6 +1,10 @@
 Changes
 =======
 
+## 2022-08-09
+
+* Ensure zstd is built before tiff (#87).
+
 ## 2022-05-20
 
 Library version changes:

@@ -132,6 +132,7 @@ function get_cmake {
 
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
+    build_zstd
     build_zlib
     build_jpeg
     ensure_xz
@@ -349,6 +350,8 @@ function pre_build {
 
     suppress build_curl
 
+    suppress build_libwebp
+    suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
     suppress build_openjpeg
@@ -356,11 +359,9 @@ function pre_build {
     suppress build_sqlite
     build_proj
     suppress build_expat
-    suppress build_libwebp
     suppress build_geos
     suppress build_hdf5
     suppress build_netcdf
-    suppress build_zstd
 
     if [ -n "$IS_OSX" ]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
