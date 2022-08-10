@@ -1,9 +1,13 @@
 Changes
 =======
 
-## 2022-08-09
+## 2022-08-10
 
 * Ensure zstd is built before tiff (#87).
+
+Library version changes:
+
+* GDAL 3.5.1 for Linux, macOS, and Windows
 
 ## 2022-05-20
 
