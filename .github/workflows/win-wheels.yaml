@@ -48,7 +48,7 @@ jobs:
 
       - name: Install GDAL
         run: |
-          vcpkg install gdal[core]:x64-windows
+          vcpkg install gdal:x64-windows
           vcpkg list
 
       - name: Debug listing
