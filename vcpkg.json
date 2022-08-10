@@ -1,0 +1,6 @@
+{
+    "dependencies": [ "gdal" ],
+    "overrides": [
+        { "name": "gdal", "version": "3.4.3#2" }
+    ]
+}
