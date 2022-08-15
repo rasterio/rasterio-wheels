@@ -1,0 +1,551 @@
+diff --git a/alg/rasterfill.cpp b/alg/rasterfill.cpp
+index e9b2b9638fb0..6bfcd29143c3 100644
+--- a/alg/rasterfill.cpp
++++ b/alg/rasterfill.cpp
+@@ -390,7 +390,8 @@ inline void QUAD_CHECK(double& dfQuadDist, float& fQuadValue,
+  *
+  * @param hTargetBand the raster band to be modified in place.
+  * @param hMaskBand a mask band indicating pixels to be interpolated
+- * (zero valued).
++ * (zero valued). If hMaskBand is set to NULL, this method will internally use
++ * the mask band returned by GDALGetMaskBand(hTargetBand).
+  * @param dfMaxSearchDist the maximum number of pixels to search in all
+  * directions to find values to interpolate from.
+  * @param bDeprecatedOption unused argument, should be zero.
+@@ -440,8 +441,70 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+         nNoDataVal = 4000002;
+     }
+ 
++/* -------------------------------------------------------------------- */
++/*      Determine format driver for temp work files.                    */
++/* -------------------------------------------------------------------- */
++    CPLString osTmpFileDriver = CSLFetchNameValueDef(
++            papszOptions, "TEMP_FILE_DRIVER", "GTiff");
++    GDALDriverH hDriver = GDALGetDriverByName(osTmpFileDriver.c_str());
++
++    if( hDriver == nullptr )
++    {
++        CPLError(CE_Failure, CPLE_AppDefined,
++                 "TEMP_FILE_DRIVER=%s driver is not registered",
++                 osTmpFileDriver.c_str());
++        return CE_Failure;
++    }
++
++    if( GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, nullptr) == nullptr )
++    {
++        CPLError(CE_Failure, CPLE_AppDefined,
++                 "TEMP_FILE_DRIVER=%s driver is incapable of creating "
++                 "temp work files",
++                 osTmpFileDriver.c_str());
++        return CE_Failure;
++    }
++
++    CPLStringList aosWorkFileOptions;
++    if( osTmpFileDriver == "GTiff" )
++    {
++        aosWorkFileOptions.SetNameValue("COMPRESS", "LZW");
++        aosWorkFileOptions.SetNameValue("BIGTIFF", "IF_SAFER");
++    }
++
++    const CPLString osTmpFile = CPLGenerateTempFilename("");
++
++    std::unique_ptr<GDALDataset> poTmpMaskDS;
+     if( hMaskBand == nullptr )
++    {
+         hMaskBand = GDALGetMaskBand( hTargetBand );
++    }
++    else if( nSmoothingIterations > 0 &&
++             hMaskBand != GDALGetMaskBand( hTargetBand ) )
++    {
++        // If doing smoothing operations and the user provided its own
++        // mask band, we must make a copy of it to be able to update it
++        // when we fill pixels during the initial pass.
++        const CPLString osMaskTmpFile = osTmpFile + "fill_mask_work.tif";
++        poTmpMaskDS.reset(GDALDataset::FromHandle(
++            GDALCreate( hDriver, osMaskTmpFile, nXSize, nYSize, 1,
++                        GDT_Byte,
++                        aosWorkFileOptions.List() )));
++        if( poTmpMaskDS == nullptr )
++        {
++            CPLError(CE_Failure, CPLE_AppDefined,
++                "Could not create poTmpMaskDS work file. Check driver capabilities.");
++            return CE_Failure;
++        }
++        poTmpMaskDS->MarkSuppressOnClose();
++        auto hTmpMaskBand = GDALRasterBand::ToHandle(poTmpMaskDS->GetRasterBand(1));
++        if( GDALRasterBandCopyWholeRaster(
++                hMaskBand, hTmpMaskBand, nullptr, nullptr, nullptr) != CE_None )
++        {
++            return CE_Failure;
++        }
++        hMaskBand = hTmpMaskBand;
++    }
+ 
+     // If there are smoothing iterations, reserve 10% of the progress for them.
+     const double dfProgressRatio = nSmoothingIterations > 0 ? 0.9 : 1.0;
+@@ -467,56 +530,25 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+         return CE_Failure;
+     }
+ 
+-/* -------------------------------------------------------------------- */
+-/*      Determine format driver for temp work files.                    */
+-/* -------------------------------------------------------------------- */
+-    CPLString osTmpFileDriver = CSLFetchNameValueDef(
+-            papszOptions, "TEMP_FILE_DRIVER", "GTiff");
+-    GDALDriverH hDriver = GDALGetDriverByName(osTmpFileDriver.c_str());
+-
+-    if( hDriver == nullptr )
+-    {
+-        CPLError(CE_Failure, CPLE_AppDefined,
+-                 "Given driver is not registered");
+-        return CE_Failure;
+-    }
+-
+-    if( GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, nullptr) == nullptr )
+-    {
+-        CPLError(CE_Failure, CPLE_AppDefined,
+-                 "Given driver is incapable of creating temp work files");
+-        return CE_Failure;
+-    }
+-
+-    char **papszWorkFileOptions = nullptr;
+-    if( osTmpFileDriver == "GTiff" )
+-    {
+-        papszWorkFileOptions = CSLSetNameValue(
+-                papszWorkFileOptions, "COMPRESS", "LZW");
+-        papszWorkFileOptions = CSLSetNameValue(
+-                papszWorkFileOptions, "BIGTIFF", "IF_SAFER");
+-    }
+-
+ /* -------------------------------------------------------------------- */
+ /*      Create a work file to hold the Y "last value" indices.          */
+ /* -------------------------------------------------------------------- */
+-    const CPLString osTmpFile = CPLGenerateTempFilename("");
+     const CPLString osYTmpFile = osTmpFile + "fill_y_work.tif";
+ 
+-    GDALDatasetH hYDS =
++    auto poYDS = std::unique_ptr<GDALDataset>(GDALDataset::FromHandle(
+         GDALCreate( hDriver, osYTmpFile, nXSize, nYSize, 1,
+-                    eType, papszWorkFileOptions );
++                    eType, aosWorkFileOptions.List() )));
+ 
+-    if( hYDS == nullptr )
++    if( poYDS == nullptr )
+     {
+         CPLError(
+             CE_Failure, CPLE_AppDefined,
+             "Could not create Y index work file. Check driver capabilities.");
+         return CE_Failure;
+     }
+-    GDALDataset::FromHandle(hYDS)->MarkSuppressOnClose();
++    poYDS->MarkSuppressOnClose();
+ 
+-    GDALRasterBandH hYBand = GDALGetRasterBand( hYDS, 1 );
++    GDALRasterBandH hYBand = GDALRasterBand::FromHandle(poYDS->GetRasterBand(1));
+ 
+ /* -------------------------------------------------------------------- */
+ /*      Create a work file to hold the pixel value associated with      */
+@@ -524,20 +556,20 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+ /* -------------------------------------------------------------------- */
+     const CPLString osValTmpFile = osTmpFile + "fill_val_work.tif";
+ 
+-    GDALDatasetH hValDS =
++    auto poValDS = std::unique_ptr<GDALDataset>(GDALDataset::FromHandle(
+         GDALCreate( hDriver, osValTmpFile, nXSize, nYSize, 1,
+                     GDALGetRasterDataType( hTargetBand ),
+-                    papszWorkFileOptions );
++                    aosWorkFileOptions.List() )));
+ 
+-    if( hValDS == nullptr )
++    if( poValDS == nullptr )
+     {
+         CPLError(CE_Failure, CPLE_AppDefined,
+             "Could not create XY value work file. Check driver capabilities.");
+         return CE_Failure;
+     }
+-    GDALDataset::FromHandle(hValDS)->MarkSuppressOnClose();
++    poValDS->MarkSuppressOnClose();
+ 
+-    GDALRasterBandH hValBand = GDALGetRasterBand( hValDS, 1 );
++    GDALRasterBandH hValBand = GDALRasterBand::FromHandle(poValDS->GetRasterBand(1));
+ 
+ /* -------------------------------------------------------------------- */
+ /*      Create a mask file to make it clear what pixels can be filtered */
+@@ -545,19 +577,19 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+ /* -------------------------------------------------------------------- */
+     const CPLString osFiltMaskTmpFile = osTmpFile + "fill_filtmask_work.tif";
+ 
+-    GDALDatasetH hFiltMaskDS =
++    auto poFiltMaskDS = std::unique_ptr<GDALDataset>(GDALDataset::FromHandle(
+         GDALCreate( hDriver, osFiltMaskTmpFile, nXSize, nYSize, 1,
+-                    GDT_Byte, papszWorkFileOptions );
++                    GDT_Byte, aosWorkFileOptions.List() )));
+ 
+-    if( hFiltMaskDS == nullptr )
++    if( poFiltMaskDS == nullptr )
+     {
+         CPLError(CE_Failure, CPLE_AppDefined,
+             "Could not create mask work file. Check driver capabilities.");
+         return CE_Failure;
+     }
+-    GDALDataset::FromHandle(hFiltMaskDS)->MarkSuppressOnClose();
++    poFiltMaskDS->MarkSuppressOnClose();
+ 
+-    GDALRasterBandH hFiltMaskBand = GDALGetRasterBand( hFiltMaskDS, 1 );
++    GDALRasterBandH hFiltMaskBand = GDALRasterBand::FromHandle(poFiltMaskDS->GetRasterBand(1));
+ 
+ /* -------------------------------------------------------------------- */
+ /*      Allocate buffers for last scanline and this scanline.           */
+@@ -822,7 +854,10 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+             {
+                 pabyFiltMask[iX] = 255;
+                 if( dfWeightSum > 0.0 )
++                {
++                    pabyMask[iX] = 255;
+                     pafScanline[iX] = static_cast<float>(dfValueSum / dfWeightSum);
++                }
+                 else
+                     pafScanline[iX] = fNoData;
+             }
+@@ -838,6 +873,18 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+         if( eErr != CE_None )
+             break;
+ 
++        if( poTmpMaskDS != nullptr )
++        {
++            // Update (copy of) mask band when it has been provided by the
++            // user
++            eErr =
++                GDALRasterIO( hMaskBand, GF_Write, 0, iY, nXSize, 1,
++                              pabyMask, nXSize, 1, GDT_Byte, 0, 0 );
++
++            if( eErr != CE_None )
++                break;
++        }
++
+         eErr =
+             GDALRasterIO( hFiltMaskBand, GF_Write, 0, iY, nXSize, 1,
+                           pabyFiltMask, nXSize, 1, GDT_Byte, 0, 0 );
+@@ -871,8 +918,13 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+ /* ==================================================================== */
+     if( eErr == CE_None && nSmoothingIterations > 0 )
+     {
+-        // Force masks to be to flushed and recomputed.
+-        GDALFlushRasterCache( hMaskBand );
++        if( poTmpMaskDS == nullptr )
++        {
++            // Force masks to be to flushed and recomputed when the user
++            // didn't pass a user-provided hMaskBand, and we assigned it
++            // to be the mask band of hTargetBand.
++            GDALFlushRasterCache( hMaskBand );
++        }
+ 
+         void *pScaledProgress =
+             GDALCreateScaledProgress( dfProgressRatio, 1.0, pfnProgress, pProgressArg );
+@@ -898,11 +950,5 @@ GDALFillNodata( GDALRasterBandH hTargetBand,
+     CPLFree(pabyMask);
+     CPLFree(pabyFiltMask);
+ 
+-    GDALClose( hYDS );
+-    GDALClose( hValDS );
+-    GDALClose( hFiltMaskDS );
+-
+-    CSLDestroy(papszWorkFileOptions);
+-
+     return eErr;
+ }
+diff --git a/autotest/alg/fillnodata.py b/autotest/alg/fillnodata.py
+index 0f70ff9e1692..6ae7f6118771 100755
+--- a/autotest/alg/fillnodata.py
++++ b/autotest/alg/fillnodata.py
+@@ -138,3 +138,121 @@ def test_fillnodata_nodata(
+     )
+     ar = ds.ReadRaster()
+     assert struct.unpack("B" * npixels, ar) == expected
++
++
++def test_fillnodata_user_provided_mask_with_smoothing():
++
++    ar = struct.pack(
++        "f" * (5 * 5),
++        5,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        10,
++    )
++
++    ds = gdal.GetDriverByName("MEM").Create("", 5, 5, 1, gdal.GDT_Float32)
++    targetBand = ds.GetRasterBand(1)
++    targetBand.WriteRaster(0, 0, ds.RasterXSize, ds.RasterYSize, ar)
++
++    mask_ds = gdal.GetDriverByName("MEM").Create("", 5, 5)
++    mask_ar = struct.pack(
++        "B" * (5 * 5),
++        255,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        0,
++        255,
++    )
++    mask_ds.WriteRaster(0, 0, ds.RasterXSize, ds.RasterYSize, mask_ar)
++
++    expected = [
++        5.0,
++        5.833333492279053,
++        6.5450849533081055,
++        7.105823040008545,
++        8.333333015441895,
++        6.325798988342285,
++        6.566854476928711,
++        7.038447856903076,
++        7.557196140289307,
++        7.811311721801758,
++        7.0352678298950195,
++        7.2065935134887695,
++        7.561786651611328,
++        7.926154613494873,
++        8.114609718322754,
++        7.453090190887451,
++        7.642454147338867,
++        8.04526424407959,
++        8.50459098815918,
++        8.746294975280762,
++        7.5,
++        7.894176959991455,
++        8.454915046691895,
++        9.166666984558105,
++        10.0,
++    ]
++
++    gdal.FillNodata(
++        targetBand=targetBand,
++        maskBand=mask_ds.GetRasterBand(1),
++        maxSearchDist=100,
++        smoothingIterations=10,
++    )
++    got = [x for x in struct.unpack("f" * (5 * 5), targetBand.ReadRaster())]
++    assert got == pytest.approx(expected, 1e-5)
++
++    # Check with get the same result with mask band not explicitly set, and thus
++    # defaulting to the implicit mask band with nodata==0
++
++    ds = gdal.GetDriverByName("MEM").Create("", 5, 5, 1, gdal.GDT_Float32)
++    targetBand = ds.GetRasterBand(1)
++    targetBand.SetNoDataValue(0)
++    targetBand.WriteRaster(0, 0, ds.RasterXSize, ds.RasterYSize, ar)
++
++    gdal.FillNodata(
++        targetBand=targetBand, maskBand=None, maxSearchDist=100, smoothingIterations=10
++    )
++    got = [x for x in struct.unpack("f" * (5 * 5), targetBand.ReadRaster())]
++    assert got == pytest.approx(expected, 1e-5)
+diff --git a/autotest/gcore/mask.py b/autotest/gcore/mask.py
+index d0751569da25..e46bfa16d4a2 100755
+--- a/autotest/gcore/mask.py
++++ b/autotest/gcore/mask.py
+@@ -30,6 +30,7 @@
+ ###############################################################################
+ 
+ import os
++import struct
+ 
+ import gdaltest
+ import pytest
+@@ -953,10 +954,6 @@ def test_mask_26():
+     gdal.Unlink("/vsimem/mask_26.tif")
+ 
+ 
+-###############################################################################
+-# Cleanup.
+-
+-
+ ###############################################################################
+ # Extensive test of nodata mask for all complex types using real part only
+ 
+@@ -989,4 +986,28 @@ def test_mask_27():
+ 
+ 
+ ###############################################################################
+-# Extensive test of real NODATA_VALUES mask for all complex types
++# Test setting nodata after having first queried GetMaskBand()
++
++
++@pytest.mark.parametrize("dt", [gdal.GDT_Byte, gdal.GDT_Int64, gdal.GDT_UInt64])
++def test_mask_setting_nodata(dt):
++    def set_nodata_value(ds, val):
++        if dt == gdal.GDT_Byte:
++            ds.GetRasterBand(1).SetNoDataValue(val)
++        elif dt == gdal.GDT_Int64:
++            ds.GetRasterBand(1).SetNoDataValueAsInt64(val)
++        else:
++            ds.GetRasterBand(1).SetNoDataValueAsUInt64(val)
++
++    ds = gdal.GetDriverByName("MEM").Create("", 1, 1, 1, dt)
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 255)
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 255)
++    set_nodata_value(ds, 0)
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 0)
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 0)
++    set_nodata_value(ds, 1)
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 255)
++    set_nodata_value(ds, 0)
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 0)
++    ds.GetRasterBand(1).DeleteNoDataValue()
++    assert ds.GetRasterBand(1).GetMaskBand().ReadRaster() == struct.pack("B", 255)
+diff --git a/gcore/gdal_priv.h b/gcore/gdal_priv.h
+index 4f761a51c8da..d2ccb7fcf3aa 100644
+--- a/gcore/gdal_priv.h
++++ b/gcore/gdal_priv.h
+@@ -1441,6 +1441,7 @@ class CPL_DLL GDALAllValidMaskBand : public GDALRasterBand
+ 
+ class CPL_DLL GDALNoDataMaskBand : public GDALRasterBand
+ {
++    friend class GDALRasterBand;
+     double          dfNoDataValue = 0;
+     int64_t         nNoDataValueInt64 = 0;
+     uint64_t        nNoDataValueUInt64 = 0;
+diff --git a/gcore/gdalrasterband.cpp b/gcore/gdalrasterband.cpp
+index 5aa392dfd052..894b063b133b 100644
+--- a/gcore/gdalrasterband.cpp
++++ b/gcore/gdalrasterband.cpp
+@@ -6714,8 +6714,68 @@ CPLErr CPL_STDCALL GDALSetDefaultRAT( GDALRasterBandH hBand,
+ GDALRasterBand *GDALRasterBand::GetMaskBand()
+ 
+ {
++    const auto HasNoData = [this]() {
++        int bHaveNoDataRaw = FALSE;
++        bool bHaveNoData = false;
++        if( eDataType == GDT_Int64 )
++        {
++            CPL_IGNORE_RET_VAL(GetNoDataValueAsInt64(&bHaveNoDataRaw));
++            bHaveNoData = CPL_TO_BOOL(bHaveNoDataRaw);
++        }
++        else if( eDataType == GDT_UInt64 )
++        {
++            CPL_IGNORE_RET_VAL(GetNoDataValueAsUInt64(&bHaveNoDataRaw));
++            bHaveNoData = CPL_TO_BOOL(bHaveNoDataRaw);
++        }
++        else
++        {
++            const double dfNoDataValue = GetNoDataValue( &bHaveNoDataRaw );
++            if( bHaveNoDataRaw &&
++                GDALNoDataMaskBand::IsNoDataInRange(dfNoDataValue, eDataType) )
++            {
++                bHaveNoData = true;
++            }
++        }
++        return bHaveNoData;
++    };
++
+     if( poMask != nullptr )
+-        return poMask;
++    {
++        if( bOwnMask )
++        {
++            if( dynamic_cast<GDALAllValidMaskBand*>(poMask) != nullptr )
++            {
++                if( HasNoData() )
++                {
++                    InvalidateMaskBand();
++                }
++            }
++            else if( auto poNoDataMaskBand = dynamic_cast<GDALNoDataMaskBand*>(poMask) )
++            {
++                int bHaveNoDataRaw = FALSE;
++                bool bIsSame = false;
++                if( eDataType == GDT_Int64 )
++                    bIsSame = poNoDataMaskBand->nNoDataValueInt64 == GetNoDataValueAsInt64(&bHaveNoDataRaw) && bHaveNoDataRaw;
++                else if( eDataType == GDT_UInt64 )
++                    bIsSame = poNoDataMaskBand->nNoDataValueUInt64 == GetNoDataValueAsUInt64(&bHaveNoDataRaw) && bHaveNoDataRaw;
++                else
++                {
++                    const double dfNoDataValue = GetNoDataValue(&bHaveNoDataRaw);
++                    if( bHaveNoDataRaw )
++                    {
++                        bIsSame = std::isnan(dfNoDataValue) ?
++                            std::isnan(poNoDataMaskBand->dfNoDataValue) :
++                            poNoDataMaskBand->dfNoDataValue == dfNoDataValue;
++                    }
++                }
++                if( !bIsSame )
++                    InvalidateMaskBand();
++            }
++        }
++
++        if( poMask != nullptr )
++            return poMask;
++    }
+ 
+ /* -------------------------------------------------------------------- */
+ /*      Check for a mask in a .msk file.                                */
+@@ -6799,28 +6859,7 @@ GDALRasterBand *GDALRasterBand::GetMaskBand()
+ /* -------------------------------------------------------------------- */
+ /*      Check for nodata case.                                          */
+ /* -------------------------------------------------------------------- */
+-    int bHaveNoDataRaw = FALSE;
+-    bool bHaveNoData = false;
+-    if( eDataType == GDT_Int64 )
+-    {
+-        CPL_IGNORE_RET_VAL(GetNoDataValueAsInt64(&bHaveNoDataRaw));
+-        bHaveNoData = CPL_TO_BOOL(bHaveNoDataRaw);
+-    }
+-    else if( eDataType == GDT_UInt64 )
+-    {
+-        CPL_IGNORE_RET_VAL(GetNoDataValueAsUInt64(&bHaveNoDataRaw));
+-        bHaveNoData = CPL_TO_BOOL(bHaveNoDataRaw);
+-    }
+-    else
+-    {
+-        const double dfNoDataValue = GetNoDataValue( &bHaveNoDataRaw );
+-        if( bHaveNoDataRaw &&
+-            GDALNoDataMaskBand::IsNoDataInRange(dfNoDataValue, eDataType) )
+-        {
+-            bHaveNoData = true;
+-        }
+-    }
+-    if( bHaveNoData )
++    if( HasNoData() )
+     {
+         nMaskFlags = GMF_NODATA;
+         try
