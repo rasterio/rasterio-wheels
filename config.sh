@@ -133,7 +133,7 @@ function get_cmake {
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
     build_jpeg
-    build_webp
+    build_libwebp
     build_zlib
     build_zstd
     ensure_xz
@@ -141,7 +141,7 @@ function build_tiff {
     (cd tiff-${TIFF_VERSION} \
         && mv VERSION VERSION.txt \
         && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
-        && ./configure \
+        && ./configure --enable-zstd --enable-webp \
         && make -j4 \
         && make install)
     touch tiff-stamp
@@ -167,8 +167,12 @@ function build_openjpeg {
 }
 
 
-function build_webp {
-    build_simple webp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz
+function build_libwebp {
+    build_libpng
+    build_giflib
+    build_simple libwebp $LIBWEBP_VERSION \
+        https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz \
+        --enable-libwebpmux --enable-libwebpdemux
 }
 
 
@@ -352,7 +356,7 @@ function pre_build {
 
     suppress build_curl
 
-    suppress build_webp
+    build_libwebp
     suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
