@@ -339,8 +339,7 @@ function pre_build {
     #    build_new_zlib
     #fi
 
-    build_xz
-
+    suppress build_xz
     suppress build_nghttp2
 
     if [ -n "$IS_OSX" ]; then
@@ -355,17 +354,17 @@ function pre_build {
     rm -rf /usr/local/lib/libcurl*
 
     suppress build_curl
-
-    build_tiff
-
     suppress build_libwebp
     suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
+
+    build_tiff
+
     suppress build_openjpeg
     suppress build_jsonc
     suppress build_sqlite
-    supress build_proj
+    suppress build_proj
     suppress build_expat
     suppress build_geos
     suppress build_hdf5
