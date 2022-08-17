@@ -132,9 +132,10 @@ function get_cmake {
 
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
-    build_zstd
-    build_zlib
     build_jpeg
+    build_webp
+    build_zlib
+    build_zstd
     ensure_xz
     fetch_unpack https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz
     (cd tiff-${TIFF_VERSION} \
@@ -166,8 +167,8 @@ function build_openjpeg {
 }
 
 
-function build_libwebp {
-    build_simple libwebp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz
+function build_webp {
+    build_simple webp ${LIBWEBP_VERSION} https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz
 }
 
 
@@ -351,7 +352,7 @@ function pre_build {
 
     suppress build_curl
 
-    suppress build_libwebp
+    suppress build_webp
     suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
