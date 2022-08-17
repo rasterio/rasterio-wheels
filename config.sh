@@ -356,14 +356,16 @@ function pre_build {
 
     suppress build_curl
 
-    build_libwebp
+    build_tiff
+
+    suppress build_libwebp
     suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
     suppress build_openjpeg
     suppress build_jsonc
     suppress build_sqlite
-    build_proj
+    supress build_proj
     suppress build_expat
     suppress build_geos
     suppress build_hdf5
