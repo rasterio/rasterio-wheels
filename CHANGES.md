@@ -1,6 +1,14 @@
 Changes
 =======
 
+## 2022-08-17
+
+* Ensure WebP and ZSTD codecs are availble to libtiff (#89).
+
+Library version changes:
+
+* PROJ 9.0.1
+
 ## 2022-08-10
 
 * Ensure zstd is built before tiff (#87).
