@@ -44,11 +44,11 @@ jobs:
           cat setup.cfg
 
       - name: Cache vcpkg
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         id: vcpkgcache
         with:
           path: C:/vcpkg/installed
-          key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}
+          key: ${{ runner.os }}-deps-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}
 
       - name: Install GDAL
         run: |
