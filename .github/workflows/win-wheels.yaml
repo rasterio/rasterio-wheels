@@ -48,7 +48,7 @@ jobs:
         id: vcpkgcache
         with:
           path: C:/vcpkg/installed
-          key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*') }}
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}
 
       - name: Install GDAL
         run: |
