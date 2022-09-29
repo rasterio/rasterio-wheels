@@ -37,12 +37,11 @@ jobs:
           path: C:/vcpkg/installed
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
-      - name: Install GDAL
-        shell: bash
+      - name: Install C Packages (GDAL et al)
         run: |
-          ls -l
-          vcpkg install --feature-flags="versions,manifest"
-          vcpkg list
+          ./vcpkg/bootstrap-vcpkg.bat
+          ./vcpkg/vcpkg install --feature-flags="versions,manifest"
+          ./vcpkg/vcpkg list
 
       - name: Debug listing
         shell: bash

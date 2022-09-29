@@ -4,3 +4,6 @@
 [submodule "multibuild"]
 	path = multibuild
 	url = https://github.com/multi-build/multibuild.git
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg.git
