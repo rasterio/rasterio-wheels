@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Cache vcpkg
         uses: actions/cache@v3
@@ -40,7 +42,7 @@ jobs:
       - name: Install C Packages (GDAL et al)
         shell: bash
         run: |
-          ls -l
+          ls -l vcpkg
           cmd /c ./vcpkg/bootstrap-vcpkg.bat
           ./vcpkg/vcpkg install --feature-flags="versions,manifest"
           ./vcpkg/vcpkg list
