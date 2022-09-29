@@ -48,11 +48,11 @@ jobs:
         id: vcpkgcache
         with:
           path: C:/vcpkg/installed
-          key: ${{ runner.os }}-dependencies-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
       - name: Install GDAL
         run: |
-          vcpkg install --feature-flags="versions" gdal:x64-windows
+          vcpkg install --feature-flags="versions,manifest"
           vcpkg list
 
       - name: Debug listing
@@ -79,7 +79,7 @@ jobs:
             PACKAGE_DATA=1
             GDAL_DATA="$VCPKG_INSTALL/share/gdal"
             PROJ_LIB="$VCPKG_INSTALL/share/proj"
-            GDAL_VERSION="3.5.1"
+            GDAL_VERSION="3.5.2"
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --add-path C:/vcpkg/installed/x64-windows/bin -w {dest_dir} {wheel}
 
@@ -131,3 +131,9 @@ jobs:
           python test_fiona_issue383.py
           cp -R rasterio/tests tests
           PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353 and not test_info_azure_unsigned and not test_decimated_no_use_overview and not test_datasetreader_ctor_url"
+
+      - name: Check for conflicts with fiona wheel
+        shell: bash
+        run: |
+          python -m pip install --pre fiona
+          python -c "import fiona; import rasterio; print(rasterio.show_versions())"
