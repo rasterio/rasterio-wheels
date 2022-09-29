@@ -35,6 +35,7 @@ jobs:
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
       - name: Install GDAL
+        shell: bash
         run: |
           pwd
           ls -l
