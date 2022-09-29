@@ -2,7 +2,6 @@
     "name": "rasterio",
     "version": "1.3.3",
     "dependencies": [ "gdal" ],
-    "builtin-baseline": "1ea1da790eb4b1c699c84085f197747a2178c88e",
     "overrides": [
         { "name": "proj", "version": "9.0.1" }
     ]
