@@ -37,8 +37,7 @@ jobs:
       - name: Install GDAL
         shell: bash
         run: |
-          pwd
-          ls -l
+          cd .. && ls -l
           vcpkg install --feature-flags="versions,manifest"
           vcpkg list
 
