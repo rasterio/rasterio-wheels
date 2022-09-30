@@ -22,9 +22,6 @@ jobs:
           - os: "windows-2019"
             arch: AMD64
             msvc_arch: x64
-            # windows requires windows-specific paths
-            vcpkg_cache: "c:\\vcpkg\\installed"
-            vcpkg_logs: "c:\\vcpkg\\buildtrees\\**\\*.log"
 
     steps:
       - name: Checkout
@@ -36,32 +33,31 @@ jobs:
         uses: actions/cache@v3
         id: vcpkgcache
         with:
-          path: C:/vcpkg/installed
+          path: "$GITHUB_WORKSPACE/vcpkg/installed"
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
-      # - name: Bootstrap vcpkg
-      #   run: |
-      #     ./vcpkg/bootstrap-vcpkg.bat
+      - name: Bootstrap vcpkg
+        run: |
+          ./vcpkg/bootstrap-vcpkg.bat
 
       - name: Install C Packages (GDAL et al)
         shell: bash
         run: |
-          vcpkg x-update-baseline --add-initial-baseline
-          vcpkg install --feature-flags="versions,manifest"
-          vcpkg list
+          ./vcpkg/vcpkg install --feature-flags="versions,manifest"
+          ./vcpkg/vcpkg list
 
       - name: Debug listing
         shell: bash
         run: |
-          ls C:/vcpkg/installed/x64-windows
-          ls C:/vcpkg/installed/x64-windows/lib
-          find c:/vcpkg -name gdal*.lib
+          "ls $GITHUB_WORKSPACE/vcpkg/installed/x64-windows"
+          "ls $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/lib"
+          "find $GITHUB_WORKSPACE/vcpkg -name gdal*.lib"
 
       - name: Upload vcpkg build logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          path: ${{ matrix.vcpkg_logs }}
+          path: "$GITHUB_WORKSPACE/vcpkg/buildtrees/**/*.log"
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,9 +70,9 @@ jobs:
         shell: bash
         run: |
           echo -e "\n[build_ext]" >> setup.cfg
-          echo "include_dirs = C:/vcpkg/installed/x64-windows/include" >> setup.cfg
+          echo "include_dirs = $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal" >> setup.cfg
-          echo "library_dirs = C:/vcpkg/installed/x64-windows/lib" >> setup.cfg
+          echo "library_dirs = $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/lib" >> setup.cfg
           cat setup.cfg
 
       - name: Build wheels
@@ -84,7 +80,7 @@ jobs:
         env:
           CIBW_SKIP: "*-win32 pp*"
           CIBW_ENVIRONMENT_WINDOWS:
-            VCPKG_INSTALL="$VCPKG_INSTALLATION_ROOT/installed/x64-windows"
+            VCPKG_INSTALL="$GITHUB_WORKSPACE/vcpkg/installed/x64-windows"
             GDAL_INCLUDE_PATH="$VCPKG_INSTALL/include"
             GDAL_LIBRARY_PATH="$VCPKG_INSTALL/lib"
             PACKAGE_DATA=1
