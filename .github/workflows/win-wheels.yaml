@@ -37,14 +37,18 @@ jobs:
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
       - name: Bootstrap vcpkg
+        env:
+          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
         run: |
           ./vcpkg/bootstrap-vcpkg.bat
 
       - name: Install C Packages (GDAL et al)
-        shell: bash
+        env:
+          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
         run: |
-          "VCPKG_INSTALLATION_ROOT=$GITHUB_WORKSPACE/vcpkg/ ./vcpkg/vcpkg install --feature-flags='versions,manifest'"
-          "VCPKG_INSTALLATION_ROOT=$GITHUB_WORKSPACE/vcpkg/ ./vcpkg/vcpkg list"
+          ./vcpkg/vcpkg install --feature-flags="versions,manifest"
+          ./vcpkg/vcpkg list
+        shell: bash
 
       - name: Debug listing
         shell: bash
