@@ -39,16 +39,16 @@ jobs:
           path: C:/vcpkg/installed
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
-      - name: Bootstrap vcpkg
-        run: |
-          ./vcpkg/bootstrap-vcpkg.bat
+      # - name: Bootstrap vcpkg
+      #   run: |
+      #     ./vcpkg/bootstrap-vcpkg.bat
 
       - name: Install C Packages (GDAL et al)
         shell: bash
         run: |
-          ls -l vcpkg
-          ./vcpkg/vcpkg install --feature-flags="versions,manifest"
-          ./vcpkg/vcpkg list
+          vcpkg x-update-baseline --add-initial-baseline
+          vcpkg install --feature-flags="versions,manifest"
+          vcpkg list
 
       - name: Debug listing
         shell: bash
