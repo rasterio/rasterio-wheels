@@ -43,8 +43,8 @@ jobs:
       - name: Install C Packages (GDAL et al)
         shell: bash
         run: |
-          ./vcpkg/vcpkg install --feature-flags="versions,manifest"
-          ./vcpkg/vcpkg list
+          "VCPKG_INSTALLATION_ROOT=$GITHUB_WORKSPACE/vcpkg/ ./vcpkg/vcpkg install --feature-flags='versions,manifest'"
+          "VCPKG_INSTALLATION_ROOT=$GITHUB_WORKSPACE/vcpkg/ ./vcpkg/vcpkg list"
 
       - name: Debug listing
         shell: bash
