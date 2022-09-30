@@ -32,30 +32,26 @@ jobs:
       - name: Cache vcpkg
         uses: actions/cache@v3
         id: vcpkgcache
-        env:
-          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
         with:
           path: "$VCPKG_INSTALLATION_ROOT/installed"
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
       - name: Bootstrap vcpkg
-        env:
-          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
         run: |
-          ./vcpkg/bootstrap-vcpkg.bat
+          cd "$VCPKG_INSTALLATION_ROOT"
+          git pull > nul
+          ./bootstrap-vcpkg.bat -disableMetrics
 
       - name: Install C Packages (GDAL et al)
-        env:
-          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
         run: |
-          ./vcpkg/vcpkg install --feature-flags="versions,manifest"
-          ./vcpkg/vcpkg list
+          vcpkg install --feature-flags="versions,manifest"
+          vcpkg list
 
       - name: Upload vcpkg build logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          path: "$GITHUB_WORKSPACE/vcpkg/buildtrees/**/*.log"
+          path: "c:/vcpkg/buildtrees/**/*.log"
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -67,9 +63,9 @@ jobs:
       - name: Add to rasterio setup.cfg
         run: |
           echo -e "\n[build_ext]" >> setup.cfg
-          echo "include_dirs = $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/include" >> setup.cfg
+          echo "include_dirs = c:/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal" >> setup.cfg
-          echo "library_dirs = $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/lib" >> setup.cfg
+          echo "library_dirs = c:/vcpkg/installed/x64-windows/lib" >> setup.cfg
           cat setup.cfg
         shell: bash
 
@@ -78,7 +74,7 @@ jobs:
         env:
           CIBW_SKIP: "*-win32 pp*"
           CIBW_ENVIRONMENT_WINDOWS:
-            VCPKG_INSTALL="$GITHUB_WORKSPACE/vcpkg/installed/x64-windows"
+            VCPKG_INSTALL="c:/vcpkg/installed/x64-windows"
             GDAL_INCLUDE_PATH="$VCPKG_INSTALL/include"
             GDAL_LIBRARY_PATH="$VCPKG_INSTALL/lib"
             PACKAGE_DATA=1
