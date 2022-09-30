@@ -32,30 +32,24 @@ jobs:
       - name: Cache vcpkg
         uses: actions/cache@v3
         id: vcpkgcache
+        env:
+          VCPKG_INSTALLATION_ROOT: ${{ env.GITHUB_WORKSPACE }}/vcpkg
         with:
-          path: "$GITHUB_WORKSPACE/vcpkg/installed"
+          path: "$VCPKG_INSTALLATION_ROOT/installed"
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
       - name: Bootstrap vcpkg
         env:
-          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
+          VCPKG_INSTALLATION_ROOT: ${{ env.GITHUB_WORKSPACE }}/vcpkg
         run: |
           ./vcpkg/bootstrap-vcpkg.bat
 
       - name: Install C Packages (GDAL et al)
         env:
-          VCPKG_INSTALLATION_ROOT: "$GITHUB_WORKSPACE/vcpkg"
+          VCPKG_INSTALLATION_ROOT: ${{ env.GITHUB_WORKSPACE }}/vcpkg
         run: |
           ./vcpkg/vcpkg install --feature-flags="versions,manifest"
           ./vcpkg/vcpkg list
-        shell: bash
-
-      - name: Debug listing
-        shell: bash
-        run: |
-          "ls $GITHUB_WORKSPACE/vcpkg/installed/x64-windows"
-          "ls $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/lib"
-          "find $GITHUB_WORKSPACE/vcpkg -name gdal*.lib"
 
       - name: Upload vcpkg build logs
         if: ${{ failure() }}
@@ -71,13 +65,13 @@ jobs:
           ref: ${{ env.REF }}
 
       - name: Add to rasterio setup.cfg
-        shell: bash
         run: |
           echo -e "\n[build_ext]" >> setup.cfg
           echo "include_dirs = $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal" >> setup.cfg
           echo "library_dirs = $GITHUB_WORKSPACE/vcpkg/installed/x64-windows/lib" >> setup.cfg
           cat setup.cfg
+        shell: bash
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
