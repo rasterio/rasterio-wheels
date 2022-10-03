@@ -61,6 +61,9 @@ jobs:
 
       - name: Add to rasterio setup.cfg
         run: |
+          ls c:/vcpkg/installed
+          ls c:/vcpkg/installed/x64-windows
+          ls c:/vcpkg/packages
           echo -e "\n[build_ext]" >> setup.cfg
           echo "include_dirs = c:/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal" >> setup.cfg
