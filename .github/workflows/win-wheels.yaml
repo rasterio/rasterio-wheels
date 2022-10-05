@@ -43,7 +43,7 @@ jobs:
 
       - name: Install C Packages (GDAL et al)
         run: |
-          vcpkg install --feature-flags="versions,manifest"
+          vcpkg install --feature-flags="versions,manifest" --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
           find c:/vcpkg -name gdal*.lib
           vcpkg list
         shell: bash
