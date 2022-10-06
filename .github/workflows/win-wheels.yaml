@@ -27,13 +27,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: vcpkg debugging
-        run: |
-          which vcpkg
-          echo "$VCPKG_INSTALLATION_ROOT"
-          ls -l $VCPKG_INSTALLATION_ROOT
-        shell: bash
- 
       - name: Cache vcpkg
         uses: actions/cache@v3
         id: vcpkgcache
@@ -50,7 +43,7 @@ jobs:
 
       - name: Install C Packages (GDAL et al)
         run: |
-          vcpkg install --feature-flags="versions,manifests" --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
+          vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
         shell: bash
 
       - name: Upload vcpkg build logs
@@ -75,6 +68,11 @@ jobs:
           cat setup.cfg
         shell: bash
 
+      - name: vcpkg debugging
+        run: |
+          find $VCPKG_INSTALLATION_ROOT -name gdal.lib
+        shell: bash
+ 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
         env:
