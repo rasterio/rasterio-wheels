@@ -44,8 +44,6 @@ jobs:
       - name: Install C Packages (GDAL et al)
         run: |
           vcpkg install --feature-flags="versions,manifest" --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
-          find c:/vcpkg -name gdal*.lib
-          vcpkg list
         shell: bash
 
       - name: Upload vcpkg build logs
@@ -63,11 +61,6 @@ jobs:
 
       - name: Add to rasterio setup.cfg
         run: |
-          ls -l c:/vcpkg/installed
-          ls -l c:/vcpkg/installed/x64-windows
-          ls -l c:/vcpkg/vcpkg_installed
-          ls -l c:/vcpkg/vcpkg_installed/x64-windows
-          ls c:/vcpkg/packages
           echo -e "\n[build_ext]" >> setup.cfg
           echo "include_dirs = c:/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal" >> setup.cfg
