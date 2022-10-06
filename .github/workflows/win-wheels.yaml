@@ -27,6 +27,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: vcpkg debugging
+        run: |
+          which vcpkg
+          echo "$VCPKG_INSTALLATION_ROOT"
+          ls -l $VCPKG_INSTALLATION_ROOT
+        shell: bash
+ 
       - name: Cache vcpkg
         uses: actions/cache@v3
         id: vcpkgcache
@@ -37,6 +44,7 @@ jobs:
       - name: Bootstrap vcpkg
         run: |
           cd "$VCPKG_INSTALLATION_ROOT"
+          mkdir -p installed
           git pull > nul
           ./bootstrap-vcpkg.bat -disableMetrics
         shell: bash
