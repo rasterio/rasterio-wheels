@@ -44,14 +44,13 @@ jobs:
       - name: Bootstrap vcpkg
         run: |
           cd "$VCPKG_INSTALLATION_ROOT"
-          mkdir -p installed
           git pull > nul
           ./bootstrap-vcpkg.bat -disableMetrics
         shell: bash
 
       - name: Install C Packages (GDAL et al)
         run: |
-          vcpkg install --feature-flags="versions,manifest" --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
+          vcpkg install --feature-flags="versions,manifests" --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
         shell: bash
 
       - name: Upload vcpkg build logs
