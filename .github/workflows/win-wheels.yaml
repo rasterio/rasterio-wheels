@@ -35,6 +35,8 @@ jobs:
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
 
       - name: Bootstrap vcpkg
+        env:
+          VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
           cd "$VCPKG_INSTALLATION_ROOT"
           git pull > nul
@@ -42,6 +44,8 @@ jobs:
         shell: bash
 
       - name: Install C Packages (GDAL et al)
+        env:
+          VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
           vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
         shell: bash
