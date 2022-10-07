@@ -50,7 +50,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          path: "c:/vcpkg/buildtrees/**/*.log"
+          path: "C:/vcpkg/buildtrees/**/*.log"
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -62,9 +62,9 @@ jobs:
       - name: Add to rasterio setup.cfg
         run: |
           echo -e "\n[build_ext]" >> setup.cfg
-          echo "include_dirs = c:/vcpkg/installed/x64-windows/include" >> setup.cfg
+          echo "include_dirs = C:/vcpkg/installed/x64-windows/include" >> setup.cfg
           echo "libraries = gdal" >> setup.cfg
-          echo "library_dirs = c:/vcpkg/installed/x64-windows/lib" >> setup.cfg
+          echo "library_dirs = C:/vcpkg/installed/x64-windows/lib" >> setup.cfg
           cat setup.cfg
         shell: bash
 
@@ -78,7 +78,7 @@ jobs:
         env:
           CIBW_SKIP: "*-win32 pp*"
           CIBW_ENVIRONMENT_WINDOWS:
-            VCPKG_INSTALL="c:/vcpkg/installed/x64-windows"
+            VCPKG_INSTALL="C:/vcpkg/installed/x64-windows"
             GDAL_INCLUDE_PATH="$VCPKG_INSTALL/include"
             GDAL_LIBRARY_PATH="$VCPKG_INSTALL/lib"
             PACKAGE_DATA=1
