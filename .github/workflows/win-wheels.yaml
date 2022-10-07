@@ -71,6 +71,7 @@ jobs:
       - name: vcpkg debugging
         run: |
           find $VCPKG_INSTALLATION_ROOT -name gdal.lib
+          find $VCPKG_INSTALLATION_ROOT -name header.dxf
         shell: bash
  
       - name: Build wheels
