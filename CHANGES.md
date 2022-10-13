@@ -1,6 +1,17 @@
 Changes
 =======
 
+## 2022-10-11
+
+Library version changes:
+
+* GDAL 3.5.2
+* GEOS 3.11.0
+
+Python version changes:
+
+* Python 3.11 has been added
+
 ## 2022-08-17
 
 * Ensure WebP and ZSTD codecs are availble to libtiff (#89).
