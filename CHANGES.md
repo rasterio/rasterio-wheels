@@ -1,6 +1,13 @@
 Changes
 =======
 
+## 2022-11-16
+
+Library version changes:
+
+* GDAL 3.5.3
+* GEOS 3.11.1
+
 ## 2022-10-11
 
 Library version changes:
