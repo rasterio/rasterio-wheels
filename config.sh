@@ -50,9 +50,10 @@ function build_geos {
 
 function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
+    PATH="$BUILD_PREFIX/bin:$PATH"
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
-        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
@@ -70,12 +71,13 @@ function build_jsonc {
 function build_proj {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
+    PATH="$BUILD_PREFIX/bin:$PATH"
     if [ -e proj-stamp ]; then return; fi
     build_sqlite
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
         && mkdir build && cd build \
-        && /usr/local/bin/cmake .. \
+        && cmake .. \
         -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
@@ -124,7 +126,7 @@ function get_cmake {
             && ./bootstrap --prefix=$BUILD_PREFIX > /dev/null \
             && make -j4 > /dev/null \
             && make install > /dev/null)
-        cmake=/usr/local/bin/cmake
+        cmake=$BUILD_PREFIX/bin/cmake
     fi
     echo $cmake
 }
@@ -343,7 +345,7 @@ function pre_build {
     suppress build_nghttp2
 
     if [ -n "$IS_OSX" ]; then
-        rm /usr/local/lib/libpng*
+        rm /usr/local/lib/libpng* || true
     fi
 
     suppress build_openssl
@@ -351,7 +353,7 @@ function pre_build {
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
     # Remove previously installed curl.
-    rm -rf /usr/local/lib/libcurl*
+    rm -rf /usr/local/lib/libcurl* || true
 
     suppress build_curl
     suppress build_libwebp
