@@ -170,6 +170,10 @@ function build_openjpeg {
 
 
 function build_libwebp {
+    ls -l $HOME/local
+    ls -l $HOME/local/share
+    ls -l $HOME/local/share/man
+    ls -l $HOME/local/share/man/man3
     build_libpng
     build_giflib
     build_simple libwebp $LIBWEBP_VERSION \
