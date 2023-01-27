@@ -19,6 +19,9 @@ wheel_build_task:
   install_pre_requirements_script:
     - brew install python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
+  build_directory_script:
+    - mkdir $HOME/local
+    - chown -R $USER:$USER $HOME/local
   build_wheel_script:
     - .github/workflows/build.sh
   wheels_artifacts:
