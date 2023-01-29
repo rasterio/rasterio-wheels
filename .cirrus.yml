@@ -21,15 +21,12 @@ wheel_build_task:
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   brew_remove_pkgs_script:
     - brew remove -f --ignore-dependencies webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript
-  before_install_script:
+  build_and_test_wheel_script:
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - python3 -m pip install virtualenv
     - before_install
-  build_wheel_script:
     - clean_code $REPO_DIR $BUILD_COMMIT
     - sudo build_wheel $REPO_DIR $PLAT
-  test_wheel_script:
-    - install_run $PLAT
   wheels_artifacts:
     path: "wheelhouse/*.whl"
