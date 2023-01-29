@@ -46,7 +46,7 @@ function build_geos {
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e geos-stamp ]; then return; fi
     local cmake=$(get_modern_cmake)
-    fetch_unpack http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.gz
+    fetch_unpack http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2
     (cd geos-${GEOS_VERSION} \
         && mkdir build && cd build \
         && $cmake .. \
