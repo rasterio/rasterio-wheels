@@ -154,6 +154,9 @@ function build_openjpeg {
 
 
 function build_libwebp {
+    ls -l $BUILD_PREFIX
+    ls -l $BUILD_PREFIX/share
+    ls -l $BUILD_PREFIX/share/man
     build_libpng
     build_giflib
     build_simple libwebp $LIBWEBP_VERSION \
