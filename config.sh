@@ -44,7 +44,21 @@ function fetch_unpack {
 function build_geos {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
-    build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
+    if [ -e geos-stamp ]; then return; fi
+    local cmake=$(get_modern_cmake)
+    fetch_unpack http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.gz
+    (cd geos-${GEOS_VERSION} \
+        && mkdir build && cd build \
+        && $cmake .. \
+        -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_IPO=ON \
+        -DBUILD_APPS:BOOL=OFF \
+        -DBUILD_TESTING:BOOL=OFF \
+        && $cmake --build . -j4 \
+        && $cmake --install .)
+    touch geos-stamp
 }
 
 
