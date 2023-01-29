@@ -20,7 +20,7 @@ wheel_build_task:
     - brew install python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   brew_remove_pkgs_script:
-    - brew remove --ignore-dependencies webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript
+    - brew remove -f --ignore-dependencies webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript
   before_install_script:
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
