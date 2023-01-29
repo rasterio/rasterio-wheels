@@ -21,7 +21,7 @@ wheel_build_task:
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   build_directory_script:
     - mkdir $HOME/local
-    - chown -R $USER:$USER $HOME/local
+    - chown -R root:$USER $HOME/local
   build_wheel_script:
     - .github/workflows/build.sh
   wheels_artifacts:

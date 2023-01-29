@@ -50,10 +50,10 @@ function build_geos {
 
 function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
-    PATH="$BUILD_PREFIX/bin:$PATH"
+    local cmake=$(get_modern_cmake)
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
-        && cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
@@ -71,21 +71,21 @@ function build_jsonc {
 function build_proj {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
-    PATH="$BUILD_PREFIX/bin:$PATH"
     if [ -e proj-stamp ]; then return; fi
+    local cmake=$(get_modern_cmake)
     build_sqlite
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
         && mkdir build && cd build \
-        && cmake .. \
+        && $cmake .. \
         -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_IPO=ON \
         -DBUILD_APPS:BOOL=OFF \
         -DBUILD_TESTING:BOOL=OFF \
-        && cmake --build . -j4 \
-        && cmake --install .)
+        && $cmake --build . -j4 \
+        && $cmake --install .)
     touch proj-stamp
 }
 
@@ -116,22 +116,6 @@ function build_expat {
 }
 
 
-function get_cmake {
-    local cmake=cmake
-    if [ -n "$IS_OSX" ]; then
-        brew install cmake > /dev/null
-    else
-        fetch_unpack https://www.cmake.org/files/v3.12/cmake-3.12.1.tar.gz > /dev/null
-        (cd cmake-3.12.1 \
-            && ./bootstrap --prefix=$BUILD_PREFIX > /dev/null \
-            && make -j4 > /dev/null \
-            && make install > /dev/null)
-        cmake=$BUILD_PREFIX/bin/cmake
-    fi
-    echo $cmake
-}
-
-
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
     build_jpeg
@@ -155,7 +139,7 @@ function build_openjpeg {
     build_zlib
     build_tiff
     build_lcms2
-    local cmake=$(get_cmake)
+    local cmake=$(get_modern_cmake)
     local archive_prefix="v"
     if [ $(lex_ver $OPENJPEG_VERSION) -lt $(lex_ver 2.1.1) ]; then
         archive_prefix="version."
