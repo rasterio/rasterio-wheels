@@ -20,8 +20,8 @@ wheel_build_task:
     - brew install python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   build_directory_script:
-    - mkdir $HOME/local
-    - chown -R root:$USER $HOME/local
+    - sudo mkdir -p $BUILD_PREFIX/lib $BUILD_PREFIX/include
+    - sudo chown -R $USER $BUILD_PREFIX
   build_wheel_script:
     - .github/workflows/build.sh
   wheels_artifacts:
