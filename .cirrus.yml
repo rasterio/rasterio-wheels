@@ -8,7 +8,7 @@ wheel_build_task:
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
-    BUILD_PREFIX: $HOME/local
+    BUILD_PREFIX: /usr/local/lib
     BUILD_DEPENDS: "oldest-supported-numpy cython>=0.29 wheel==0.34.2"
     TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
     TRAVIS_OS_NAME: "osx"
@@ -19,10 +19,17 @@ wheel_build_task:
   install_pre_requirements_script:
     - brew install python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
-  build_directory_script:
-    - sudo mkdir -p $BUILD_PREFIX/lib $BUILD_PREFIX/include
-    - sudo chown -R $USER $BUILD_PREFIX
+  brew_remove_pkgs_script:
+    - brew remove --ignore-dependencies webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript
+  before_install_script:
+    - source multibuild/common_utils.sh
+    - source multibuild/travis_steps.sh
+    - python3 -m pip install virtualenv
+    - before_install
   build_wheel_script:
-    - .github/workflows/build.sh
+    - clean_code $REPO_DIR $BUILD_COMMIT
+    - sudo build_wheel $REPO_DIR $PLAT
+  test_wheel_script:
+    - install_run $PLAT
   wheels_artifacts:
     path: "wheelhouse/*.whl"
