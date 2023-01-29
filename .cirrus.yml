@@ -8,7 +8,6 @@ wheel_build_task:
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
-    BUILD_PREFIX: /usr/local/lib
     BUILD_DEPENDS: "oldest-supported-numpy cython>=0.29 wheel==0.34.2"
     TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
     TRAVIS_OS_NAME: "osx"
