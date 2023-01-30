@@ -253,78 +253,51 @@ function build_gdal {
     CXXFLAGS="$CXXFLAGS -g -O2"
 
     if [ -n "$IS_OSX" ]; then
-        EXPAT_PREFIX=/usr
-        GEOS_CONFIG="--without-geos"
+        GEOS_CONFIG="-GDAL_USE_GEOS=OFF"
     else
-        EXPAT_PREFIX=$BUILD_PREFIX
-        GEOS_CONFIG="--with-geos=${BUILD_PREFIX}/bin/geos-config"
+        GEOS_CONFIG="-GDAL_USE_GEOS=ON"
     fi
 
+    local cmake=$(get_modern_cmake)
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && (patch -u -p2 --force < ../patches/4646.diff || true) \
         && (patch -u -p2 --force < ../patches/6194.diff || true) \
-        && ./configure \
-            --with-crypto=yes \
-	        --with-hide-internal-symbols \
-	        --with-webp=${BUILD_PREFIX} \
-            --disable-debug \
-            --disable-static \
-	        --disable-driver-elastic \
-            --prefix=$BUILD_PREFIX \
-            --with-curl=curl-config \
-            --with-expat=${EXPAT_PREFIX} \
-            ${GEOS_CONFIG} \
-            --with-geotiff=internal \
-            --with-gif \
-            --with-grib \
-            --with-jpeg \
-            --with-libiconv-prefix=/usr \
-            --with-libjson-c=${BUILD_PREFIX} \
-            --with-libtiff=${BUILD_PREFIX} \
-            --with-libz=/usr \
-            --with-netcdf=${BUILD_PREFIX} \
-            --with-openjpeg \
-            --with-pam \
-            --with-png \
-            --with-proj=${BUILD_PREFIX} \
-            --with-sqlite3=${BUILD_PREFIX} \
-            --with-zstd=${BUILD_PREFIX} \
-            --with-threads \
-            --without-bsb \
-            --without-cfitsio \
-            --without-dwgdirect \
-            --without-ecw \
-            --without-fme \
-            --without-freexl \
-            --without-gnm \
-            --without-grass \
-            --without-ingres \
-            --without-jasper \
-            --without-jp2mrsid \
-            --without-jpeg12 \
-            --without-kakadu \
-            --without-libgrass \
-            --without-libgrass \
-            --without-libkml \
-            --without-mrf \
-            --without-mrsid \
-            --without-mysql \
-            --without-odbc \
-            --without-ogdi \
-            --without-pcidsk \
-            --without-pcraster \
-            --without-perl \
-            --without-pg \
-            --without-php \
-            --without-python \
-            --without-qhull \
-            --without-sde \
-            --without-sfcgal \
-            --without-xerces \
-            --without-xml2 \
-        && make -j4 \
-        && make install)
+        && mkdir build \
+        && cd build \
+        && $cmake .. \
+        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \
+        -DCMAKE_INCLUDE_PATH=$BUILD_PREFIX/include \
+        -DCMAKE_LIBRARY_PATH=$BUILD_PREFIX/lib \
+        -DCMAKE_PROGRAM_PATH=$BUILD_PREFIX/bin \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DGDAL_BUILD_OPTIONAL_DRIVERS=OFF \
+        -DOGR_BUILD_OPTIONAL_DRIVERS=OFF \
+        ${GEOS_CONFIG} \
+        -GDAL_USE_TIFF=ON \
+        -GDAL_USE_TIFF_INTERNAL=OFF \
+        -GDAL_USE_GEOTIFF=ON \
+        -GDAL_USE_GEOTIFF_INTERNAL=ON \
+        -GDAL_ENABLE_DRIVER_GIF=ON \
+        -GDAL_ENABLE_DRIVER_GRIB=ON \
+        -GDAL_ENABLE_DRIVER_JPEG=ON \
+        -GDAL_USE_ICONV=ON \
+        -GDAL_USE_JSONC=ON \
+        -GDAL_USE_JSONC_INTERNAL=OFF \
+        -GDAL_USE_ZLIB=ON \
+        -GDAL_USE_ZLIB_INTERNAL=OFF \
+        -GDAL_ENABLE_DRIVER_NETCDF=ON \
+        -GDAL_ENABLE_DRIVER_OPENJPEG=ON \
+        -GDAL_ENABLE_DRIVER_PNG=ON \
+        -BUILD_PYTHON_BINDINGS=OFF \
+        -BUILD_JAVA_BINDINGS=OFF \
+        -BUILD_CSHARP_BINDINGS=OFF \
+        -GDAL_USE_SFCGAL=OFF \
+        -GDAL_USE_XERCESC=OFF \
+        -GDAL_USE_LIBXML2=OFF \
+        && $cmake --build . -j4 \
+        && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
         :
     else
