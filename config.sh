@@ -277,7 +277,6 @@ function build_gdal {
         ${GEOS_CONFIG} \
         -DGDAL_USE_TIFF=ON \
         -DGDAL_USE_TIFF_INTERNAL=OFF \
-        -DGDAL_USE_GEOTIFF=ON \
         -DGDAL_USE_GEOTIFF_INTERNAL=ON \
         -DGDAL_ENABLE_DRIVER_GIF=ON \
         -DGDAL_ENABLE_DRIVER_GRIB=ON \
