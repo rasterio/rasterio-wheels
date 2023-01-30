@@ -261,7 +261,6 @@ function build_gdal {
     local cmake=$(get_modern_cmake)
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && (patch -u -p1 --force < ../patches/6194.diff || true) \
         && mkdir build \
         && cd build \
         && $cmake .. \
@@ -271,7 +270,7 @@ function build_gdal {
         -DCMAKE_PROGRAM_PATH=$BUILD_PREFIX/bin \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
-        -DGDAL_BUILD_OPTIONAL_DRIVERS=OFF \
+        -DGDAL_BUILD_OPTIONAL_DRIVERS=ON \
         -DOGR_BUILD_OPTIONAL_DRIVERS=OFF \
         ${GEOS_CONFIG} \
         -DGDAL_USE_TIFF=ON \
@@ -288,6 +287,7 @@ function build_gdal {
         -DGDAL_ENABLE_DRIVER_NETCDF=ON \
         -DGDAL_ENABLE_DRIVER_OPENJPEG=ON \
         -DGDAL_ENABLE_DRIVER_PNG=ON \
+        -DOGR_ENABLE_DRIVER_GPKG=ON \
         -DBUILD_PYTHON_BINDINGS=OFF \
         -DBUILD_JAVA_BINDINGS=OFF \
         -DBUILD_CSHARP_BINDINGS=OFF \
@@ -393,7 +393,7 @@ function build_wheel_cmd {
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    (cd $repo_dir && GDAL_CONFIG=$BUILD_PREFIX/bin/gdal-config PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
