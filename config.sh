@@ -253,9 +253,9 @@ function build_gdal {
     CXXFLAGS="$CXXFLAGS -g -O2"
 
     if [ -n "$IS_OSX" ]; then
-        GEOS_CONFIG="-GDAL_USE_GEOS=OFF"
+        GEOS_CONFIG="-DGDAL_USE_GEOS=OFF"
     else
-        GEOS_CONFIG="-GDAL_USE_GEOS=ON"
+        GEOS_CONFIG="-DGDAL_USE_GEOS=ON"
     fi
 
     local cmake=$(get_modern_cmake)
@@ -275,27 +275,27 @@ function build_gdal {
         -DGDAL_BUILD_OPTIONAL_DRIVERS=OFF \
         -DOGR_BUILD_OPTIONAL_DRIVERS=OFF \
         ${GEOS_CONFIG} \
-        -GDAL_USE_TIFF=ON \
-        -GDAL_USE_TIFF_INTERNAL=OFF \
-        -GDAL_USE_GEOTIFF=ON \
-        -GDAL_USE_GEOTIFF_INTERNAL=ON \
-        -GDAL_ENABLE_DRIVER_GIF=ON \
-        -GDAL_ENABLE_DRIVER_GRIB=ON \
-        -GDAL_ENABLE_DRIVER_JPEG=ON \
-        -GDAL_USE_ICONV=ON \
-        -GDAL_USE_JSONC=ON \
-        -GDAL_USE_JSONC_INTERNAL=OFF \
-        -GDAL_USE_ZLIB=ON \
-        -GDAL_USE_ZLIB_INTERNAL=OFF \
-        -GDAL_ENABLE_DRIVER_NETCDF=ON \
-        -GDAL_ENABLE_DRIVER_OPENJPEG=ON \
-        -GDAL_ENABLE_DRIVER_PNG=ON \
-        -BUILD_PYTHON_BINDINGS=OFF \
-        -BUILD_JAVA_BINDINGS=OFF \
-        -BUILD_CSHARP_BINDINGS=OFF \
-        -GDAL_USE_SFCGAL=OFF \
-        -GDAL_USE_XERCESC=OFF \
-        -GDAL_USE_LIBXML2=OFF \
+        -DGDAL_USE_TIFF=ON \
+        -DGDAL_USE_TIFF_INTERNAL=OFF \
+        -DGDAL_USE_GEOTIFF=ON \
+        -DGDAL_USE_GEOTIFF_INTERNAL=ON \
+        -DGDAL_ENABLE_DRIVER_GIF=ON \
+        -DGDAL_ENABLE_DRIVER_GRIB=ON \
+        -DGDAL_ENABLE_DRIVER_JPEG=ON \
+        -DGDAL_USE_ICONV=ON \
+        -DGDAL_USE_JSONC=ON \
+        -DGDAL_USE_JSONC_INTERNAL=OFF \
+        -DGDAL_USE_ZLIB=ON \
+        -DGDAL_USE_ZLIB_INTERNAL=OFF \
+        -DGDAL_ENABLE_DRIVER_NETCDF=ON \
+        -DGDAL_ENABLE_DRIVER_OPENJPEG=ON \
+        -DGDAL_ENABLE_DRIVER_PNG=ON \
+        -DBUILD_PYTHON_BINDINGS=OFF \
+        -DBUILD_JAVA_BINDINGS=OFF \
+        -DBUILD_CSHARP_BINDINGS=OFF \
+        -DGDAL_USE_SFCGAL=OFF \
+        -DGDAL_USE_XERCESC=OFF \
+        -DGDAL_USE_LIBXML2=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
