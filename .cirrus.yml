@@ -35,6 +35,8 @@ wheel_build_task:
   test_wheel_script:
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
+    - python3 -m pip install virtualenv
+    - before_install
     - install_run $PLAT
   wheels_artifacts:
     path: "wheelhouse/*.whl"
