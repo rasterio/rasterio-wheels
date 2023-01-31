@@ -397,7 +397,6 @@ function build_wheel_cmd {
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    $BUILD_PREFIX/bin/gdal-config
     (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
 	:
