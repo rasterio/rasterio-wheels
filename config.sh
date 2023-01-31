@@ -51,6 +51,7 @@ function build_geos {
         && mkdir build && cd build \
         && $cmake .. \
         -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_IPO=ON \
@@ -67,7 +68,7 @@ function build_jsonc {
     local cmake=$(get_modern_cmake)
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
-        && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET . \
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
@@ -93,6 +94,7 @@ function build_proj {
         && mkdir build && cd build \
         && $cmake .. \
         -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_IPO=ON \
@@ -160,7 +162,7 @@ function build_openjpeg {
     fi
     local out_dir=$(fetch_unpack https://github.com/uclouvain/openjpeg/archive/${archive_prefix}${OPENJPEG_VERSION}.tar.gz)
     (cd $out_dir \
-        && $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET . \
         && make -j4 \
         && make install)
     touch openjpeg-stamp
@@ -268,6 +270,7 @@ function build_gdal {
         -DCMAKE_INCLUDE_PATH=$BUILD_PREFIX/include \
         -DCMAKE_LIBRARY_PATH=$BUILD_PREFIX/lib \
         -DCMAKE_PROGRAM_PATH=$BUILD_PREFIX/bin \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
         -DGDAL_BUILD_OPTIONAL_DRIVERS=ON \
