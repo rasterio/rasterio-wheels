@@ -11,7 +11,7 @@ wheel_build_task:
     PLAT: "arm64"
     BUILD_DEPENDS: "oldest-supported-numpy cython>=0.29 wheel==0.34.2"
     TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
-    MACOSX_DEPLOYMENT_TARGET: "12.0"
+    MACOSX_DEPLOYMENT_TARGET: "11.0"
     matrix:
       - MB_PYTHON_VERSION: "3.11"
   install_pre_requirements_script:
@@ -28,6 +28,11 @@ wheel_build_task:
     - python3 -m pip install virtualenv
     - before_install
     - clean_code $REPO_DIR $BUILD_COMMIT
+    - echo -e "\n[build_ext]" >> rasterio/setup.cfg
+    - echo "include_dirs = $BUILD_PREFIX/include" >> rasterio/setup.cfg
+    - echo "libraries = gdal" >> rasterio/setup.cfg
+    - echo "library_dirs = $BUILD_PREFIX/lib" >> rasterio/setup.cfg
+    - cat rasterio/setup.cfg
     - build_wheel $REPO_DIR $PLAT
   test_wheel_script:
     - source multibuild/common_utils.sh
