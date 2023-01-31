@@ -45,7 +45,7 @@ function build_geos {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e geos-stamp ]; then return; fi
-    local cmake=$(get_modern_cmake)
+    local cmake=cmake
     fetch_unpack http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2
     (cd geos-${GEOS_VERSION} \
         && mkdir build && cd build \
@@ -65,7 +65,7 @@ function build_geos {
 
 function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
-    local cmake=$(get_modern_cmake)
+    local cmake=cmake
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
         && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET . \
@@ -87,7 +87,7 @@ function build_proj {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e proj-stamp ]; then return; fi
-    local cmake=$(get_modern_cmake)
+    local cmake=cmake
     build_sqlite
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
@@ -155,7 +155,7 @@ function build_openjpeg {
     build_zlib
     build_tiff
     build_lcms2
-    local cmake=$(get_modern_cmake)
+    local cmake=cmake
     local archive_prefix="v"
     if [ $(lex_ver $OPENJPEG_VERSION) -lt $(lex_ver 2.1.1) ]; then
         archive_prefix="version."
@@ -260,7 +260,7 @@ function build_gdal {
         GEOS_CONFIG="-DGDAL_USE_GEOS=ON"
     fi
 
-    local cmake=$(get_modern_cmake)
+    local cmake=cmake
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
         && mkdir build \
@@ -316,6 +316,8 @@ function pre_build {
     #    # Update to latest zlib for OSX build
     #    build_new_zlib
     #fi
+
+    local cmake=$(get_modern_cmake)
 
     suppress build_xz
     suppress build_nghttp2
