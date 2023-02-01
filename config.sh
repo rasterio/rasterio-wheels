@@ -41,6 +41,23 @@ function fetch_unpack {
 }
 
 
+function build_blosc {
+    if [ -e blosc-stamp ]; then return; fi
+    local cmake=cmake
+    fetch_unpack https://github.com/Blosc/c-blosc/archive/v${BLOSC_VERSION}.tar.gz
+    (cd c-blosc-${BLOSC_VERSION} \
+        && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && make install)
+    if [ -n "$IS_MACOS" ]; then
+        # Fix blosc library id bug
+        for lib in $(ls ${BUILD_PREFIX}/lib/libblosc*.dylib); do
+            install_name_tool -id $lib $lib
+        done
+    fi
+    touch blosc-stamp
+}
+
+
 function build_geos {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
@@ -238,6 +255,7 @@ function build_zstd {
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
+    build_blosc
     build_curl
     build_jpeg
     build_libpng
