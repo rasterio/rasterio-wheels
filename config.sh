@@ -303,6 +303,10 @@ function build_gdal {
         -DGDAL_ENABLE_POSTGISRASTER=OFF \
         -DGDAL_USE_OPENEXR=OFF \
         -DGDAL_ENABLE_EXR=OFF \
+        -DGDAL_USE_OPENEXR=OFF \
+        -DGDAL_USE_HEIF=OFF \
+        -DGDAL_ENABLE_HEIF=OFF \
+        -DGDAL_USE_ODBC=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
