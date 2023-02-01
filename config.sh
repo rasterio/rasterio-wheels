@@ -287,6 +287,7 @@ function build_gdal {
         -DGDAL_USE_JSONC_INTERNAL=OFF \
         -DGDAL_USE_ZLIB=ON \
         -DGDAL_USE_ZLIB_INTERNAL=OFF \
+        -DGDAL_ENABLE_DRIVER_HDF5=ON \
         -DGDAL_ENABLE_DRIVER_NETCDF=ON \
         -DGDAL_ENABLE_DRIVER_OPENJPEG=ON \
         -DGDAL_ENABLE_DRIVER_PNG=ON \
@@ -298,6 +299,8 @@ function build_gdal {
         -DGDAL_USE_SFCGAL=OFF \
         -DGDAL_USE_XERCESC=OFF \
         -DGDAL_USE_LIBXML2=OFF \
+        -DGDAL_USE_POSTGRESQL=OFF \
+        -DGDAL_ENABLE_POSTGISRASTER=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
