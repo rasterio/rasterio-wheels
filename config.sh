@@ -301,6 +301,8 @@ function build_gdal {
         -DGDAL_USE_LIBXML2=OFF \
         -DGDAL_USE_POSTGRESQL=OFF \
         -DGDAL_ENABLE_POSTGISRASTER=OFF \
+        -DGDAL_USE_OPENEXR=OFF \
+        -DGDAL_ENABLE_EXR=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
