@@ -303,7 +303,8 @@ function build_gdal {
     if [ -n "$IS_OSX" ]; then
         :
     else
-        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.*
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.* || true
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib64/libgdal.so.* || true
     fi
     touch gdal-stamp
 }
