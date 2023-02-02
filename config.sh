@@ -149,8 +149,27 @@ function build_expat {
 }
 
 
+function build_lerc {
+    if [-e lerc-stam ]; then return; fi
+    local cmake=cmake
+    local out_dir=$(fetch_unpack https://github.com/Esri/lerc/archive/refs/tags/v{LERC_VERSION}.tar.gz)
+    (cd $out_dir \ 
+        && mkdir cmake_build && cd cmake_build \
+        && $cmake .. \
+        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \ 
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_IPO=ON \
+        && $cmake --build . -j4 \
+        && $cmake --install .)
+    touch lerc-stamp
+}
+
+
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
+    build_lerc
     build_jpeg
     build_libwebp
     build_zlib
@@ -257,6 +276,7 @@ function build_gdal {
 
     build_blosc
     build_curl
+    build_lerc
     build_jpeg
     build_libpng
     build_openjpeg
@@ -325,7 +345,7 @@ function build_gdal {
         -DGDAL_USE_HEIF=OFF \
         -DGDAL_ENABLE_HEIF=OFF \
         -DGDAL_USE_ODBC=OFF \
-        -DGDAL_USE_LERC_INTERNAL=ON \
+        -DGDAL_USE_LERC=ON \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
