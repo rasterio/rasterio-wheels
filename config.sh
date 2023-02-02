@@ -325,6 +325,7 @@ function build_gdal {
         -DGDAL_USE_HEIF=OFF \
         -DGDAL_ENABLE_HEIF=OFF \
         -DGDAL_USE_ODBC=OFF \
+        -DGDAL_USE_LERC_INTERNAL=ON \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
