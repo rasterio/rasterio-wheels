@@ -41,18 +41,51 @@ function fetch_unpack {
 }
 
 
+function build_blosc {
+    if [ -e blosc-stamp ]; then return; fi
+    local cmake=cmake
+    fetch_unpack https://github.com/Blosc/c-blosc/archive/v${BLOSC_VERSION}.tar.gz
+    (cd c-blosc-${BLOSC_VERSION} \
+        && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && make install)
+    if [ -n "$IS_MACOS" ]; then
+        # Fix blosc library id bug
+        for lib in $(ls ${BUILD_PREFIX}/lib/libblosc*.dylib); do
+            install_name_tool -id $lib $lib
+        done
+    fi
+    touch blosc-stamp
+}
+
+
 function build_geos {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
-    build_simple geos $GEOS_VERSION https://download.osgeo.org/geos tar.bz2
+    if [ -e geos-stamp ]; then return; fi
+    local cmake=cmake
+    fetch_unpack http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2
+    (cd geos-${GEOS_VERSION} \
+        && mkdir build && cd build \
+        && $cmake .. \
+        -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_IPO=ON \
+        -DBUILD_APPS:BOOL=OFF \
+        -DBUILD_TESTING:BOOL=OFF \
+        && $cmake --build . -j4 \
+        && $cmake --install .)
+    touch geos-stamp
 }
 
 
 function build_jsonc {
     if [ -e jsonc-stamp ]; then return; fi
+    local cmake=cmake
     fetch_unpack https://s3.amazonaws.com/json-c_releases/releases/json-c-${JSONC_VERSION}.tar.gz
     (cd json-c-${JSONC_VERSION} \
-        && /usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET . \
         && make -j4 \
         && make install)
     if [ -n "$IS_OSX" ]; then
@@ -71,19 +104,21 @@ function build_proj {
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
     if [ -e proj-stamp ]; then return; fi
+    local cmake=cmake
     build_sqlite
     fetch_unpack http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
     (cd proj-${PROJ_VERSION} \
         && mkdir build && cd build \
-        && /usr/local/bin/cmake .. \
+        && $cmake .. \
         -DCMAKE_INSTALL_PREFIX:PATH=$BUILD_PREFIX \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_IPO=ON \
         -DBUILD_APPS:BOOL=OFF \
         -DBUILD_TESTING:BOOL=OFF \
-        && cmake --build . -j4 \
-        && cmake --install .)
+        && $cmake --build . -j4 \
+        && $cmake --install .)
     touch proj-stamp
 }
 
@@ -114,22 +149,6 @@ function build_expat {
 }
 
 
-function get_cmake {
-    local cmake=cmake
-    if [ -n "$IS_OSX" ]; then
-        brew install cmake > /dev/null
-    else
-        fetch_unpack https://www.cmake.org/files/v3.12/cmake-3.12.1.tar.gz > /dev/null
-        (cd cmake-3.12.1 \
-            && ./bootstrap --prefix=$BUILD_PREFIX > /dev/null \
-            && make -j4 > /dev/null \
-            && make install > /dev/null)
-        cmake=/usr/local/bin/cmake
-    fi
-    echo $cmake
-}
-
-
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
     build_jpeg
@@ -141,7 +160,7 @@ function build_tiff {
     (cd tiff-${TIFF_VERSION} \
         && mv VERSION VERSION.txt \
         && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
-        && ./configure --enable-zstd --enable-webp \
+        && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp \
         && make -j4 \
         && make install)
     touch tiff-stamp
@@ -153,14 +172,14 @@ function build_openjpeg {
     build_zlib
     build_tiff
     build_lcms2
-    local cmake=$(get_cmake)
+    local cmake=cmake
     local archive_prefix="v"
     if [ $(lex_ver $OPENJPEG_VERSION) -lt $(lex_ver 2.1.1) ]; then
         archive_prefix="version."
     fi
     local out_dir=$(fetch_unpack https://github.com/uclouvain/openjpeg/archive/${archive_prefix}${OPENJPEG_VERSION}.tar.gz)
     (cd $out_dir \
-        && $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX . \
+        && $cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET . \
         && make -j4 \
         && make install)
     touch openjpeg-stamp
@@ -168,6 +187,9 @@ function build_openjpeg {
 
 
 function build_libwebp {
+    ls -l $BUILD_PREFIX
+    ls -l $BUILD_PREFIX/share
+    ls -l $BUILD_PREFIX/share/man
     build_libpng
     build_giflib
     build_simple libwebp $LIBWEBP_VERSION \
@@ -226,13 +248,14 @@ function build_zstd {
     fi
     (cd zstd-${ZSTD_VERSION}  \
         && make -j4 PREFIX=$BUILD_PREFIX ZSTD_LEGACY_SUPPORT=0 \
-        && make install SED_ERE_OPT=$sed_ere_opt)
+        && make install PREFIX=$BUILD_PREFIX SED_ERE_OPT=$sed_ere_opt)
     touch zstd-stamp
 }
 
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
+    build_blosc
     build_curl
     build_jpeg
     build_libpng
@@ -250,82 +273,65 @@ function build_gdal {
     CXXFLAGS="$CXXFLAGS -g -O2"
 
     if [ -n "$IS_OSX" ]; then
-        EXPAT_PREFIX=/usr
-        GEOS_CONFIG="--without-geos"
+        GEOS_CONFIG="-DGDAL_USE_GEOS=OFF"
     else
-        EXPAT_PREFIX=$BUILD_PREFIX
-        GEOS_CONFIG="--with-geos=${BUILD_PREFIX}/bin/geos-config"
+        GEOS_CONFIG="-DGDAL_USE_GEOS=ON"
     fi
 
+    local cmake=cmake
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && (patch -u -p2 --force < ../patches/4646.diff || true) \
-        && (patch -u -p2 --force < ../patches/6194.diff || true) \
-        && ./configure \
-            --with-crypto=yes \
-	        --with-hide-internal-symbols \
-	        --with-webp=${BUILD_PREFIX} \
-            --disable-debug \
-            --disable-static \
-	        --disable-driver-elastic \
-            --prefix=$BUILD_PREFIX \
-            --with-curl=curl-config \
-            --with-expat=${EXPAT_PREFIX} \
-            ${GEOS_CONFIG} \
-            --with-geotiff=internal \
-            --with-gif \
-            --with-grib \
-            --with-jpeg \
-            --with-libiconv-prefix=/usr \
-            --with-libjson-c=${BUILD_PREFIX} \
-            --with-libtiff=${BUILD_PREFIX} \
-            --with-libz=/usr \
-            --with-netcdf=${BUILD_PREFIX} \
-            --with-openjpeg \
-            --with-pam \
-            --with-png \
-            --with-proj=${BUILD_PREFIX} \
-            --with-sqlite3=${BUILD_PREFIX} \
-            --with-zstd=${BUILD_PREFIX} \
-            --with-threads \
-            --without-bsb \
-            --without-cfitsio \
-            --without-dwgdirect \
-            --without-ecw \
-            --without-fme \
-            --without-freexl \
-            --without-gnm \
-            --without-grass \
-            --without-ingres \
-            --without-jasper \
-            --without-jp2mrsid \
-            --without-jpeg12 \
-            --without-kakadu \
-            --without-libgrass \
-            --without-libgrass \
-            --without-libkml \
-            --without-mrf \
-            --without-mrsid \
-            --without-mysql \
-            --without-odbc \
-            --without-ogdi \
-            --without-pcidsk \
-            --without-pcraster \
-            --without-perl \
-            --without-pg \
-            --without-php \
-            --without-python \
-            --without-qhull \
-            --without-sde \
-            --without-sfcgal \
-            --without-xerces \
-            --without-xml2 \
-        && make -j4 \
-        && make install)
+        && mkdir build \
+        && cd build \
+        && $cmake .. \
+        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \
+        -DCMAKE_INCLUDE_PATH=$BUILD_PREFIX/include \
+        -DCMAKE_LIBRARY_PATH=$BUILD_PREFIX/lib \
+        -DCMAKE_PROGRAM_PATH=$BUILD_PREFIX/bin \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DGDAL_BUILD_OPTIONAL_DRIVERS=ON \
+        -DOGR_BUILD_OPTIONAL_DRIVERS=OFF \
+        ${GEOS_CONFIG} \
+        -DGDAL_USE_TIFF=ON \
+        -DGDAL_USE_TIFF_INTERNAL=OFF \
+        -DGDAL_USE_GEOTIFF_INTERNAL=ON \
+        -DGDAL_ENABLE_DRIVER_GIF=ON \
+        -DGDAL_ENABLE_DRIVER_GRIB=ON \
+        -DGDAL_ENABLE_DRIVER_JPEG=ON \
+        -DGDAL_USE_ICONV=ON \
+        -DGDAL_USE_JSONC=ON \
+        -DGDAL_USE_JSONC_INTERNAL=OFF \
+        -DGDAL_USE_ZLIB=ON \
+        -DGDAL_USE_ZLIB_INTERNAL=OFF \
+        -DGDAL_ENABLE_DRIVER_HDF5=ON \
+        -DGDAL_ENABLE_DRIVER_NETCDF=ON \
+        -DGDAL_ENABLE_DRIVER_OPENJPEG=ON \
+        -DGDAL_ENABLE_DRIVER_PNG=ON \
+        -DGDAL_ENABLE_DRIVER_OGCAPI=OFF \
+        -DOGR_ENABLE_DRIVER_GPKG=ON \
+        -DBUILD_PYTHON_BINDINGS=OFF \
+        -DBUILD_JAVA_BINDINGS=OFF \
+        -DBUILD_CSHARP_BINDINGS=OFF \
+        -DGDAL_USE_SFCGAL=OFF \
+        -DGDAL_USE_XERCESC=OFF \
+        -DGDAL_USE_LIBXML2=OFF \
+        -DGDAL_USE_POSTGRESQL=OFF \
+        -DGDAL_ENABLE_POSTGISRASTER=OFF \
+        -DGDAL_USE_OPENEXR=OFF \
+        -DGDAL_ENABLE_EXR=OFF \
+        -DGDAL_USE_OPENEXR=OFF \
+        -DGDAL_USE_HEIF=OFF \
+        -DGDAL_ENABLE_HEIF=OFF \
+        -DGDAL_USE_ODBC=OFF \
+        && $cmake --build . -j4 \
+        && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
         :
     else
-        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.*
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib/libgdal.so.* || true
+        strip -v --strip-unneeded ${BUILD_PREFIX}/lib64/libgdal.so.* || true
     fi
     touch gdal-stamp
 }
@@ -339,11 +345,13 @@ function pre_build {
     #    build_new_zlib
     #fi
 
+    local cmake=$(get_modern_cmake)
+
     suppress build_xz
     suppress build_nghttp2
 
     if [ -n "$IS_OSX" ]; then
-        rm /usr/local/lib/libpng*
+        rm /usr/local/lib/libpng* || true
     fi
 
     suppress build_openssl
@@ -351,7 +359,7 @@ function pre_build {
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
     # Remove previously installed curl.
-    rm -rf /usr/local/lib/libcurl*
+    rm -rf /usr/local/lib/libcurl* || true
 
     suppress build_curl
     suppress build_libwebp
@@ -419,11 +427,21 @@ function build_wheel_cmd {
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    (cd $repo_dir && GDAL_VERSION=3.5.3 PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
         /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi
     repair_wheelhouse $wheelhouse
+}
+
+
+function macos_arm64_native_build_setup {
+    # Setup native build for single arch arm_64 wheels
+    export PLAT="arm64"
+    # We don't want universal2 builds and only want an arm64 build
+    export _PYTHON_HOST_PLATFORM="macosx-11.0-arm64"
+    export ARCHFLAGS+=" -arch arm64"
+    $@
 }
