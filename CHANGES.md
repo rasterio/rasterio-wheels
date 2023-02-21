@@ -1,6 +1,14 @@
 Changes
 =======
 
+## 2023-02-13
+
+* Patch for GDAL issue #7170.
+* PROJ symbols are renamed to avoid conflicts with other modules that may link
+  libproj.
+* Belatedly, Cirrus CI configuration has been added to build macos arm64
+  wheels.
+
 ## 2022-11-16
 
 Library version changes:
