@@ -180,6 +180,8 @@ function build_tiff {
         && mv VERSION VERSION.txt \
         && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
         && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp \
+          --with-lerc-lib-dir=$BUILD_PREFIX/lib \
+          --with-lerc-include-dir=$BUILD_PREFIX/include \
         && make -j4 \
         && make install)
     touch tiff-stamp
@@ -347,6 +349,7 @@ function build_gdal {
         -DGDAL_ENABLE_HEIF=OFF \
         -DGDAL_USE_ODBC=OFF \
         -DGDAL_USE_LERC=ON \
+        -DGDAL_USE_LERC_INTERNAL=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
