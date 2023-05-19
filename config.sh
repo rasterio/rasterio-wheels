@@ -312,6 +312,7 @@ function build_gdal {
         -DGDAL_ENABLE_DRIVER_PNG=ON \
         -DGDAL_ENABLE_DRIVER_OGCAPI=OFF \
         -DOGR_ENABLE_DRIVER_GPKG=ON \
+        -DGDAL_ENABLE_DRIVER_GPKG=ON \
         -DBUILD_PYTHON_BINDINGS=OFF \
         -DBUILD_JAVA_BINDINGS=OFF \
         -DBUILD_CSHARP_BINDINGS=OFF \
@@ -326,6 +327,8 @@ function build_gdal {
         -DGDAL_USE_HEIF=OFF \
         -DGDAL_ENABLE_HEIF=OFF \
         -DGDAL_USE_ODBC=OFF \
+        -DGDAL_ENABLE_DRIVER_AIGRID=ON \
+        -DGDAL_ENABLE_DRIVER_AAIGRID=ON \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
