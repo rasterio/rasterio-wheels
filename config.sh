@@ -327,6 +327,7 @@ function build_gdal {
         -DGDAL_USE_HEIF=OFF \
         -DGDAL_ENABLE_HEIF=OFF \
         -DGDAL_USE_ODBC=OFF \
+        -DOGR_ENABLE_DRIVER_AVC=ON \
         -DGDAL_ENABLE_DRIVER_AIGRID=ON \
         -DGDAL_ENABLE_DRIVER_AAIGRID=ON \
         && $cmake --build . -j4 \
