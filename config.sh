@@ -150,13 +150,13 @@ function build_expat {
 
 
 function build_lerc {
-    if [-e lerc-stam ]; then return; fi
+    if [-e lerc-stamp ]; then return; fi
     local cmake=cmake
-    local out_dir=$(fetch_unpack https://github.com/Esri/lerc/archive/refs/tags/v{LERC_VERSION}.tar.gz)
-    (cd $out_dir \ 
+    fetch_unpack https://github.com/Esri/lerc/archive/refs/tags/v${LERC_VERSION}.tar.gz
+    (cd lerc-${LERC_VERSION} \
         && mkdir cmake_build && cd cmake_build \
         && $cmake .. \
-        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \ 
+        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \
         -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
         -DBUILD_SHARED_LIBS=ON \
         -DCMAKE_BUILD_TYPE=Release \
