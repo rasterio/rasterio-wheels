@@ -401,7 +401,7 @@ function pre_build {
     suppress build_libpng
     suppress build_jpeg
 
-    build_tiff
+    suppress build_tiff
 
     suppress build_openjpeg
     suppress build_jsonc
@@ -409,8 +409,8 @@ function pre_build {
     suppress build_proj
     suppress build_expat
     suppress build_geos
-    suppress build_hdf5
-    suppress build_netcdf
+    build_hdf5
+    build_netcdf
 
     if [ -n "$IS_OSX" ]; then
         export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
