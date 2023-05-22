@@ -197,9 +197,9 @@ function build_tiff {
     (cd tiff-${TIFF_VERSION} \
         && mv VERSION VERSION.txt \
         && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
-        && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp \
-          --with-lerc-lib-dir=$BUILD_PREFIX/lib \
-          --with-lerc-include-dir=$BUILD_PREFIX/include \
+        && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp --enable-lerc \
+#          --with-lerc-lib-dir=$BUILD_PREFIX/lib \
+#          --with-lerc-include-dir=$BUILD_PREFIX/include \
         && make -j4 \
         && make install)
     touch tiff-stamp
@@ -423,7 +423,7 @@ function pre_build {
     suppress build_libpng
     suppress build_jpeg
 
-    suppress build_tiff
+    build_tiff
 
     suppress build_openjpeg
     suppress build_jsonc
