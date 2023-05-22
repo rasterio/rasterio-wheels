@@ -41,6 +41,24 @@ function fetch_unpack {
 }
 
 
+function build_hdf5 {
+    if [ -e hdf5-stamp ]; then return; fi
+    build_zlib
+    # libaec is a drop-in replacement for szip
+    build_libaec
+    local hdf5_url=https://support.hdfgroup.org/ftp/HDF5/releases
+    local short=$(echo $HDF5_VERSION | awk -F "." '{printf "%d.%d", $1, $2}')
+    fetch_unpack $hdf5_url/hdf5-$short/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz
+    (cd hdf5-$HDF5_VERSION \
+        && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib \
+        && ./configure --with-szlib=$BUILD_PREFIX --prefix=$BUILD_PREFIX \
+        --enable-cxx --enable-threadsafe --enable-unsupported --with-pthread=yes \
+        && make -j4 \
+        && make install)
+    touch hdf5-stamp
+}
+
+
 function build_blosc {
     if [ -e blosc-stamp ]; then return; fi
     local cmake=cmake
@@ -149,8 +167,27 @@ function build_expat {
 }
 
 
+function build_lerc {
+    if [-e lerc-stamp ]; then return; fi
+    local cmake=cmake
+    fetch_unpack https://github.com/Esri/lerc/archive/refs/tags/v${LERC_VERSION}.tar.gz
+    (cd lerc-${LERC_VERSION} \
+        && mkdir cmake_build && cd cmake_build \
+        && $cmake .. \
+        -DCMAKE_INSTALL_PREFIX=$BUILD_PREFIX \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_IPO=ON \
+        && $cmake --build . -j4 \
+        && $cmake --install .)
+    touch lerc-stamp
+}
+
+
 function build_tiff {
     if [ -e tiff-stamp ]; then return; fi
+    build_lerc
     build_jpeg
     build_libwebp
     build_zlib
@@ -160,7 +197,7 @@ function build_tiff {
     (cd tiff-${TIFF_VERSION} \
         && mv VERSION VERSION.txt \
         && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
-        && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp \
+        && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp --enable-lerc \
         && make -j4 \
         && make install)
     touch tiff-stamp
@@ -257,6 +294,7 @@ function build_gdal {
 
     build_blosc
     build_curl
+    build_lerc
     build_jpeg
     build_libpng
     build_openjpeg
@@ -295,23 +333,33 @@ function build_gdal {
         -DGDAL_BUILD_OPTIONAL_DRIVERS=ON \
         -DOGR_BUILD_OPTIONAL_DRIVERS=OFF \
         ${GEOS_CONFIG} \
+        -DGDAL_USE_CURL=ON \
         -DGDAL_USE_TIFF=ON \
         -DGDAL_USE_TIFF_INTERNAL=OFF \
         -DGDAL_USE_GEOTIFF_INTERNAL=ON \
         -DGDAL_ENABLE_DRIVER_GIF=ON \
         -DGDAL_ENABLE_DRIVER_GRIB=ON \
         -DGDAL_ENABLE_DRIVER_JPEG=ON \
+        -DGDAL_USE_JXL=OFF \
         -DGDAL_USE_ICONV=ON \
         -DGDAL_USE_JSONC=ON \
         -DGDAL_USE_JSONC_INTERNAL=OFF \
         -DGDAL_USE_ZLIB=ON \
         -DGDAL_USE_ZLIB_INTERNAL=OFF \
         -DGDAL_ENABLE_DRIVER_HDF5=ON \
+        -DGDAL_USE_HDF5=ON \
+        -DHDF5_INCLUDE_DIRS=$BUILD_PREFIX/include \
         -DGDAL_ENABLE_DRIVER_NETCDF=ON \
+        -DGDAL_USE_NETCDF=ON \
         -DGDAL_ENABLE_DRIVER_OPENJPEG=ON \
         -DGDAL_ENABLE_DRIVER_PNG=ON \
         -DGDAL_ENABLE_DRIVER_OGCAPI=OFF \
+        -DGDAL_USE_SQLITE3=ON \
+        -DOGR_ENABLE_DRIVER_SQLITE=ON \
         -DOGR_ENABLE_DRIVER_GPKG=ON \
+        -DOGR_ENABLE_DRIVER_MVT=ON \
+        -DGDAL_ENABLE_DRIVER_MBTILES=ON \
+        -DOGR_ENABLE_DRIVER_OSM=ON \
         -DBUILD_PYTHON_BINDINGS=OFF \
         -DBUILD_JAVA_BINDINGS=OFF \
         -DBUILD_CSHARP_BINDINGS=OFF \
@@ -326,6 +374,11 @@ function build_gdal {
         -DGDAL_USE_HEIF=OFF \
         -DGDAL_ENABLE_HEIF=OFF \
         -DGDAL_USE_ODBC=OFF \
+        -DOGR_ENABLE_DRIVER_AVC=ON \
+        -DGDAL_ENABLE_DRIVER_AIGRID=ON \
+        -DGDAL_ENABLE_DRIVER_AAIGRID=ON \
+        -DGDAL_USE_LERC=ON \
+        -DGDAL_USE_LERC_INTERNAL=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
@@ -367,6 +420,11 @@ function pre_build {
     suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
+    build_lerc
+
+    if [ -n "$IS_OSX" ]; then
+        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
+    fi
 
     build_tiff
 
@@ -376,12 +434,8 @@ function pre_build {
     suppress build_proj
     suppress build_expat
     suppress build_geos
-    suppress build_hdf5
-    suppress build_netcdf
-
-    if [ -n "$IS_OSX" ]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
-    fi
+    build_hdf5
+    build_netcdf
 
     build_gdal
 }

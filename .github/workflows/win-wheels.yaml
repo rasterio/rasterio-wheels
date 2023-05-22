@@ -4,7 +4,7 @@ name: Windows wheels
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  REF: 1.3.6
+  REF: 1.3.7
 
 # cancel running jobs on new commit to PR
 concurrency:
@@ -89,7 +89,7 @@ jobs:
             PACKAGE_DATA=1
             GDAL_DATA="$VCPKG_INSTALL/share/gdal"
             PROJ_LIB="$VCPKG_INSTALL/share/proj/data"
-            GDAL_VERSION="3.5.2"
+            GDAL_VERSION="3.6.4"
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --add-path C:/vcpkg/installed/x64-windows/bin -w {dest_dir} {wheel}
 
@@ -130,7 +130,8 @@ jobs:
         shell: bash
         run: |
           python -m pip install shapely oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis
-          python -m pip install --pre --find-links wheelhouse/artifact rasterio
+          python -m pip install --pre --no-deps --find-links wheelhouse/artifact rasterio
+          python -m pip install rasterio
           python -m pip list
 
       - name: Run tests
@@ -146,5 +147,5 @@ jobs:
         shell: bash
         if: matrix.python-version != '3.11-dev'
         run: |
-          python -m pip install --pre fiona
+          python -m pip install fiona
           python -c "import fiona; import rasterio; print(rasterio.show_versions())"

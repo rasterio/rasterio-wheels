@@ -3,9 +3,9 @@ wheel_build_task:
   macos_instance:
     image: ghcr.io/cirruslabs/macos-monterey-xcode
   env:
-    BUILD_PREFIX: /tmp/local
+    BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
-    BUILD_COMMIT: 1.3.6
+    BUILD_COMMIT: 1.3.7
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
@@ -21,7 +21,7 @@ wheel_build_task:
     - brew install python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   brew_remove_pkgs_script:
-    - brew remove -f --ignore-dependencies webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript lz4 openjpeg
+    - brew remove -f --ignore-dependencies liblerc webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript lz4 openjpeg
   build_wheel_script:
     - mkdir -p $BUILD_PREFIX/include
     - mkdir -p $BUILD_PREFIX/lib
