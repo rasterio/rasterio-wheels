@@ -342,6 +342,7 @@ function build_gdal {
         -DGDAL_ENABLE_DRIVER_GIF=ON \
         -DGDAL_ENABLE_DRIVER_GRIB=ON \
         -DGDAL_ENABLE_DRIVER_JPEG=ON \
+        -DGDAL_USE_JXL=OFF \
         -DGDAL_USE_ICONV=ON \
         -DGDAL_USE_JSONC=ON \
         -DGDAL_USE_JSONC_INTERNAL=OFF \
