@@ -420,6 +420,11 @@ function pre_build {
     suppress build_zstd
     suppress build_libpng
     suppress build_jpeg
+    build_lerc
+
+    if [ -n "$IS_OSX" ]; then
+        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
+    fi
 
     build_tiff
 
@@ -431,10 +436,6 @@ function pre_build {
     suppress build_geos
     build_hdf5
     build_netcdf
-
-    if [ -n "$IS_OSX" ]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-rpath,${BUILD_PREFIX}/lib"
-    fi
 
     build_gdal
 }
