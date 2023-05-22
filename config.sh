@@ -198,8 +198,6 @@ function build_tiff {
         && mv VERSION VERSION.txt \
         && (patch -u --force < ../patches/libtiff-rename-VERSION.patch || true) \
         && ./configure --prefix=$BUILD_PREFIX --enable-zstd --enable-webp --enable-lerc \
-#          --with-lerc-lib-dir=$BUILD_PREFIX/lib \
-#          --with-lerc-include-dir=$BUILD_PREFIX/include \
         && make -j4 \
         && make install)
     touch tiff-stamp
