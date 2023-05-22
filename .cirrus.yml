@@ -3,7 +3,7 @@ wheel_build_task:
   macos_instance:
     image: ghcr.io/cirruslabs/macos-monterey-xcode
   env:
-    BUILD_PREFIX: /tmp/local
+    BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
     BUILD_COMMIT: maint-1.3
     CIRRUS_CLONE_SUBMODULES: true
@@ -34,7 +34,6 @@ wheel_build_task:
     - MACOSX_DEPLOYMENT_TARGET=11.0
     - GDAL_CONFIG=$BUILD_PREFIX/bin/gdal-config
     - PROJ_LIB=$BUILD_PREFIX/share/proj
-    - DYLD_LIBRARY_PATH=$BUILD_PREFIX/lib
     - build_wheel $REPO_DIR $PLAT
   test_wheel_script:
     - source multibuild/common_utils.sh
