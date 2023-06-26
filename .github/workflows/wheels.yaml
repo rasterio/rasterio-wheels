@@ -28,7 +28,7 @@ jobs:
           - os: "ubuntu-20.04"
             os-name: "focal"
     env:
-      BUILD_COMMIT: 1.3.7
+      BUILD_COMMIT: 1.3.8
       PLAT: "${{ matrix.platform }}"
       MB_PYTHON_VERSION: "${{ matrix.python }}"
       MB_ML_VER: "2014"

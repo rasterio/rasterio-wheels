@@ -1,0 +1,96 @@
+diff --git a/autotest/gcore/tiff_read.py b/autotest/gcore/tiff_read.py
+index 177e519499d..34abee89201 100755
+--- a/autotest/gcore/tiff_read.py
++++ b/autotest/gcore/tiff_read.py
+@@ -4597,6 +4597,21 @@ def test_tiff_jxl_read_for_files_created_before_6393():
+                 "INTERLEAVE=BAND",
+             ],
+         ),
++        (
++            True,
++            100,
++            100,
++            3,
++            gdal.GDT_Byte,
++            [
++                "COMPRESS=LZW",
++                "TILED=YES",
++                "BLOCKXSIZE=16",
++                "BLOCKYSIZE=32",
++                "INTERLEAVE=BAND",
++                "PHOTOMETRIC=MINISBLACK",
++            ],
++        ),
+         (
+             True,
+             100,
+diff --git a/frmts/gtiff/geotiff.cpp b/frmts/gtiff/geotiff.cpp
+index 99d998d9d89..00a1bedb76c 100644
+--- a/frmts/gtiff/geotiff.cpp
++++ b/frmts/gtiff/geotiff.cpp
+@@ -2678,6 +2678,8 @@ struct GTiffDecompressContext
+     std::mutex oMutex{};
+     bool bSuccess = true;
+ 
++    std::vector<CPLErrorHandlerAccumulatorStruct> aoErrors{};
++
+     VSIVirtualHandle *poHandle = nullptr;
+     GTiffDataset *poDS = nullptr;
+     GDALDataType eDT = GDT_Unknown;
+@@ -2728,6 +2730,19 @@ struct GTiffDecompressJob
+     vsi_l_offset nSize = 0;
+ };
+ 
++/************************************************************************/
++/*                  ThreadDecompressionFuncErrorHandler()               */
++/************************************************************************/
++
++static void CPL_STDCALL ThreadDecompressionFuncErrorHandler(
++    CPLErr eErr, CPLErrorNum eErrorNum, const char *pszMsg)
++{
++    GTiffDecompressContext *psContext =
++        static_cast<GTiffDecompressContext *>(CPLGetErrorHandlerUserData());
++    std::lock_guard<std::mutex> oLock(psContext->oMutex);
++    psContext->aoErrors.emplace_back(eErr, eErrorNum, pszMsg);
++}
++
+ /************************************************************************/
+ /*                     ThreadDecompressionFunc()                        */
+ /************************************************************************/
+@@ -2738,6 +2753,9 @@ static void ThreadDecompressionFunc(void *pData)
+     auto psContext = psJob->psContext;
+     auto poDS = psContext->poDS;
+ 
++    CPLErrorHandlerPusher oErrorHandler(ThreadDecompressionFuncErrorHandler,
++                                        psContext);
++
+     const int nBandsPerStrile =
+         poDS->m_nPlanarConfig == PLANARCONFIG_CONTIG ? poDS->nBands : 1;
+     const int nBandsToWrite = poDS->m_nPlanarConfig == PLANARCONFIG_CONTIG
+@@ -3521,8 +3539,11 @@ CPLErr GTiffDataset::MultiThreadedRead(int nXOff, int nYOff, int nXSize,
+                                   &sContext.nYCrbCrSubSampling1);
+         }
+     }
+-    TIFFGetField(m_hTIFF, TIFFTAG_EXTRASAMPLES, &sContext.nExtraSampleCount,
+-                 &sContext.pExtraSamples);
++    if (m_nPlanarConfig == PLANARCONFIG_CONTIG)
++    {
++        TIFFGetField(m_hTIFF, TIFFTAG_EXTRASAMPLES, &sContext.nExtraSampleCount,
++                     &sContext.pExtraSamples);
++    }
+ 
+     // Create one job per tile/strip
+     vsi_l_offset nFileSize = 0;
+@@ -3665,6 +3686,12 @@ CPLErr GTiffDataset::MultiThreadedRead(int nXOff, int nYOff, int nXSize,
+ 
+         // Undo effect of above TemporarilyDropReadWriteLock()
+         ReacquireReadWriteLock();
++
++        // Re-emit errors caught in threads
++        for (const auto &oError : sContext.aoErrors)
++        {
++            CPLError(oError.type, oError.no, "%s", oError.msg.c_str());
++        }
+     }
+ 
+     return sContext.bSuccess ? CE_None : CE_Failure;

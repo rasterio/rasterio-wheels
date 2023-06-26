@@ -1,6 +1,10 @@
 Changes
 =======
 
+## 2023-06-26
+
+* Patch GDAL 3.6.4 for issues #7962 and #7967.
+
 ## 2023-02-13
 
 * Patch for GDAL issue #7170.
