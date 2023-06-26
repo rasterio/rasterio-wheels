@@ -319,9 +319,8 @@ function build_gdal {
     local cmake=cmake
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && (patch -u --force < ../patches/7177.diff || true) \
-        && (patch -u --force < ../patches/7962.diff || true) \
-        && (patch -u --force < ../patches/7967.diff || true) \
+        && (patch -u --force -p1 < ../patches/7962.diff || true) \
+        && (patch -u --force -p1 < ../patches/7967.diff || true) \
         && mkdir build \
         && cd build \
         && $cmake .. \
