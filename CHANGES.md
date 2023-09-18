@@ -1,6 +1,10 @@
 Changes
 =======
 
+## 2023-09-18
+
+* Update libwebp to 1.3.2 to address CVE-2023-4863.
+
 ## 2023-06-26
 
 * Patch GDAL 3.6.4 for issues #7962 and #7967.
