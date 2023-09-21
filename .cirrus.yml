@@ -13,6 +13,7 @@ wheel_build_task:
     TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
     MACOSX_DEPLOYMENT_TARGET: "11.0"
     matrix:
+      - MB_PYTHON_VERSION: "3.12"
       - MB_PYTHON_VERSION: "3.11"
       - MB_PYTHON_VERSION: "3.10"
       - MB_PYTHON_VERSION: "3.9"
