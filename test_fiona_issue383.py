@@ -408,6 +408,8 @@ d = {
 }
 
 
-from shapely.geometry import shape
-
-print(shape(d["geometry"]))
+try:
+    from shapely.geometry import shape
+    print(shape(d["geometry"]))
+except ImportError:
+    print("Shapely not installed.")
