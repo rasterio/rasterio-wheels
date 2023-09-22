@@ -251,7 +251,7 @@ function build_openssl {
     fetch_unpack ${OPENSSL_DOWNLOAD_URL}/${OPENSSL_ROOT}.tar.gz
     check_sha256sum $ARCHIVE_SDIR/${OPENSSL_ROOT}.tar.gz ${OPENSSL_HASH}
     (cd ${OPENSSL_ROOT} \
-        && ./config no-ssl2 no-shared -fPIC --prefix=$BUILD_PREFIX \
+        && ./config no-ssl2 -fPIC --prefix=$BUILD_PREFIX \
         && make -j4 \
         && if [ -n "$IS_OSX" ]; then sudo make install; else make install; fi)
     touch openssl-stamp
