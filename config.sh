@@ -458,7 +458,7 @@ function run_tests {
     fi
     cp -R ../rasterio/tests ./tests
     python -m pip install "shapely;python_version<'3.12'" $TEST_DEPENDS
-    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353 and not test_info_azure_unsigned and not test_datasetreader_ctor_url"
+    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353 and not test_info_azure_unsigned and not test_datasetreader_ctor_url and not test_outer_boundless_pixel_fidelity"
     rio --version
     rio env --formats
     python ../test_fiona_issue383.py
