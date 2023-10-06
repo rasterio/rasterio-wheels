@@ -9,8 +9,8 @@ wheel_build_task:
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
-    BUILD_DEPENDS: "setuptools oldest-supported-numpy cython~=3.0.2 wheel==0.34.2"
-    TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
+    BUILD_DEPENDS: "setuptools oldest-supported-numpy cython~=3.0.2 wheel"
+    TEST_DEPENDS: "oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel"
     MACOSX_DEPLOYMENT_TARGET: "11.0"
     matrix:
       - MB_PYTHON_VERSION: "3.12"
@@ -22,7 +22,7 @@ wheel_build_task:
     - brew install pkg-config python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   brew_remove_pkgs_script:
-    - brew remove -f --ignore-dependencies liblerc webp zstd xz libpng libtiff libxcb libxdmcp curl php lcms2 xmlto ghostscript lz4 openjpeg
+    - brew remove -f --ignore-dependencies liblerc webp zstd libpng libtiff libxcb libxdmcp curl php lcms2 xmlto ghostscript lz4 openjpeg
   build_wheel_script:
     - mkdir -p $BUILD_PREFIX/include
     - mkdir -p $BUILD_PREFIX/lib
