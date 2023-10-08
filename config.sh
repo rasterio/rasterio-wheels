@@ -466,13 +466,6 @@ function run_tests {
 
 
 function build_wheel_cmd {
-    # Update the container's auditwheel with our patched version.
-    if [ -n "$IS_OSX" ]; then
-	:
-    else  # manylinux
-        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
-    fi
-
     local cmd=${1:-pip_wheel_cmd}
     local repo_dir=${2:-$REPO_DIR}
     [ -z "$repo_dir" ] && echo "repo_dir not defined" && exit 1
@@ -483,11 +476,11 @@ function build_wheel_cmd {
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && GDAL_VERSION=3.6.4 PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    (cd $repo_dir && GDAL_VERSION=3.6.4 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
-        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
+        pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi
     repair_wheelhouse $wheelhouse
 }
