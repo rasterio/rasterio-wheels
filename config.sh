@@ -466,7 +466,7 @@ function run_tests {
 
 
 function build_wheel_cmd {
-    local cmd=${1:-pip_wheel_cmd}
+    local cmd=${1:-build_cmd}
     local repo_dir=${2:-$REPO_DIR}
     [ -z "$repo_dir" ] && echo "repo_dir not defined" && exit 1
     local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
@@ -474,6 +474,7 @@ function build_wheel_cmd {
     if [ -n "$(is_function "pre_build")" ]; then pre_build; fi
     stop_spinner
     pip install -U pip
+    pip install -U build
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
@@ -484,6 +485,12 @@ function build_wheel_cmd {
         pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi
     repair_wheelhouse $wheelhouse
+}
+
+
+function build_cmd {
+    local abs_wheelhouse=$1
+    python -m build -o $abs_wheelhouse
 }
 
 

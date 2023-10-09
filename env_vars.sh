@@ -26,5 +26,4 @@ export PACKAGE_DATA=1
 export PROJ_LIB=/usr/local/share/proj
 export AUDITWHEEL_EXTRA_LIB_NAME_TAG=rasterio
 export SETUPTOOLS_USE_DISTUTILS=stdlib
-export BUILD_DEPENDS="setuptools oldest-supported-numpy cython~=3.0.2 wheel"
-export TEST_DEPENDS="oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel"
+export TEST_DEPENDS="oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis"
