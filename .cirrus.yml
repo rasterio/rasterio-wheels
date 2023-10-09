@@ -27,6 +27,7 @@ wheel_build_task:
     - mkdir -p $BUILD_PREFIX/include
     - mkdir -p $BUILD_PREFIX/lib/pkgconfig
     - mkdir -p $BUILD_PREFIX/bin
+    - mkdir -p $BUILD_PREFIX/share/doc/
     - mkdir -p $BUILD_PREFIX/share/man/man{1,3,5,7}
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
