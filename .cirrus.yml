@@ -5,26 +5,29 @@ wheel_build_task:
   env:
     BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
-    BUILD_COMMIT: 1.3.7
+    BUILD_COMMIT: 1.3.8.post1
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
-    BUILD_DEPENDS: "oldest-supported-numpy cython>=0.29 wheel==0.34.2"
-    TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 wheel==0.34.2"
+    BUILD_DEPENDS: "setuptools oldest-supported-numpy cython~=3.0.2 wheel"
+    TEST_DEPENDS: "oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel"
     MACOSX_DEPLOYMENT_TARGET: "11.0"
     matrix:
+      - MB_PYTHON_VERSION: "3.12"
       - MB_PYTHON_VERSION: "3.11"
       - MB_PYTHON_VERSION: "3.10"
       - MB_PYTHON_VERSION: "3.9"
       - MB_PYTHON_VERSION: "3.8"
   install_pre_requirements_script:
-    - brew install python@3.10
+    - brew install pkg-config python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
   brew_remove_pkgs_script:
-    - brew remove -f --ignore-dependencies liblerc webp zstd xz libtiff libxcb curl php lcms2 xmlto ghostscript lz4 openjpeg
+    - brew remove -f --ignore-dependencies liblerc webp zstd libpng libtiff libxcb libxdmcp curl php lcms2 xmlto ghostscript lz4 openjpeg
   build_wheel_script:
     - mkdir -p $BUILD_PREFIX/include
-    - mkdir -p $BUILD_PREFIX/lib
+    - mkdir -p $BUILD_PREFIX/lib/pkgconfig
+    - mkdir -p $BUILD_PREFIX/bin
+    - mkdir -p $BUILD_PREFIX/share/doc/
     - mkdir -p $BUILD_PREFIX/share/man/man{1,3,5,7}
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh

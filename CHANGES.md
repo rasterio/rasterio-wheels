@@ -1,6 +1,20 @@
 Changes
 =======
 
+## 2023-10-09
+
+Python version changes:
+
+* Python 3.12 has been added
+
+Library version changes:
+
+* Update libwebp to 1.3.2 to address CVE-2023-4863.
+
+## 2023-06-26
+
+* Patch GDAL 3.6.4 for issues #7962 and #7967.
+
 ## 2023-02-13
 
 * Patch for GDAL issue #7170.

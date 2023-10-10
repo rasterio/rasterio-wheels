@@ -251,7 +251,7 @@ function build_openssl {
     fetch_unpack ${OPENSSL_DOWNLOAD_URL}/${OPENSSL_ROOT}.tar.gz
     check_sha256sum $ARCHIVE_SDIR/${OPENSSL_ROOT}.tar.gz ${OPENSSL_HASH}
     (cd ${OPENSSL_ROOT} \
-        && ./config no-ssl2 no-shared -fPIC --prefix=$BUILD_PREFIX \
+        && ./config no-ssl2 -fPIC --prefix=$BUILD_PREFIX \
         && make -j4 \
         && if [ -n "$IS_OSX" ]; then sudo make install; else make install; fi)
     touch openssl-stamp
@@ -262,8 +262,8 @@ function build_curl {
     if [ -e curl-stamp ]; then return; fi
     CFLAGS="$CFLAGS -g -O2"
     CXXFLAGS="$CXXFLAGS -g -O2"
-    build_nghttp2
     build_openssl
+    build_nghttp2
     local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz --with-ssl"
     #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
@@ -319,7 +319,8 @@ function build_gdal {
     local cmake=cmake
     fetch_unpack http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
     (cd gdal-${GDAL_VERSION} \
-        && (patch -u --force < ../patches/7177.diff || true) \
+        && (patch -u --force -p1 < ../patches/7962.diff || true) \
+        && (patch -u --force -p1 < ../patches/7967.diff || true) \
         && mkdir build \
         && cd build \
         && $cmake .. \
@@ -401,14 +402,14 @@ function pre_build {
 
     local cmake=$(get_modern_cmake)
 
+    build_openssl
+
     suppress build_xz
     suppress build_nghttp2
 
     if [ -n "$IS_OSX" ]; then
         rm /usr/local/lib/libpng* || true
     fi
-
-    suppress build_openssl
 
     fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 
@@ -456,8 +457,8 @@ function run_tests {
         apt-get install -y ca-certificates
     fi
     cp -R ../rasterio/tests ./tests
-    pip install shapely
-    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353 and not test_info_azure_unsigned and not test_datasetreader_ctor_url"
+    python -m pip install "shapely;python_version<'3.12'" $TEST_DEPENDS
+    PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353 and not test_info_azure_unsigned and not test_datasetreader_ctor_url and not test_outer_boundless_pixel_fidelity"
     rio --version
     rio env --formats
     python ../test_fiona_issue383.py
@@ -465,30 +466,31 @@ function run_tests {
 
 
 function build_wheel_cmd {
-    # Update the container's auditwheel with our patched version.
-    if [ -n "$IS_OSX" ]; then
-	:
-    else  # manylinux
-        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
-    fi
-
-    local cmd=${1:-pip_wheel_cmd}
+    local cmd=${1:-build_cmd}
     local repo_dir=${2:-$REPO_DIR}
     [ -z "$repo_dir" ] && echo "repo_dir not defined" && exit 1
     local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
     start_spinner
     if [ -n "$(is_function "pre_build")" ]; then pre_build; fi
     stop_spinner
+    pip install -U pip
+    pip install -U build
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && GDAL_VERSION=3.5.3 PIP_NO_BUILD_ISOLATION=0 PIP_USE_PEP517=0 $cmd $wheelhouse)
+    (cd $repo_dir && GDAL_VERSION=3.6.4 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
 	:
     else  # manylinux
-        /opt/python/cp37-cp37m/bin/pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
+        pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi
     repair_wheelhouse $wheelhouse
+}
+
+
+function build_cmd {
+    local abs_wheelhouse=$1
+    python -m build -o $abs_wheelhouse
 }
 
 
