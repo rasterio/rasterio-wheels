@@ -1,7 +1,13 @@
 Changes
 =======
 
-## 2023-09-18
+## 2023-10-09
+
+Python version changes:
+
+* Python 3.12 has been added
+
+Library version changes:
 
 * Update libwebp to 1.3.2 to address CVE-2023-4863.
 
