@@ -6,7 +6,6 @@ on: [push, pull_request, workflow_dispatch]
 env:
   REPO_DIR: rasterio
   WHEEL_SDIR: wheelhouse
-  SETUPTOOLS_USE_DISTUTILS: stdlib
 
 jobs:
   build:
