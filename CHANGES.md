@@ -1,6 +1,13 @@
 Changes
 =======
 
+## 2023-10-11
+
+Library version changes:
+
+* Update curl to 8.4.0 to address CVE-2023-38545 and CVE-2023-38546 (#112).
+* Update vcpkg to commit b40de44891dc1cab11d4722094ae44807a837b98 (#112).
+
 ## 2023-10-09
 
 Python version changes:
