@@ -321,6 +321,7 @@ function build_gdal {
     (cd gdal-${GDAL_VERSION} \
         && (patch -u --force -p1 < ../patches/7962.diff || true) \
         && (patch -u --force -p1 < ../patches/7967.diff || true) \
+        && (patch -u --force -p1 < ../patches/b5858ed5bc5004c97f7cd6000674015bdc70b33b.diff || true) \
         && mkdir build \
         && cd build \
         && $cmake .. \

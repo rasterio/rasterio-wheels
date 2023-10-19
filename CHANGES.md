@@ -1,6 +1,15 @@
 Changes
 =======
 
+## 2023-10-19
+
+Library version changes:
+
+* A local gdal overlay port for vcpkg has been added.
+* GDAL 3.6.4 is patched in the PyPI wheels to fix the potential GTiff
+  multithreading deadlock reported in
+  https://github.com/OSGeo/gdal/issues/8470.
+
 ## 2023-10-11
 
 Library version changes:
