@@ -31,7 +31,7 @@ jobs:
       PLAT: "${{ matrix.platform }}"
       MB_PYTHON_VERSION: "${{ matrix.python }}"
       MB_ML_VER: "2014"
-      TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1"
+      TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 fsspec"
       TRAVIS_OS_NAME: ${{ matrix.os-name }}
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
     steps:
