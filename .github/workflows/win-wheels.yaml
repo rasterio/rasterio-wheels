@@ -47,7 +47,7 @@ jobs:
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
-          vcpkg install --feature-flags="versions,manifests" --overlay-ports=${GITHUB_WORKSPACE}/ports --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
+          vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed
         shell: bash
 
       - name: Upload vcpkg build logs
