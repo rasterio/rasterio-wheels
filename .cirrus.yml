@@ -35,7 +35,7 @@ wheel_build_task:
     - clean_code $REPO_DIR $BUILD_COMMIT
     - MACOSX_DEPLOYMENT_TARGET=11.0
     - GDAL_CONFIG=$BUILD_PREFIX/bin/gdal-config
-    - PROJ_LIB=$BUILD_PREFIX/share/proj
+    - PROJ_DATA=$BUILD_PREFIX/share/proj
     - build_wheel $REPO_DIR $PLAT
   test_wheel_script:
     - source multibuild/common_utils.sh

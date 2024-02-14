@@ -442,7 +442,7 @@ function pre_build {
 
 function run_tests {
     unset GDAL_DATA
-    unset PROJ_LIB
+    unset PROJ_DATA
     if [ -n "$IS_OSX" ]; then
         export PATH=$PATH:${BUILD_PREFIX}/bin
         export LC_ALL=en_US.UTF-8
