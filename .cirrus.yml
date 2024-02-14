@@ -17,7 +17,6 @@ wheel_build_task:
       - MB_PYTHON_VERSION: "3.11"
       - MB_PYTHON_VERSION: "3.10"
       - MB_PYTHON_VERSION: "3.9"
-      - MB_PYTHON_VERSION: "3.8"
   install_pre_requirements_script:
     - brew install pkg-config python@3.10
     - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
