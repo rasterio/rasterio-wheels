@@ -1,4 +1,3 @@
----
 name: Linux and macOS wheels
 
 on: [push, pull_request, workflow_dispatch]
@@ -6,44 +5,26 @@ on: [push, pull_request, workflow_dispatch]
 env:
   REPO_DIR: rasterio
   WHEEL_SDIR: wheelhouse
+  CIBW_BUILD: cp39-* cp310-* cp311-* cp312-*
 
 jobs:
   build:
-    name: ${{ matrix.python }} ${{ matrix.os-name }} ${{ matrix.platform }}
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ "ubuntu-20.04", "macos-12" ]
-        python: [ "3.9", "3.10", "3.11", "3.12" ]
-        platform: [ "x86_64" ]
-        macos-target: [ "10.15" ]
-        exclude:
-          - os: "macos-12"
-            platform: "i686"
-        include:
-          - os: "macos-12"
-            os-name: "osx"
-          - os: "ubuntu-20.04"
-            os-name: "focal"
-    env:
-      BUILD_COMMIT: rel-1.4a2
-      PLAT: "${{ matrix.platform }}"
-      MB_PYTHON_VERSION: "${{ matrix.python }}"
-      MB_ML_VER: "2014"
-      TEST_DEPENDS: "oldest-supported-numpy attrs==21.4.0 pytest==6.2.5 click==8.0.3 mock boto3 packaging hypothesis==4.38.1 fsspec aiohttp requests"
-      TRAVIS_OS_NAME: ${{ matrix.os-name }}
-      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
+      - name: Install cibuildwheel
+        uses: pypa/cibuildwheel@v2.16
         with:
-          python-version: "3.x"
-      - name: Build Wheel
-        run: .github/workflows/build.sh
-      - uses: actions/upload-artifact@v3
+          output-dir: wheelhouse
+      - uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: wheelhouse/*.whl
@@ -54,7 +35,7 @@ jobs:
     if: "startsWith(github.ref, 'refs/tags/')"
     needs: build
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
       - name: Upload Release
