@@ -192,7 +192,7 @@ function build_tiff {
     build_libwebp
     build_zlib
     build_zstd
-    ensure_xz
+    build_xz
     fetch_unpack https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz
     (cd tiff-${TIFF_VERSION} \
         && mv VERSION VERSION.txt \
@@ -264,7 +264,7 @@ function build_curl {
     CXXFLAGS="$CXXFLAGS -g -O2"
     build_openssl
     build_nghttp2
-    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz --with-ssl"
+    local flags="--prefix=$BUILD_PREFIX --with-nghttp2=$BUILD_PREFIX --with-libz --with-ssl --without-libidn2"
     #    fetch_unpack https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
     (cd curl-${CURL_VERSION} \
         && LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BUILD_PREFIX/lib:$BUILD_PREFIX/lib64 ./configure $flags \
@@ -378,6 +378,9 @@ function build_gdal {
         -DGDAL_ENABLE_DRIVER_AAIGRID=ON \
         -DGDAL_USE_LERC=ON \
         -DGDAL_USE_LERC_INTERNAL=OFF \
+        -DGDAL_USE_PCRE2=OFF \
+        -DGDAL_USE_POSTGRESQL=OFF \
+        -DGDAL_USE_ODBC=OFF \
         && $cmake --build . -j4 \
         && $cmake --install .)
     if [ -n "$IS_OSX" ]; then
@@ -455,7 +458,7 @@ function run_tests {
         apt-get install -y ca-certificates
     fi
     cp -R ../rasterio/tests ./tests
-    python -m pip install "shapely;python_version<'3.12'" $TEST_DEPENDS
+    python -m pip install $TEST_DEPENDS
     PROJ_NETWORK=ON python -m pytest -vv tests -m "not gdalbin" -k "not test_ensure_env_decorator_sets_gdal_data_prefix and not test_tiled_dataset_blocksize_guard and not test_untiled_dataset_blocksize and not test_positional_calculation_byindex and not test_transform_geom_polygon and not test_reproject_error_propagation and not test_issue2353 and not test_info_azure_unsigned and not test_datasetreader_ctor_url and not test_outer_boundless_pixel_fidelity"
     rio --version
     rio env --formats
@@ -476,9 +479,10 @@ function build_wheel_cmd {
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && GDAL_VERSION=3.6.4 $cmd $wheelhouse)
+    (cd $repo_dir && GDAL_VERSION=3.8.4 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
-	:
+        pip install delocate
+        delocate-listdeps --all --depending $wheelhouse/*.whl
     else  # manylinux
         pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
     fi

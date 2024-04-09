@@ -1,0 +1,20 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1438,7 +1443,7 @@ function(my_install_man COMPONENT SRC_FILE LINK_NAMES)
+     endif()
+ endfunction()
+ 
+-
++if(BUILD_TOOLS)
+ #############################################################################
+ # libgnu (getopt_long)
+ #############################################################################
+@@ -1853,7 +1858,7 @@ if(NOT MSVC OR MSVC_VERSION GREATER_EQUAL 1900)
+         my_install_man(xz_Documentation src/xz/xz.1 "${XZ_LINKS}")
+     endif()
+ endif()
+-
++endif(BUILD_TOOLS)
+ 
+ #############################################################################
+ # Scripts
