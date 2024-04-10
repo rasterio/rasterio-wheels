@@ -47,6 +47,8 @@ jobs:
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
+          pip install cmake==3.28.4
+          cmake --version
           vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed --overlay-ports=ports
         shell: bash
 
