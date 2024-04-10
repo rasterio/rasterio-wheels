@@ -1,12 +1,9 @@
-vcpkg_download_distfile(ARCHIVE
-    URLS "https://sourceforge.net/projects/lzmautils/files/xz-5.4.4.tar.gz"
-    FILENAME "xz-5.4.4.tar.gz"
-    SHA512 2e27d864c9f346e53afc549d7046385b5d35a749af15d84f69de14612657df2f0e2ce71d3be03d57adadf8fd28549ecf4ef1c214bdcd1f061b5a47239e0104e8
-)
-
-vcpkg_extract_source_archive(
-    SOURCE_PATH
-    ARCHIVE ${ARCHIVE}
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO tukaani-project/xz
+    REF "v${VERSION}"
+    SHA512 c28461123562564e030f3f733f078bc4c840e87598d9f4b718d4bca639120d8133f969c45d7bdc62f33f081d789ec0f14a1791fb7da18515682bfe3c0c7362e0
+    HEAD_REF master
     PATCHES
         fix_config_include.patch
         win_output_name.patch # Fix output name on Windows. Autotool build does not generate lib prefixed libraries on windows. 
@@ -32,7 +29,6 @@ vcpkg_cmake_configure(
         -DCREATE_XZ_SYMLINKS=OFF
         -DCREATE_LZMA_SYMLINKS=OFF
         -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=   # using flags from (vcpkg) toolchain
-        -DENABLE_NLS=OFF # nls is not supported by this port, yet
     MAYBE_UNUSED_VARIABLES
         CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
         CREATE_XZ_SYMLINKS
@@ -45,7 +41,7 @@ set(exec_prefix "\${prefix}")
 set(libdir "\${prefix}/lib")
 set(includedir "\${prefix}/include")
 set(PACKAGE_URL https://tukaani.org/xz/)
-set(PACKAGE_VERSION "${VERSION}")
+set(PACKAGE_VERSION 5.4.3)
 if(NOT VCPKG_TARGET_IS_WINDOWS)
     set(PTHREAD_CFLAGS -pthread)
 endif()
@@ -71,7 +67,7 @@ file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/share/man"
 )
 
-set(TOOLS xz xzdec lzmadec lzmainfo)
+set(TOOLS xz xzdec)
 foreach(_tool IN LISTS TOOLS)
     if(NOT EXISTS "${CURRENT_PACKAGES_DIR}/bin/${_tool}${VCPKG_TARGET_EXECUTABLE_SUFFIX}")
         list(REMOVE_ITEM TOOLS ${_tool})

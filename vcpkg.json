@@ -5,9 +5,6 @@
         { "name": "tiff", "features": [ "zstd", "lerc", "webp" ] },
         "gdal"
     ],
-    "builtin-baseline": "a34c873a9717a888f58dc05268dea15592c2f0ff",
-    "overrides": [
-        { "name": "liblzma", "version": "5.4.4" }
-    ]
+    "builtin-baseline": "a34c873a9717a888f58dc05268dea15592c2f0ff"
 }
 
