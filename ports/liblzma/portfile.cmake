@@ -1,7 +1,7 @@
 vcpkg_download_distfile(ARCHIVE
     URLS "https://sourceforge.net/projects/lzmautils/files/xz-5.4.4.tar.gz"
     FILENAME "xz-5.4.4.tar.gz"
-    SHA1 da229ced518de107fdb597f38bafdb6b9ce9e1b7
+    SHA512 0
 )
 
 vcpkg_extract_source_archive(
