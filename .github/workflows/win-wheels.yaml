@@ -27,12 +27,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache vcpkg
-        uses: actions/cache@v3
-        id: vcpkgcache
+      - uses: lukka/get-cmake@latest
         with:
-          path: "$VCPKG_INSTALLATION_ROOT/installed"
-          key: ${{ runner.os }}-vcpkg-${{ hashFiles('.github/workflows/*', 'vcpkg.json') }}-1
+          cmakeVersion: "3.28.4"
 
       - name: Bootstrap vcpkg
         env:
@@ -47,8 +44,6 @@ jobs:
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
-          pip install cmake==3.28.4
-          cmake --version
           vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed --overlay-ports=ports
         shell: bash
 
