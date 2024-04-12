@@ -26,11 +26,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - uses: lukka/get-cmake@latest
-        with:
-          cmakeVersion: "3.28.4"
-
       - name: Bootstrap vcpkg
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
@@ -44,8 +39,6 @@ jobs:
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
-          which cmake
-          echo $PATH
           vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed --overlay-ports=ports
         shell: bash
 
