@@ -122,7 +122,7 @@ jobs:
       - name: Install dependencies and rasterio wheel
         shell: bash
         run: |
-          python -m pip install oldest-supported-numpy aiohttp attrs pytest click mock boto3 packaging hypothesis fsspec
+          python -m pip install oldest-supported-numpy aiohttp attrs pytest click mock boto3 packaging hypothesis fsspec requests
           python -m pip install --pre --no-deps --find-links wheelhouse/artifact rasterio
           python -m pip install rasterio
           python -m pip list
