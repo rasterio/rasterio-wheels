@@ -5,7 +5,7 @@ wheel_build_task:
   env:
     BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
-    BUILD_COMMIT: rel-1.3.10
+    BUILD_COMMIT: rel-1.4a3
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
@@ -17,7 +17,6 @@ wheel_build_task:
       - MB_PYTHON_VERSION: "3.11"
       - MB_PYTHON_VERSION: "3.10"
       - MB_PYTHON_VERSION: "3.9"
-      - MB_PYTHON_VERSION: "3.8"
   install_pre_requirements_script:
     - brew install pkg-config python@3.10
     - ln -s /opt/homebrew/opt/python@3.10/bin/python3.10 /opt/homebrew/opt/python@3.10/bin/python

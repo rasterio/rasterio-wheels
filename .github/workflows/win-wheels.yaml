@@ -4,7 +4,7 @@ name: Windows wheels
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  REF: rel-1.3.10
+  REF: rel-1.4a3
 
 # cancel running jobs on new commit to PR
 concurrency:
@@ -81,7 +81,7 @@ jobs:
             PACKAGE_DATA=1
             GDAL_DATA="$VCPKG_INSTALL/share/gdal"
             PROJ_DATA="$VCPKG_INSTALL/share/proj"
-            GDAL_VERSION="3.8.3"
+            GDAL_VERSION="3.8.4"
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --add-path C:/vcpkg/installed/x64-windows/bin -w {dest_dir} {wheel}
 
@@ -97,7 +97,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["windows-latest"]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v3
