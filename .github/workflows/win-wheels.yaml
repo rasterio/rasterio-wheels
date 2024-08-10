@@ -4,7 +4,7 @@ name: Windows wheels
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  REF: rel-1.4a3
+  REF: main
 
 # cancel running jobs on new commit to PR
 concurrency:
