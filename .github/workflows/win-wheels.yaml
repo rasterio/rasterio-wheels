@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Bootstrap vcpkg
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
@@ -49,7 +49,7 @@ jobs:
           path: "C:/vcpkg/buildtrees/**/*.log"
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rasterio/rasterio
           fetch-depth: 0
@@ -100,9 +100,9 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Checkout Rasterio
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rasterio/rasterio
           ref: ${{ env.REF }}
