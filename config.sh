@@ -289,6 +289,10 @@ function build_zstd {
     touch zstd-stamp
 }
 
+function build_pcre2 {
+    build_simple pcre2 $PCRE_VERSION https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${PCRE_VERSION}
+}
+
 function build_gdal {
     if [ -e gdal-stamp ]; then return; fi
 
@@ -306,14 +310,17 @@ function build_gdal {
     build_hdf5
     build_netcdf
     build_zstd
+    build_pcre2
 
     CFLAGS="$CFLAGS -DPROJ_RENAME_SYMBOLS -g -O2"
     CXXFLAGS="$CXXFLAGS -DPROJ_RENAME_SYMBOLS -DPROJ_INTERNAL_CPP_NAMESPACE -g -O2"
 
     if [ -n "$IS_OSX" ]; then
         GEOS_CONFIG="-DGDAL_USE_GEOS=OFF"
+        PCRE2_LIB="$BUILD_PREFIX/lib/libpcre2-8.dylib"
     else
         GEOS_CONFIG="-DGDAL_USE_GEOS=ON"
+        PCRE2_LIB="$BUILD_PREFIX/lib/libpcre2-8.so"
     fi
 
     local cmake=cmake
@@ -365,6 +372,9 @@ function build_gdal {
         -DGDAL_USE_SFCGAL=OFF \
         -DGDAL_USE_XERCESC=OFF \
         -DGDAL_USE_LIBXML2=OFF \
+        -DGDAL_USE_PCRE2=ON \
+        -DPCRE2_INCLUDE_DIR=$BUILD_PREFIX/include \
+        -DPCRE2-8_LIBRARY=$PCRE2_LIB \
         -DGDAL_USE_POSTGRESQL=OFF \
         -DGDAL_ENABLE_POSTGISRASTER=OFF \
         -DGDAL_USE_OPENEXR=OFF \
@@ -479,12 +489,12 @@ function build_wheel_cmd {
     if [ -n "$BUILD_DEPENDS" ]; then
         pip install $(pip_opts) $BUILD_DEPENDS
     fi
-    (cd $repo_dir && GDAL_VERSION=3.8.4 $cmd $wheelhouse)
+    (cd $repo_dir && GDAL_VERSION=3.9.1 $cmd $wheelhouse)
     if [ -n "$IS_OSX" ]; then
         pip install delocate
         delocate-listdeps --all --depending $wheelhouse/*.whl
     else  # manylinux
-        pip install -I "git+https://github.com/sgillies/auditwheel.git#egg=auditwheel"
+        pip install -I "auditwheel @ git+https://github.com/sgillies/auditwheel.git@extra-lib-name-tag"
     fi
     repair_wheelhouse $wheelhouse
 }
