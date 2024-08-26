@@ -4,7 +4,7 @@ name: Windows wheels
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  REF: 1.4b1
+  REF: main
 
 # cancel running jobs on new commit to PR
 concurrency:
@@ -71,7 +71,7 @@ jobs:
         shell: bash
  
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.20.0
         env:
           CIBW_SKIP: "*-win32 pp*"
           CIBW_ENVIRONMENT_WINDOWS:
@@ -97,7 +97,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["windows-latest"]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v3

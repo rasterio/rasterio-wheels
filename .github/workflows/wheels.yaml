@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ "ubuntu-20.04", "macos-12" ]
-        python: [ "3.9", "3.10", "3.11", "3.12" ]
+        python: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         platform: [ "x86_64" ]
         macos-target: [ "10.15" ]
         exclude:
@@ -27,7 +27,7 @@ jobs:
           - os: "ubuntu-20.04"
             os-name: "focal"
     env:
-      BUILD_COMMIT: 1.4b1
+      BUILD_COMMIT: main
       PLAT: "${{ matrix.platform }}"
       MB_PYTHON_VERSION: "${{ matrix.python }}"
       MB_ML_VER: "2014"
