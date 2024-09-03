@@ -1,6 +1,12 @@
 Changes
 =======
 
+## 2024-09-03
+
+* GDAL 3.9.2 (3.9.1 on Windows)
+* PROJ 9.4.1
+* Curl 8.8.0
+
 ## 2023-10-19
 
 Library version changes:
