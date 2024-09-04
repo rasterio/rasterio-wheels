@@ -9,7 +9,7 @@ wheel_build_task:
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
-    BUILD_DEPENDS: "setuptools numpy>=2 cython~=3.0.2 wheel"
+    BUILD_DEPENDS: "setuptools numpy cython~=3.0.2 wheel"
     TEST_DEPENDS: "oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel fsspec aiohttp requests"
     MACOSX_DEPLOYMENT_TARGET: "11.0"
     matrix:
