@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ "ubuntu-20.04", "macos-12" ]
-        python: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+        python: [ "3.8" ]
         platform: [ "x86_64" ]
         macos-target: [ "10.15" ]
         exclude:
