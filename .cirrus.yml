@@ -5,7 +5,7 @@ wheel_build_task:
   env:
     BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
-    BUILD_COMMIT: rel-1.4.0rc1
+    BUILD_COMMIT: rel-1.4.0rc2
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
