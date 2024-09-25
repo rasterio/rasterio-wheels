@@ -35,6 +35,12 @@ jobs:
           ./bootstrap-vcpkg.bat -disableMetrics
         shell: bash
 
+      - name: Patch vcpkg cmake script
+        run: |
+          cd "$VCPKG_INSTALLATION_ROOT"
+          patch -p1 < ${GITHUB_WORKSPACE}/40956.diff
+        shell: bash
+
       - name: Install C Packages (GDAL et al)
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
