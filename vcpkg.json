@@ -1,6 +1,6 @@
 {
     "name": "rasterio",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "dependencies": [
         { "name": "tiff", "features": [ "zstd", "lerc", "webp" ] },
         "gdal"
