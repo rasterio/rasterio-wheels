@@ -4,7 +4,7 @@ name: Windows wheels
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  REF: 1.4b1
+  REF: 1.4.1
 
 # cancel running jobs on new commit to PR
 concurrency:
@@ -39,8 +39,8 @@ jobs:
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
         run: |
-          vcpkg install --feature-flags="versions,manifests" --x-manifest-root=${GITHUB_WORKSPACE} --x-install-root=$VCPKG_INSTALLATION_ROOT/installed --overlay-ports=ports
-        shell: bash
+          vcpkg install --feature-flags="versions,manifests" --x-manifest-root=$Env:GITHUB_WORKSPACE --x-install-root=$Env:VCPKG_INSTALLATION_ROOT/installed
+        shell: pwsh
 
       - name: Upload vcpkg build logs
         if: ${{ failure() }}
@@ -71,7 +71,7 @@ jobs:
         shell: bash
  
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.21.1
         env:
           CIBW_SKIP: "*-win32 pp*"
           CIBW_ENVIRONMENT_WINDOWS:
@@ -85,9 +85,9 @@ jobs:
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --add-path C:/vcpkg/installed/x64-windows/bin -w {dest_dir} {wheel}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          path: ./wheelhouse/*.whl
+          path: wheelhouse/*.whl
 
   test-wheels:
     name: Test wheels on ${{ matrix.os }} (Python ${{ matrix.python-version }})
@@ -97,7 +97,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["windows-latest"]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v3
@@ -115,7 +115,7 @@ jobs:
           allow-prereleases: true
 
       - name: Download wheels from artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: wheelhouse
 

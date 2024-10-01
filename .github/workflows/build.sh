@@ -30,7 +30,7 @@ echo "::group::Build wheel"
   ls -l "${GITHUB_WORKSPACE}/${WHEEL_SDIR}/"
 echo "::endgroup::"
 
-if [[ $MACOSX_DEPLOYMENT_TARGET != "11.0" ]]; then
+if [[ $MACOSX_DEPLOYMENT_TARGET != "11.0" ]] && [[ "$MB_PYTHON_VERSION" != "3.13" ]]; then
   echo "::group::Test wheel"
     install_run $PLAT
   echo "::endgroup::"

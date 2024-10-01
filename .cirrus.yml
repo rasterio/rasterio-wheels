@@ -5,14 +5,15 @@ wheel_build_task:
   env:
     BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
-    BUILD_COMMIT: 1.4b1
+    BUILD_COMMIT: 1.4.1
     CIRRUS_CLONE_SUBMODULES: true
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     PLAT: "arm64"
-    BUILD_DEPENDS: "setuptools numpy>=1.25,<2 cython~=3.0.2 wheel"
+    BUILD_DEPENDS: "setuptools numpy>=2 cython~=3.0.2 wheel"
     TEST_DEPENDS: "oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel fsspec aiohttp requests"
     MACOSX_DEPLOYMENT_TARGET: "11.0"
     matrix:
+      - MB_PYTHON_VERSION: "3.13"
       - MB_PYTHON_VERSION: "3.12"
       - MB_PYTHON_VERSION: "3.11"
       - MB_PYTHON_VERSION: "3.10"

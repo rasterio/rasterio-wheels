@@ -1,6 +1,14 @@
 Changes
 =======
 
+## 2024-08-26
+
+Library version changes:
+
+* CURL 8.8.0
+* GDAL 3.9.2
+* PROJ 9.4.1
+
 ## 2023-10-19
 
 Library version changes:

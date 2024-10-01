@@ -453,6 +453,25 @@ function pre_build {
 }
 
 
+function install_run {
+    if [ -n "$IS_OSX" ]; then
+        install_wheel
+        mkdir tmp_for_test
+        (cd tmp_for_test && run_tests)
+        rmdir tmp_for_test  2>/dev/null || echo "Cannot remove tmp_for_test"
+    else
+        if [ "${MB_PYTHON_VERSION}" != "3.13" ]; then
+            install_wheel
+            mkdir tmp_for_test
+            (cd tmp_for_test && run_tests)
+            rmdir tmp_for_test  2>/dev/null || echo "Cannot remove tmp_for_test"
+        else
+            :
+        fi
+    fi
+}
+
+
 function run_tests {
     unset GDAL_DATA
     unset PROJ_DATA
