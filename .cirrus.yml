@@ -1,7 +1,7 @@
 wheel_build_task:
   name: Build Rasterio wheels for Mac ARM64.
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-monterey-xcode
+    image: ghcr.io/cirruslabs/macos-runner:sonoma
   env:
     BUILD_PREFIX: /private/tmp/local
     REPO_DIR: rasterio
@@ -11,7 +11,7 @@ wheel_build_task:
     PLAT: "arm64"
     BUILD_DEPENDS: "setuptools numpy>=2 cython~=3.0.2 wheel"
     TEST_DEPENDS: "oldest-supported-numpy attrs pytest click mock boto3 packaging hypothesis wheel fsspec aiohttp requests"
-    MACOSX_DEPLOYMENT_TARGET: "11.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
     matrix:
       - MB_PYTHON_VERSION: "3.13"
       - MB_PYTHON_VERSION: "3.12"
