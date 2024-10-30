@@ -33,7 +33,7 @@ wheel_build_task:
     - source multibuild/travis_steps.sh
     - before_install
     - clean_code $REPO_DIR $BUILD_COMMIT
-    - MACOSX_DEPLOYMENT_TARGET=11.0
+    - MACOSX_DEPLOYMENT_TARGET=14.0
     - GDAL_CONFIG=$BUILD_PREFIX/bin/gdal-config
     - PROJ_DATA=$BUILD_PREFIX/share/proj
     - build_wheel $REPO_DIR $PLAT
